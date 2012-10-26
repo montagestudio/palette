@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-exports.Authoring = {
+exports.Palette = {
 
     stringifySerialization: function(object) {
         return JSON.stringify(object, null, 4)
