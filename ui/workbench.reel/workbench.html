@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="workbench.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "workbench"},
+                "montageFrame": {"@": "montageFrame"}
+            },
+            "bindings": {
+                "selectedObjects": {"<->": "@montageFrame.selectedObjects"}
+            }
+        },
+
+        "montageFrame": {
+           "prototype": "ui/montage-frame.reel",
+            "properties": {
+                "element": {"#": "montageFrame"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="workbench" class="Workbench">
+        <div data-montage-id="montageFrame"></div>
+    </div>
+</body>
+</html>

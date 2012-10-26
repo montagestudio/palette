@@ -1,0 +1,87 @@
+// Set of components available for use in the authoring system
+// TODO replace with dynamic browsing of available modules informed by ComponentDescriptions
+exports.components = [
+    {
+        label: "Button", name: "Button",
+        x: 0, y: -76, left: 11,
+        serialization: {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "label": "Button",
+                "enabled": true
+            }
+        },
+        html: '<button data-montage-id=""></button>'
+    },
+    {
+        label: "Range", name: "InputRange",
+        x: -45, y: -76, width: 43, left: 13,
+        serialization: {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "minValue": 0,
+                "maxValue": 100,
+                "value": 50
+            }
+        },
+        html: '<input type="range" data-montage-id="">'
+    },
+    {
+        label: "Toggle", name: "ToggleButton",
+        x: 0, y: -99, left: 12,
+        serialization: {
+            "prototype": "montage/ui/toggle-button.reel",
+            "properties": {
+                "value": true,
+                "pressedLabel": "On",
+                "unpressedLabel": "Off"
+            }
+        },
+        html: '<button data-montage-id=""></button>'
+    },
+    {
+        label: "Checkbox", name: "InputCheckbox",
+        x: -89, y: -76, left: 22, width: 24,
+        serialization: {
+            "prototype": "montage/ui/input-checkbox.reel",
+            "properties": {
+                "checked": true
+            }
+        },
+        html: '<input type="checkbox" data-montage-id="">'
+    },
+    {
+        label: "InputText", name: "InputText",
+        x: -71, y: -101, left: 19,
+        serialization: {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "value": "Editable text"
+            }
+        },
+        html: '<input data-montage-id="" type="text">'
+    },
+    {
+        label: "DynamicText", name: "DynamicText",
+        x: 0, y: -122, left: 20, width: 28,
+        serialization: {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "value": "Text"
+            }
+        },
+        html: '<p data-montage-id=""></p>'
+    },
+    {
+        label: "Repetition", name: "Repetition",
+        x: -29, y: -125, left: 19, width: 30,
+        serialization: {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "objects": [1, 2, 3]
+            }
+        },
+        html: '<ul data-montage-id=""><li>Item</li></ul>'
+    }
+];
+
