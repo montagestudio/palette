@@ -88,17 +88,17 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 return;
             }
 
-            this.element.removeEventListener("load", this);
-
-            var frameDoc = this._element.contentWindow.document,
+            var frameElement = this.element,
+                frameDoc = frameElement.contentWindow.document,
                 montageScript = frameDoc.createElement("script");
+
+            frameElement.removeEventListener("load", this);
+            window.addEventListener("message", this, false);
 
             montageScript.setAttribute("src", require.getPackage({name:"montage"}).location + "montage.js");
             montageScript.setAttribute("data-package", "../../../package.json");
             montageScript.setAttribute("data-module", "ui/montage-frame.reel/frame/frame");
             frameDoc.head.appendChild(montageScript);
-
-            this._element.contentWindow.addEventListener("message", this, false);
         }
     },
 
