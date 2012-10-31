@@ -31,9 +31,9 @@ var testPage = TestPageLoader.queueTest("frame", function () {
             describe("loading no serialization", function () {
 
                 it("should create a default owner component if no serialization provided", function () {
-                    montageFrame.load().then(function () {
+                    montageFrame.load().then(function (owner) {
                         expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).not.toBeNull();
+                        expect(frameBody.firstElementChild.controller).toBe(owner);
                         done = true;
                     });
 
@@ -63,7 +63,7 @@ var testPage = TestPageLoader.queueTest("frame", function () {
                 it("should move specified content into synthesized owner element", function () {
                     montageFrame.load(serialization, html).then(function (owner) {
                         expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).not.toBeNull();
+                        expect(frameBody.firstElementChild.controller).toBe(owner);
                         done = true;
                     });
 
@@ -76,14 +76,16 @@ var testPage = TestPageLoader.queueTest("frame", function () {
 
             describe("loading a serialization with an owner component", function () {
 
-                var serialization = '{\n\t"button": {\n\t\t"prototype": "montage/ui/button.reel",\n\t\t"properties": {\n\t\t\t"element": {"#": "myButton"}\n\t\t}\n\t}\n}',
-                    html = '<button data-montage-id="myButton"></button>';
+                var serialization = '{\n\t"owner": {\n\t\t"prototype": "montage/ui/component",\n\t\t"properties": {\n\t\t\t"element": {"#": "owner"}\n\t\t}\n\t}\n}',
+                    html = '<button data-montage-id="owner" data-fromOriginalContent="true"></button>';
 
                 it("should use owner component found in specified serialization", function () {
 
                     montageFrame.load(serialization, html).then(function (owner) {
                         expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).not.toBeNull();
+                        expect(frameBody.firstElementChild.controller).toEqual(owner);
+                        expect(frameBody.firstElementChild).toBe(owner.element);
+                        expect(owner.element.getAttribute("data-fromOriginalContent")).toBeTruthy();
                         done = true;
                     });
 
