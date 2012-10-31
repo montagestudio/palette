@@ -57,7 +57,7 @@ var testPage = TestPageLoader.queueTest("frame", function () {
 
                     waitsFor(function () {
                         return done;
-                    }, 10);
+                    }, "MontageFrame to load owner component", 10);
                 });
 
                 it("should move specified content into synthesized owner element", function () {
@@ -69,7 +69,7 @@ var testPage = TestPageLoader.queueTest("frame", function () {
 
                     waitsFor(function () {
                         return done;
-                    }, 10);
+                    }, "MontageFrame to load owner component", 10);
                 });
 
             });
@@ -89,7 +89,7 @@ var testPage = TestPageLoader.queueTest("frame", function () {
 
                     waitsFor(function () {
                         return done;
-                    }, 10);
+                    }, "MontageFrame to load owner component", 10);
                 });
 
             });
