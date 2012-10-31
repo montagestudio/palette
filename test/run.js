@@ -44,6 +44,7 @@ if (spec) {
         // Please keep in alphabetical order
         "test/core/exporter-spec",
 
+        "test/ui/frame-add-component-spec",
         "test/ui/frame-spec"
 
     ];

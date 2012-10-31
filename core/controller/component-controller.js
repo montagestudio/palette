@@ -1,4 +1,5 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Promise = require("montage/core/promise").Promise;
 
 // The actual object responsible for add, removing, and altering components that belong to the owner it controls.
 // This controller will inform others of the intent and result of each operation it performs allowing consumers
@@ -36,8 +37,19 @@ exports.ComponentController = Montage.create(Montage, {
         }
     },
 
+    _deferredComponent: {
+        value: null
+    },
+
     addComponent: {
         value: function (componentPath, componentName, markup) {
+
+            // TODO support adding multiple components at once
+            if (this._deferredComponent) {
+                this._deferredComponent.reject();
+            }
+
+            this._deferredComponent = Promise.defer();
 
             // TODO accept default properties to configure the component
 
@@ -59,6 +71,9 @@ exports.ComponentController = Montage.create(Montage, {
                     componentInstance.needsDraw = true;
 
 
+                    //TODO do we need to do this manually?
+                    componentInstance.ownerComponent = self.owner;
+
                     // NOTE not having this ended up not putting this component in the component tree
                     // TODO be able to specify parentage...
                     componentInstance.attachToParentComponent(self.owner);
@@ -67,12 +82,13 @@ exports.ComponentController = Montage.create(Montage, {
                 })
                 .end();
 
+            return this._deferredComponent.promise;
         }
     },
 
     _didAddComponent: {
         value: function (component) {
-
+            this._deferredComponent.resolve(component);
         }
     },
 
