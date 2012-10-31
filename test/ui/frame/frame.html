@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="../../../node_modules/montage/montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "delegate" : {"@": "test"}
+                }
+            },
+
+            "test": {
+                "prototype": "ui/frame/frame",
+                "properties": {
+                    "montageFrame": {"@": "montageFrame"}
+                }
+            },
+
+            "montageFrame": {
+                "prototype": "palette/ui/montage-frame.reel",
+                "properties": {
+                    "element": {"#": "montageFrame"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div id="montageFrame"></div>
+</body>
+</html>

@@ -55,9 +55,7 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
             var doc = this.currentDocument;
 
             if (doc) {
-                this.montageFrame.load(doc.styling, doc.serialization, doc.structure, doc.behavior);
-            } else {
-                this.montageFrame.load("", "", "", "");
+                this.montageFrame.load(doc.serialization, doc.structure, doc.behavior, doc.styling);
             }
 
             this._needsDocumentLoad = false;

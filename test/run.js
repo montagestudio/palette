@@ -42,7 +42,9 @@ if (spec) {
 } else {
     var modules = [
         // Please keep in alphabetical order
-        "test/core/exporter-spec"
+        "test/core/exporter-spec",
+
+        "test/ui/frame-spec"
 
     ];
     Promise.all(modules.map(require.deepLoad))

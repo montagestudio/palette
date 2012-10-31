@@ -7,30 +7,129 @@ var Template = require("montage/ui/template").Template,
 
 window.Frame = {
 
-    // Prepares the document for use by creating a owner component
-    initWithOwner: function (ownerModule, ownerName) {
+    _document: null,
 
-        // TODO what if the document already has an owner component?
-        // TODO re-introduce specific OwnerComponent
+    _deferredOwner: null,
 
-        var ownerInstance = Component.create();
-        this.instantiateWithOwner(ownerInstance);
+    // Load the given serialization, html, css, and javascript into the internal frame
+    // returning a deferred reference to the owner component
+    load: function (montageFrame, serialization, html, javascript, css) {
 
-        // Configure componentController to assist ownerComponent
-        this.componentController = ComponentController.create();
-        this.componentController.owner = ownerInstance;
+        if (this._deferredOwner) {
+            this._deferredOwner.reject();
+        }
+
+        this._deferredOwner = Promise.defer();
+
+        var doc = this._document = window.document,
+            head = doc.head,
+            oldSerialization = doc.querySelector("script[type='text/montage-serialization']"),
+            serializationElement,
+            ownerSerialization,
+            ownerSerializationLabel = "owner",
+            ownerModule = "montage/ui/component",
+            ownerName = "Component",
+            ownerElementMontageId = "owner",
+            owner;
+
+        if (oldSerialization) {
+            oldSerialization.parentNode.removeChild(oldSerialization);
+        }
+
+        // Whether a serialization was present or not doesn't mean there aren't
+        // objects that need to be cleared out; they may have been introduced without
+        // a serialization
+        this.clear();
+
+        if (serialization) {
+            serializationElement = doc.createElement("script");
+            serializationElement.setAttribute("type", "text/montage-serialization");
+            serializationElement.textContent = serialization;
+            head.appendChild(serializationElement);
+
+            // Find specified owner component
+            ownerSerialization = JSON.parse(serialization)[ownerSerializationLabel];
+            if (ownerSerialization) {
+
+                //TODO if no owner prototype, try to infer type based on reel?
+                if (ownerSerialization.prototype) {
+                    ownerModule = ownerSerialization.prototype;
+                }
+
+                //TODO do we have a utility method for this?
+                ownerName = ownerModule.replace(".reel", "").substring(ownerModule.lastIndexOf("/") + 1).toCapitalized();
+
+                //TODO if no element....use body? documentRoot?
+                ownerElementMontageId = ownerSerialization.properties.element["#"];
+            }
+        }
+
+        if (html) {
+            doc.body.innerHTML = html;
+        }
+
+        if (css) {
+            head.querySelector("style").textContent = css;
+        }
+
+        if (javascript) {
+            head.querySelector("script[type='text/montage-javascript']").textContent = javascript;
+        }
+
+        // TODO in jasmine specs this works:
+        rootComponent.application.eventManager.delegate = montageFrame;
+        // and this doesn't:
+        // window.defaultEventManager.delegate = montageFrame;
+
+        this._resolveOwnerComponent(ownerModule, ownerName, ownerElementMontageId);
+        return this._deferredOwner.promise;
     },
 
-    instantiateWithOwner: function (owner) {
-        var template = Template.create().initWithDocument(window.document, window.require),
-            ownerElement;
+    // Prepares the document for use by creating a owner component
+    _resolveOwnerComponent: function (ownerModule, ownerName, ownerElementMontageId) {
 
-        ownerElement = window.document.createElement('div');
-        //TODO where should the montage-id come from?
-        ownerElement.setAttribute("data-montage-id", "owner");
-        owner.element = ownerElement;
-        document.body.appendChild(ownerElement);
+        var ownerInstance,
+            self = this;
 
+        if (ownerModule && ownerName) {
+            require.async(ownerModule).then(function (module) {
+                ownerInstance = module[ownerName].create();
+                self._installOwner(ownerInstance, ownerElementMontageId);
+
+                // Configure componentController to assist ownerComponent
+                self.componentController = ComponentController.create();
+                self.componentController.owner = ownerInstance;
+                self._deferredOwner.resolve(ownerInstance);
+            });
+        } else {
+            ownerInstance = Component.create();
+            this._installOwner(ownerInstance, ownerElementMontageId);
+
+            // Configure componentController to assist ownerComponent
+            this.componentController = ComponentController.create();
+            this.componentController.owner = ownerInstance;
+            this._deferredOwner.resolve(ownerInstance);
+        }
+    },
+
+    _installOwner: function (owner, ownerElementMontageId) {
+        var bodyRange,
+            bodyContent,
+            template = Template.create().initWithDocument(document, window.require),
+            ownerElement = document.querySelector("[data-montage-id=" + ownerElementMontageId + "]");
+
+        if (!ownerElement) {
+            ownerElement = window.document.createElement('div');
+            ownerElement.setAttribute("data-montage-id", ownerElementMontageId);
+            owner.element = ownerElement;
+
+            // Transplant existing content inside the owner's element we just created
+            bodyRange = document.createRange();
+            bodyRange.selectNodeContents(document.body);
+            bodyContent = bodyRange.extractContents();
+            ownerElement.appendChild(bodyContent);
+            document.body.appendChild(ownerElement);
+        }
 
         // the template is built-in
         owner.hasTemplate = false;
@@ -47,7 +146,7 @@ window.Frame = {
     },
 
     // Clears the frame of all content
-    reset: function () {
+    clear: function () {
         var childComponents = rootComponent.childComponents,
             childComponent,
             i;
@@ -57,13 +156,14 @@ window.Frame = {
             childComponent.cleanupDeletedComponentTree();
         }
         rootComponent.needsDraw = false;
+        this._document.body.innerHTML = "";
     },
 
     addComponent: function (componentModule, componentName, markup) {
-        this.componentController.addComponent(componentModule, componentName, markup);
+        return this.componentController.addComponent(componentModule, componentName, markup);
     },
 
-    export: function () {
+    save: function () {
         if (!this.exporter) {
             this.exporter = Exporter.create();
         }
