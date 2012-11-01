@@ -13,8 +13,7 @@ var testPage = TestPageLoader.queueTest("frame", function () {
         describe("the montage frame", function () {
 
             var montageFrame = test.montageFrame,
-                owner,
-                done;
+                owner;
 
             beforeEach(function () {
                 montageFrame.load().then(function (fufilledOwner) {
@@ -24,11 +23,9 @@ var testPage = TestPageLoader.queueTest("frame", function () {
                 waitsFor(function () {
                     return owner;
                 }, "MontageFrame to load owner component", 100);
-
-                done = false;
             });
 
-            describe("adding a component", function () {
+            describe("adding a component with no properties", function () {
 
                 var addedComponent;
 
@@ -54,6 +51,42 @@ var testPage = TestPageLoader.queueTest("frame", function () {
 
                 it("should add the component's element as a child of the owner's element", function () {
                     expect(addedComponent.element.parentNode).toBe(owner.element);
+                });
+
+            });
+
+            describe("adding a component with initial properties", function () {
+
+                var addedComponent;
+
+                beforeEach(function () {
+                    var componentPromise = montageFrame.addComponent("montage/ui/button.reel", "Button", '<button data-montage-id="myButton"></button>', {
+                        label: "Click Me!"
+                    });
+
+                    componentPromise.then(function (fufilledComponent) {
+                        addedComponent = fufilledComponent;
+                    });
+
+                    waitsFor(function () {
+                        return !!addedComponent;
+                    }, "MontageFrame to addComponent", 100);
+                });
+
+                it("should add the component as belonging to the owner", function () {
+                    expect(addedComponent.ownerComponent).toBe(owner);
+                });
+
+                it("should add the component as a child of the owner", function () {
+                    expect(addedComponent.parentComponent).toBe(owner);
+                });
+
+                it("should add the component's element as a child of the owner's element", function () {
+                    expect(addedComponent.element.parentNode).toBe(owner.element);
+                });
+
+                it("should apply the expected properties", function () {
+                    expect(addedComponent.label).toBe("Click Me!");
                 });
 
             });

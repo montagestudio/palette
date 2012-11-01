@@ -37,33 +37,30 @@ exports.ComponentController = Montage.create(Montage, {
         }
     },
 
-    // TODO allow adding multiple component/objects at the same time
-
-    _deferredObject: {
-        value: null
+    _deferredObjects: {
+        value: {},
+        distinct: true
     },
 
     installObject: {
         value: function (objectPath, objectName, onRequire) {
 
-            // TODO support adding multiple components at once
-            if (this._deferredObject) {
-                this._deferredObject.reject();
-            }
+            var deferredObject = Promise.defer();
+            this._deferredObjects[deferredObject.uuid] = deferredObject;
 
-            this._deferredObject = Promise.defer();
+            require.async(objectPath).then(function (fulfilled) {
+                onRequire(fulfilled, deferredObject.uuid);
+            }).end();
 
-            require.async(objectPath).then(onRequire).end();
-
-            return this._deferredObject.promise;
+            return deferredObject.promise;
         }
     },
 
     addObject: {
-        value: function (objectModule, objectName) {
+        value: function (objectModule, objectName, properties) {
 
             var self = this;
-            return this.installObject(objectModule, objectName, function (objectModule) {
+            return this.installObject(objectModule, objectName, function (objectModule, deferredId) {
 
                 var objectPrototype = objectModule[objectName],
                     objectInstance = objectPrototype.create();
@@ -74,18 +71,17 @@ exports.ComponentController = Montage.create(Montage, {
                 // how does this end up in the serialization if not exposed as property on owner?
                 // self.owner;
 
-                self._didAddObject(objectInstance);
+                self._didAddObject(deferredId, objectInstance, properties);
             });
         }
     },
 
-    // TODO accept default properties to configure the component
     addComponent: {
-        value: function (componentPath, componentName, markup) {
+        value: function (componentPath, componentName, markup, properties) {
 
             var self = this;
 
-            return this.installObject(componentPath, componentName, function (componentModule) {
+            return this.installObject(componentPath, componentName, function (componentModule, deferredId) {
                 var component = componentModule[componentName],
                     componentInstance = component.create(),
                     id = self._generateObjectId(componentName);
@@ -106,14 +102,25 @@ exports.ComponentController = Montage.create(Montage, {
                 // TODO be able to specify parentage...
                 componentInstance.attachToParentComponent(self.owner);
 
-                self._didAddObject(componentInstance);
+                self._didAddObject(deferredId, componentInstance, properties);
             });
         }
     },
 
     _didAddObject: {
-        value: function (object) {
-            this._deferredObject.resolve(object);
+        value: function (deferredId, object, properties) {
+
+            if (properties) {
+                var propertyKeys = Object.keys(properties),
+                    i,
+                    iPropertyKey;
+
+                for (i = 0; (iPropertyKey = propertyKeys[i]); i++) {
+                    object.setProperty(iPropertyKey, properties[iPropertyKey]);
+                }
+            }
+
+            this._deferredObjects[deferredId].resolve(object);
         }
     },
 

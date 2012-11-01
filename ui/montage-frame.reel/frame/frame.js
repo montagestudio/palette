@@ -11,6 +11,8 @@ window.Frame = {
 
     _deferredOwner: null,
 
+    // Initialization methods
+
     // Load the given serialization, html, css, and javascript into the internal frame
     // returning a deferred reference to the owner component
     load: function (montageFrame, serialization, html, javascript, css) {
@@ -159,12 +161,14 @@ window.Frame = {
         this._document.body.innerHTML = "";
     },
 
-    addComponent: function (componentModule, componentName, markup) {
-        return this.componentController.addComponent(componentModule, componentName, markup);
+    // Modification Methods
+
+    addComponent: function (componentModule, componentName, markup, properties) {
+        return this.componentController.addComponent(componentModule, componentName, markup, properties);
     },
 
-    addObject: function (objectModule, objectName) {
-        return this.componentController.addObject(objectModule, objectName);
+    addObject: function (objectModule, objectName, properties) {
+        return this.componentController.addObject(objectModule, objectName, properties);
     },
 
     save: function () {
