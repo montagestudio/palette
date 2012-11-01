@@ -163,6 +163,10 @@ window.Frame = {
         return this.componentController.addComponent(componentModule, componentName, markup);
     },
 
+    addObject: function (objectModule, objectName) {
+        return this.componentController.addObject(objectModule, objectName);
+    },
+
     save: function () {
         if (!this.exporter) {
             this.exporter = Exporter.create();

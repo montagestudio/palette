@@ -45,6 +45,7 @@ if (spec) {
         "test/core/exporter-spec",
 
         "test/ui/frame-add-component-spec",
+        "test/ui/frame-add-object-spec",
         "test/ui/frame-spec"
 
     ];
