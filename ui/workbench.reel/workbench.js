@@ -105,10 +105,6 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
-    selectedObject: {
-        value: null
-    },
-
     prepareForActivationEvents: {
         value: function() {
             this.element.addEventListener("mousedown", this, false);
