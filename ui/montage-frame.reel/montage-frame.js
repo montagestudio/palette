@@ -200,13 +200,13 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 window.removeEventListener("message", this);
 
                 var iframeWindow = this._element.contentWindow,
-                    ownerPromise;
+                    ownerPromise,
+                    self = this;
+
                 iframeWindow.console.debug = this.debug.bind(this);
                 iframeWindow.console.log = this.log.bind(this);
 
                 this._frameManager = iframeWindow.Frame;
-
-                console.log("montageFrame: inner frame reported 'ready'");
 
                 if (this._deferredOwner || this._serialization || this._html || this._javascript || this._css) {
                     ownerPromise = this._frameManager.load(this, this._serialization, this._html, this._javascript, this._css);
