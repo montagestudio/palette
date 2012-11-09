@@ -52,7 +52,13 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
     // this is the real demarcation point between frames.
     // Clients of the MontageFrame shouldn't ever need to know this object is behind the scenes.
     // The MontageFrame mediates interaction between the frameManager and the outside world.
-    _frameManager: {value: null},
+    _frameManager: {
+        value: null
+    },
+
+    _deferredFrameManager: {
+        value: null
+    },
 
     delegate: {
         value: null
@@ -69,6 +75,12 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
     _deferredOwner: {
         value: null
+    },
+
+    didCreate: {
+        value: function() {
+            this._deferredFrameManager = Promise.defer();
+        }
     },
 
     // FrameManager Forwarding Methods
@@ -91,25 +103,15 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             var ownerPromise,
                 self = this;
 
-            if (this._frameManager) {
-                ownerPromise = this._frameManager.load(this, serialization, html, javascript, css);
+            this._deferredFrameManager.promise.then(function(frameManager) {
+                ownerPromise = frameManager.load(self, serialization, html, javascript, css);
 
                 if (ownerPromise) {
-                    ownerPromise.then(
-                        function (ownerFromFoundation) {
-                            self._deferredOwner.resolve(ownerFromFoundation);
-                        },
-                        function () {
-                            self._deferredOwner.reject();
-                        }
-                    );
+                    self._deferredOwner.resolve(ownerPromise);
                 }
-            } else {
-                this._css = css;
-                this._serialization = serialization;
-                this._html = html;
-                this._javascript = javascript;
-            }
+            }, function(err) {
+                self._deferredOwner.reject(err);
+            });
 
             return this._deferredOwner.promise;
         }
@@ -207,26 +209,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 iframeWindow.console.log = this.log.bind(this);
 
                 this._frameManager = iframeWindow.Frame;
-
-                if (this._deferredOwner || this._serialization || this._html || this._javascript || this._css) {
-                    ownerPromise = this._frameManager.load(this, this._serialization, this._html, this._javascript, this._css);
-
-                    if (ownerPromise) {
-                        ownerPromise.then(
-                            function (ownerFromFoundation) {
-                                self._deferredOwner.resolve(ownerFromFoundation);
-                            },
-                            function () {
-                                self._deferredOwner.reject();
-                            }
-                        );
-                    }
-
-                    delete this._serialization;
-                    delete this._html;
-                    delete this._javascript;
-                    delete this._css;
-                }
+                this._deferredFrameManager.resolve(iframeWindow.Frame);
             }
         }
     },

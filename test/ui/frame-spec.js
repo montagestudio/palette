@@ -1,6 +1,8 @@
 var Montage = require("montage").Montage,
     TestPageLoader = require("test/support/testpageloader").TestPageLoader;
 
+var WAITSFOR_TIMEOUT = 2000;
+
 var testPage = TestPageLoader.queueTest("frame", function () {
     describe("ui/frame-spec", function () {
 
@@ -31,15 +33,21 @@ var testPage = TestPageLoader.queueTest("frame", function () {
             describe("loading no serialization", function () {
 
                 it("should create a default owner component if no serialization provided", function () {
-                    montageFrame.load().then(function (owner) {
-                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).toBe(owner);
+                    var owner;
+
+                    montageFrame.load().then(function (value) {
+                        owner = value;
                         done = true;
                     });
 
                     waitsFor(function () {
                         return done;
-                    }, 10);
+                    }, WAITSFOR_TIMEOUT);
+
+                    runs(function() {
+                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
+                        expect(frameBody.firstElementChild.controller).toBe(owner);
+                    });
                 });
 
             });
@@ -50,26 +58,38 @@ var testPage = TestPageLoader.queueTest("frame", function () {
                     html = '<button data-montage-id="myButton"></button>';
 
                 it("should create a default owner component", function () {
-                    montageFrame.load(serialization, html).then(function (owner) {
-                        expect(owner).toBeTruthy();
+                    var owner;
+
+                    montageFrame.load(serialization, html).then(function (value) {
+                        owner = value;
                         done = true;
                     });
 
                     waitsFor(function () {
                         return done;
-                    }, "MontageFrame to load owner component", 10);
+                    }, "MontageFrame to load owner component", WAITSFOR_TIMEOUT);
+
+                    runs(function() {
+                        expect(owner).toBeTruthy();
+                    });
                 });
 
                 it("should move specified content into synthesized owner element", function () {
-                    montageFrame.load(serialization, html).then(function (owner) {
-                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).toBe(owner);
+                    var owner;
+
+                    montageFrame.load(serialization, html).then(function (value) {
+                        owner = value;
                         done = true;
                     });
 
                     waitsFor(function () {
                         return done;
-                    }, "MontageFrame to load owner component", 10);
+                    }, "MontageFrame to load owner component", WAITSFOR_TIMEOUT);
+
+                    runs(function() {
+                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
+                        expect(frameBody.firstElementChild.controller).toBe(owner);
+                    });
                 });
 
             });
@@ -80,18 +100,23 @@ var testPage = TestPageLoader.queueTest("frame", function () {
                     html = '<button data-montage-id="owner" data-fromOriginalContent="true"></button>';
 
                 it("should use owner component found in specified serialization", function () {
+                    var owner;
 
-                    montageFrame.load(serialization, html).then(function (owner) {
-                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
-                        expect(frameBody.firstElementChild.controller).toEqual(owner);
-                        expect(frameBody.firstElementChild).toBe(owner.element);
-                        expect(owner.element.getAttribute("data-fromOriginalContent")).toBeTruthy();
+                    montageFrame.load(serialization, html).then(function (value) {
+                        owner = value;
                         done = true;
                     });
 
                     waitsFor(function () {
                         return done;
-                    }, "MontageFrame to load owner component", 10);
+                    }, "MontageFrame to load owner component", WAITSFOR_TIMEOUT);
+
+                    runs(function() {
+                        expect(frameBody.firstElementChild.getAttribute("data-montage-id")).toEqual("owner");
+                        expect(frameBody.firstElementChild.controller).toEqual(owner);
+                        expect(frameBody.firstElementChild).toBe(owner.element);
+                        expect(owner.element.getAttribute("data-fromOriginalContent")).toBeTruthy();
+                    });
                 });
 
             });
