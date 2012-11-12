@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="property-inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "property-inspector"}
+            }
+        },
+
+        "propertyName": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": "property-name"
+            },
+            "bindings": {
+                "value": {"<-": "@owner.propertyDescription.name"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="property-inspector" class="PropertyInspector">
+        ffff
+        <label><span data-montage-id="property-name"></span></label>
+
+        <div data-icon="&#9652;" class="binding bound"></div>
+
+    </div>
+</body>
+</html>

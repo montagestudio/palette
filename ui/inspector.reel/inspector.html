@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "inspector"}
+            }
+        },
+
+        "title": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "title"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.object.identifier"}
+            }
+        },
+
+        "propertyList": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "property-list"}
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner.propertyDescriptionController"}
+            }
+        },
+
+        "propertyInspector": {
+            "prototype": "ui/property-inspector.reel",
+            "properties": {
+                "element": {"#": "property-inspector"}
+            },
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyDescription": {"<-": "@propertyList.objectAtCurrentIteration"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <section data-montage-id="inspector" class="Inspector component">
+
+        <header class="configurator-header">
+            <h1 data-montage-id="title" class="title"></h1>
+
+            <!--TODO bind to isFavorite property of selectedObjectWrapper-->
+            <button class="star" data-icon="&#9733;"></button>
+        </header>
+
+        <ul class="list" data-montage-id="property-list">
+            <li class="list-item" data-montage-id="property-inspector"></li>
+        </ul>
+    </section>
+</body>
+</html>
