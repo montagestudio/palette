@@ -2,9 +2,9 @@
     "name": "palette",
     "version": "0.0.0",
     "dependencies": {
-        "montage": "=0.10.0"
+        "montage": "*"
     },
     "devDependencies":{
-        "montage":"=0.0.0"
+        "montage":"*"
     }
 }
