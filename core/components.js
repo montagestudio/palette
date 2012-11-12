@@ -11,6 +11,7 @@ exports.components = [
                 "enabled": true
             }
         },
+        icon: null,
         html: '<button data-montage-id=""></button>'
     },
     {
@@ -24,6 +25,7 @@ exports.components = [
                 "value": 50
             }
         },
+        icon: null,
         html: '<input type="range" data-montage-id="">'
     },
     {
@@ -37,6 +39,7 @@ exports.components = [
                 "unpressedLabel": "Off"
             }
         },
+        icon: null,
         html: '<button data-montage-id=""></button>'
     },
     {
@@ -48,6 +51,7 @@ exports.components = [
                 "checked": true
             }
         },
+        icon: null,
         html: '<input type="checkbox" data-montage-id="">'
     },
     {
@@ -59,6 +63,7 @@ exports.components = [
                 "value": "Editable text"
             }
         },
+        icon: null,
         html: '<input data-montage-id="" type="text">'
     },
     {
@@ -70,6 +75,7 @@ exports.components = [
                 "value": "Text"
             }
         },
+        icon: null,
         html: '<p data-montage-id=""></p>'
     },
     {
@@ -81,6 +87,7 @@ exports.components = [
                 "objects": [1, 2, 3]
             }
         },
+        icon: null,
         html: '<ul data-montage-id=""><li>Item</li></ul>'
     }
 ];
