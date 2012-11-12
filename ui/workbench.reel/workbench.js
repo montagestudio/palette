@@ -133,6 +133,62 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
 
             this.observedEvents.push(observedEvent);
         }
+    },
+
+    _selectionsEl: {
+        value: null
+    },
+
+    _selectedObjects: {
+        value: null
+    },
+    selectedObjects: {
+        get: function() {
+            return this._selectedObjects;
+        },
+        set: function(value) {
+            if (value != this._selectedObjects) {
+                this._selectedObjects = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    drawSelections: {
+        value: function() {
+            var frameRect = window.getComputedStyle(this._montageFrame.element);
+            var offsetLeft = this._montageFrame.element.offsetLeft;
+            var offsetTop = this._montageFrame.element.offsetTop;
+
+            var numSelectedObjects = this._selectedObjects.length;
+            var selectionsEl = this._selectionsEl;
+            var numSelectionEls = this._selectionsEl.childNodes.length;
+
+            var available = Math.min(numSelectedObjects, numSelectionEls);
+
+            for (var i = 0; i < available; i++) {
+                // get dimensions of selectedObject
+                var rect = this._selectedObjects[i].element.getBoundingClientRect();
+                // set this._selectionsEl.childNodes[i] to dimensions
+                this._selectionsEl.childNodes[i].style.left = (offsetLeft + rect.left) + "px";
+                this._selectionsEl.childNodes[i].style.top = (offsetTop + rect.top) + "px";
+                this._selectionsEl.childNodes[i].style.width = rect.width + "px";
+                this._selectionsEl.childNodes[i].style.height = rect.height + "px";
+            }
+
+            if (numSelectedObjects > numSelectionEls) {
+                // create more selectionEls and set dimensions
+            } else if (numSelectedObjects < numSelectionEls) {
+                // remove extra els
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this._selectedObjects) {
+                this.drawSelections();
+            }
+        }
     }
 
 });

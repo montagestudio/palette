@@ -21,3 +21,13 @@
     box-shadow: 0 0 16px hsla(0, 0%, 0%, 0.1);
     background-color: hsl(0,0%,97%)
 }
+
+.Workbench .selections {
+    pointer-events: none;
+}
+
+.Workbench .selections div {
+    position: absolute;
+    outline: 1px solid rgba(65, 135, 245, 0.8);
+    margin: 1px;
+}

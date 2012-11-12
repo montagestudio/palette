@@ -8,7 +8,8 @@
         "owner": {
             "properties": {
                 "element": {"#": "workbench"},
-                "montageFrame": {"@": "montageFrame"}
+                "montageFrame": {"@": "montageFrame"},
+                "_selectionsEl": {"#": "selections"}
             },
             "bindings": {
                 "selectedObjects": {"<->": "@montageFrame.selectedObjects"}
@@ -26,6 +27,7 @@
 </head>
 <body>
     <div data-montage-id="workbench" class="Workbench">
+        <div data-montage-id="selections" class="selections"><div> </div></div>
         <div data-montage-id="montageFrame"></div>
     </div>
 </body>
