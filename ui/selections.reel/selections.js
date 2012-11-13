@@ -52,13 +52,20 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
             var numSelectedObjects = this._selectedObjects.length;
             var numSelectionEls = this._element.children.length;
 
-            var rect;
+            var rect, el;
             var available = Math.min(numSelectedObjects, numSelectionEls);
 
-            for (var i = 0; i < available; i++) {
+            for (var i = 0; i < numSelectedObjects; i++) {
                 rect = this._selectedObjects[i].element.getBoundingClientRect();
 
-                this._positionSelection(this._element.children[i],
+                if (i < numSelectionEls) {
+                    // reuse existing element
+                    el = this._element.children[i];
+                } else {
+                    el = this._element.appendChild(document.createElement("div"));
+                }
+
+                this._positionSelection(el,
                     offsetTop + rect.top,
                     offsetLeft + rect.left,
                     rect.height,
@@ -66,19 +73,8 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
                 );
             }
 
-            if (numSelectedObjects > numSelectionEls) {
-                for (; i < numSelectedObjects; i++) {
-                    rect = this._selectedObjects[i].element.getBoundingClientRect();
-                    var el = this._element.appendChild(document.createElement("div"));
-
-                    this._positionSelection(el,
-                        offsetTop + rect.top,
-                        offsetLeft + rect.left,
-                        rect.height,
-                        rect.width
-                    );
-                }
-            } else while (numSelectedObjects < numSelectionEls--) {
+            // remove any extra selection divs
+            while (numSelectedObjects < numSelectionEls--) {
                 this._element.removeChild(this._element.lastElementChild);
             }
         }
