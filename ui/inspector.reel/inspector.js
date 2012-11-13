@@ -19,7 +19,8 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.re
             this.propertyDescriptionController = ArrayController.create();
             Object.defineBinding(this.propertyDescriptionController, "content", {
                 boundObject: this,
-                boundObjectPropertyPath: "objectDescription.componentPropertyDescriptions"
+                boundObjectPropertyPath: "objectDescription.componentPropertyDescriptions",
+                oneway: true
             });
         }
     },
@@ -40,23 +41,25 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.re
             this._object = value;
 
             // TODO if object changes before promise resolved ignore the old promise
-            var self = this;
-            this._object.description.then(function (description) {
-                self.objectDescription = description;
-                window.i = self;
-                window.a = self.propertyDescriptionController;
-                window.d = description;
-            });
+            if (this._object) {
+                var self = this;
+                this._object.description.then(function (description) {
+                    self.objectDescription = description;
+                });
+            } else {
+                this.objectDescription = null;
+            }
         }
     },
 
     propertyDescriptionController: {
+        serializable: false,
         value: null
     },
 
     objectDescription: {
-        value: [],
-        distinct: true
+        serializable: false,
+        value: null
     }
 
 });
