@@ -56,8 +56,6 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
             var available = Math.min(numSelectedObjects, numSelectionEls);
 
             for (var i = 0; i < numSelectedObjects; i++) {
-                rect = this._selectedObjects[i].element.getBoundingClientRect();
-
                 if (i < numSelectionEls) {
                     // reuse existing element
                     el = this._element.children[i];
@@ -65,11 +63,13 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
                     el = this._element.appendChild(document.createElement("div"));
                 }
 
+                rect = this._getBounds(this._selectedObjects[i].element);
+
                 this._positionSelection(el,
                     offsetTop + rect.top,
                     offsetLeft + rect.left,
-                    rect.height,
-                    rect.width
+                    rect.bottom - rect.top,
+                    rect.right - rect.left
                 );
             }
 
@@ -79,6 +79,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
             }
         }
     },
+
     _positionSelection: {
         value: function(el, top, left, height, width) {
             el.style.top = top + "px";
@@ -87,4 +88,31 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
             el.style.width = width + "px";
         }
     },
+
+    /**
+     * Gets the bounds of the given element and all of its children.
+     * @param {HTMLElement} element The element.
+     * @return {Object} An object with top, left, bottom and right properties.
+     * @function
+     */
+    _getBounds: {
+        value: function(element) {
+            var rect = element.getBoundingClientRect();
+            var top = rect.top, left = rect.left,
+                bottom = rect.bottom, right = rect.right;
+
+            var children = element.children;
+
+            for (var i = 0, len = children.length; i < len; i++) {
+                var childRect = this._getBounds(children[i]);
+                top = childRect.top < top ? childRect.top : top;
+                left = childRect.left < left ? childRect.left : left;
+
+                bottom = childRect.bottom > bottom ? childRect.bottom : bottom;
+                right = childRect.right > right ? childRect.right : right;
+            }
+
+            return {top: top, left: left, bottom: bottom, right: right};
+        }
+    }
 });
