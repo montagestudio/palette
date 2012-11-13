@@ -7,7 +7,8 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "property-inspector"}
+                "element": {"#": "property-inspector"},
+                "propertyValueField": {"@": "propertyValueField"}
             }
         },
 
@@ -19,17 +20,23 @@
             "bindings": {
                 "value": {"<-": "@owner.propertyDescription.name"}
             }
+        },
+
+        "propertyValueField": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "property-value"}
+            }
         }
     }
     </script>
 </head>
 <body>
     <div data-montage-id="property-inspector" class="PropertyInspector">
-        ffff
-        <label><span data-montage-id="property-name"></span></label>
-
-        <div data-icon="&#9652;" class="binding bound"></div>
-
+        <label>
+            <span data-montage-id="property-name"></span>
+            <input type="text" data-montage-id="property-value">
+        </label>
     </div>
 </body>
 </html>
