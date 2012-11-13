@@ -13,6 +13,11 @@ var Montage = require("montage").Montage,
 */
 exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.reel".Selections# */ {
 
+    /**
+     * The Montage component that contains the selected objects. This used to
+     * offset the selection borders so that they appear in the correct place.
+     * @type {Component}
+     */
     offsetComponent: {
         value: null
     },
@@ -20,6 +25,11 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
     _selectedObjects: {
         value: null
     },
+    /**
+     * Array of components that are selected, and so should be surrounded
+     * by a selected border.
+     * @type {Array[Component]}
+     */
     selectedObjects: {
         get: function() {
             return this._selectedObjects;
