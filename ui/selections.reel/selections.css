@@ -1,0 +1,9 @@
+.Selections {
+    pointer-events: none;
+}
+
+.Selections div {
+    position: absolute;
+    outline: 1px solid rgba(65, 135, 245, 0.8);
+    margin: 1px;
+}

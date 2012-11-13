@@ -80,6 +80,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
     didCreate: {
         value: function() {
             this._deferredFrameManager = Promise.defer();
+            this.selectedObjects = [];
         }
     },
 
@@ -253,12 +254,19 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
             var selectionCandidate = evt.target.controller;
 
-            if (selectionCandidate && (!this.selectedObjects || this.selectedObjects[0] !== selectionCandidate)) {
-                this.selectedObjects = [selectionCandidate];
-            }
+            if (selectionCandidate) {
+                var index;
+                if ((index = this.selectedObjects.indexOf(selectionCandidate)) !== -1) {
+                    // remove
+                    this.selectedObjects.splice(index, 1);
+                } else {
+                    // add
+                    this.selectedObjects.push(selectionCandidate);
+                }
 
-            if (selectionCandidate && this.delegate && typeof this.delegate.didObserveEvent === "function") {
-                this.delegate.didObserveEvent(this, evt);
+                if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
+                    this.delegate.didObserveEvent(this, evt);
+                }
             }
         }
     },
