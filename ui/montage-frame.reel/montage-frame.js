@@ -255,6 +255,10 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             var selectionCandidate = evt.target.controller;
 
             if (selectionCandidate) {
+                if (!this.selectedObjects) {
+                    this.selectedObjects = [];
+                }
+
                 var index;
                 if ((index = this.selectedObjects.indexOf(selectionCandidate)) !== -1) {
                     // remove
