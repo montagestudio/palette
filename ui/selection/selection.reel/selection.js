@@ -36,6 +36,52 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection.re
         }
     },
 
+    _offsetTop: {
+        value: null
+    },
+    /**
+     * Offset from the top in pixels.
+     *
+     * Needed if the location of the stage is not at 0, 0 of the parent element
+     * of this component.
+     * @type {number}
+     */
+    offsetTop: {
+        get: function() {
+            return this._offsetTop;
+        },
+        set: function(value) {
+            if (this._offsetTop === value) {
+                return;
+            }
+            this._offsetTop = value;
+            this.needsDraw = true;
+        }
+    },
+
+    _offsetLeft: {
+        value: null
+    },
+    /**
+     * Offset from the left in pixels.
+     *
+     * Needed if the location of the stage is not at 0, 0 of the parent element
+     * of this component.
+     * @type {number}
+     */
+    offsetLeft: {
+        get: function() {
+            return this._offsetLeft;
+        },
+        set: function(value) {
+            if (this._offsetLeft === value) {
+                return;
+            }
+            this._offsetLeft = value;
+            this.needsDraw = true;
+        }
+    },
+
     _top: {
         value: null
     },
@@ -116,8 +162,42 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection.re
         }
     },
 
-    component: {
+    _object: {
         value: null
+    },
+    /**
+     * The object that this selection surrounds.
+     * @type {Component|HTMLElement}
+     */
+    object: {
+        get: function() {
+            return this._object;
+        },
+        set: function(value) {
+            if (this._object === value) {
+                return;
+            }
+            this._object = value;
+            this.needsDraw = true;
+        }
+    },
+
+    willDraw: {
+        value: function() {
+            if (!this.object) {
+                return;
+            }
+
+            var object = this.object,
+                el = "element" in object ? object.element : object;
+
+            var rect = this._getBounds(this.object.element);
+
+            this._top = this.offsetTop + rect.top;
+            this._left = this.offsetLeft + rect.left;
+            this._height = rect.bottom - rect.top;
+            this._width = rect.right - rect.left;
+        }
     },
 
     draw: {
@@ -126,6 +206,34 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection.re
             this._element.style.left = this._left + "px";
             this._element.style.height = this._height + "px";
             this._element.style.width = this._width + "px";
+        }
+    },
+
+    /**
+     * Gets the bounds of the given element and all of its children.
+     * @param {HTMLElement} element The element.
+     * @return {Object} An object with top, left, bottom and right properties.
+     * @function
+     * @private
+     */
+    _getBounds: {
+        value: function(element) {
+            var rect = element.getBoundingClientRect();
+            var top = rect.top, left = rect.left,
+                bottom = rect.bottom, right = rect.right;
+
+            var children = element.children;
+
+            for (var i = 0, len = children.length; i < len; i++) {
+                var childRect = this._getBounds(children[i]);
+                top = childRect.top < top ? childRect.top : top;
+                left = childRect.left < left ? childRect.left : left;
+
+                bottom = childRect.bottom > bottom ? childRect.bottom : bottom;
+                right = childRect.right > right ? childRect.right : right;
+            }
+
+            return {top: top, left: left, bottom: bottom, right: right};
         }
     }
 
