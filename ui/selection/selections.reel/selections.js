@@ -4,7 +4,8 @@
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Selection = require('../selection.reel').Selection;
 
 /**
     Description TODO
@@ -12,6 +13,16 @@ var Montage = require("montage").Montage,
     @extends module:montage/ui/component.Component
 */
 exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.reel".Selections# */ {
+
+    didCreate: {
+        value: function() {
+            this._objectSelectionMap  = Object.create(null);
+            this._minusSelectedObjects  = [];
+            this._elementsToAdd = [];
+
+            this.addPropertyChangeListener("_selectedObjects", this, false);
+        }
+    },
 
     /**
      * The Montage component that contains the selected objects. This used to
@@ -36,35 +47,60 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
         },
         set: function(value) {
             if (value != this._selectedObjects) {
-                this.removePropertyChangeListener("_selectedObjects", this, false);
                 this._selectedObjects = value;
-                this.addPropertyChangeListener("_selectedObjects", this, false);
                 this.needsDraw = true;
             }
         }
     },
 
     handleChange: {
-        value: function() {
+        value: function(change) {
+            var i;
+            // Keep track of the removed objects
+            if (change.minus && change.minus.length) {
+                for (i = change.minus.length - 1; i >= 0; i--) {
+                    this._minusSelectedObjects.push(change.minus[i]);
+                }
+            }
+            // If an object has been removed and added again it needs to
+            // removed from the minus array
+            if (change.plus && change.plus.length) {
+                for (i = change.plus.length - 1; i >= 0; i--) {
+                    var index;
+                    if ((index = this._minusSelectedObjects.indexOf(change.plus[i].uuid)) !== -1) {
+                        this._minusSelectedObjects.splice(index, 1);
+                    }
+                }
+            }
+
             this.needsDraw = true;
         }
     },
 
     /**
-     * Stores the rects to draw in between willDraw and draw.
-     * @type {Array[Array[number]]} An array of an array with four numbers:
-     * top, left, height and width.
-     * @private
+     * Maps from an object (actually the object's uuid) to the Selection object.
+     * @type {Object}
      */
-    _rects: { value: null },
+    _objectSelectionMap: {
+        value: null
+    },
+
+    /**
+     * Array of the objects that have been deselected since the last draw.
+     * @type {Array[Object]}
+     */
+    _minusSelectedObjects: {
+        value: null
+    },
+
+    /**
+     * The DOM elements that need to be inserted in the next draw.
+     * @type {Array[HTMLElement]}
+     */
+    _elementsToAdd: { value: null },
 
     willDraw: {
         value: function() {
-            // Store all the rects that need to be drawn. Put this above the
-            // return so that existing drawn rects are cleared if
-            // selectedObjects has been set to null.
-            this._rects = [];
-
             if (!this._selectedObjects) {
                 return;
             }
@@ -75,13 +111,27 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
             var offsetTop = this.offsetComponent.element.offsetTop;
 
             for (var i = 0, len = this._selectedObjects.length; i < len; i++) {
-                var rect = this._getBounds(this._selectedObjects[i].element);
-                this._rects.push([
-                    offsetTop + rect.top,
-                    offsetLeft + rect.left,
-                    rect.bottom - rect.top,
-                    rect.right - rect.left
-                ]);
+                var object = this._selectedObjects[i];
+                var rect = this._getBounds(object.element);
+
+                var selection;
+                if (object.uuid in this._objectSelectionMap) {
+                    selection = this._objectSelectionMap[object.uuid];
+                } else {
+                    var el = document.createElement("div");
+                    selection = Selection.create();
+
+                    this._objectSelectionMap[object.uuid] = selection;
+                    this._elementsToAdd.push(el);
+                    selection.setElementWithParentComponent(el, this);
+
+                    selection.component = object;
+                }
+
+                selection.top = offsetTop + rect.top;
+                selection.left = offsetLeft + rect.left;
+                selection.height = rect.bottom - rect.top;
+                selection.width = rect.right - rect.left;
             }
         }
     },
@@ -116,50 +166,20 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.
 
     draw: {
         value: function() {
-            var rects = this._rects;
-            var numRects = rects.length;
-            var numSelectionEls = this._element.children.length;
+            var element, object;
 
-            var el;
-
-            for (var i = 0; i < numRects; i++) {
-                if (i < numSelectionEls) {
-                    // reuse existing element
-                    el = this._element.children[i];
-                } else {
-                    el = this._element.appendChild(document.createElement("div"));
-                }
-
-                this._positionSelection(el,
-                    rects[i][0], rects[i][1], rects[i][2], rects[i][3]
-                );
+            // add elements
+            while ((element = this._elementsToAdd.pop())) {
+                this._element.appendChild(element);
             }
 
-            // remove any extra selection divs
-            while (numSelectionEls-- > numRects) {
-                this._element.removeChild(this._element.lastElementChild);
+            // remove elements
+            while ((object = this._minusSelectedObjects.pop())) {
+                var selection = this._objectSelectionMap[object.uuid];
+                delete this._objectSelectionMap[object.uuid];
+
+                this._element.removeChild(selection.element);
             }
-
-            this._rects = null;
-        }
-    },
-
-    /**
-     * Sets the styles of the given elements.
-     * @param {HTMLElement} el The element to set the styles on.
-     * @param {number} top Distance from top, in pixels.
-     * @param {number} left Distance from left, in pixels.
-     * @param {number} height Height, in pixels.
-     * @param {number} width Width, in pixels.
-     * @function
-     * @private
-     */
-    _positionSelection: {
-        value: function(el, top, left, height, width) {
-            el.style.top = top + "px";
-            el.style.left = left + "px";
-            el.style.height = height + "px";
-            el.style.width = width + "px";
         }
     }
 
