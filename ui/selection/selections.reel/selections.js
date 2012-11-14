@@ -1,5 +1,5 @@
 /**
-    @module "ui/selections.reel"
+    @module "ui/selection/selections.reel"
     @requires montage
     @requires montage/ui/component
 */
@@ -10,10 +10,10 @@ var Montage = require("montage").Montage,
 
 /**
     Description TODO
-    @class module:"ui/selections.reel".Selections
+    @class module:"ui/selection/selections.reel".Selections
     @extends module:montage/ui/component.Component
 */
-exports.Selections = Montage.create(Component, /** @lends module:"ui/selections.reel".Selections# */ {
+exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/selections.reel".Selections# */ {
 
     didCreate: {
         value: function() {
