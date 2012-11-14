@@ -50,7 +50,7 @@ exports.ComponentController = Montage.create(Montage, {
 
             require.async(objectPath).then(function (fulfilled) {
                 onRequire(fulfilled, deferredObject.uuid);
-            }).end();
+            }).done();
 
             return deferredObject.promise;
         }
