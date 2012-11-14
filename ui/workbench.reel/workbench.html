@@ -20,12 +20,24 @@
             "properties": {
                 "element": {"#": "montageFrame"}
             }
+        },
+
+        "selections": {
+            "prototype": "ui/selection/selections.reel",
+            "properties": {
+                "element": {"#": "selections"},
+                "offsetComponent": {"@": "montageFrame"}
+            },
+            "bindings": {
+                "selectedObjects": {"<-": "@owner.selectedObjects"}
+            }
         }
     }
     </script>
 </head>
 <body>
     <div data-montage-id="workbench" class="Workbench">
+        <div data-montage-id="selections"></div>
         <div data-montage-id="montageFrame"></div>
     </div>
 </body>

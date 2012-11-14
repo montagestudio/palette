@@ -133,6 +133,10 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
 
             this.observedEvents.push(observedEvent);
         }
+    },
+
+    selectedObjects: {
+        value: null
     }
 
 });
