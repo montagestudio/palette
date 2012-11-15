@@ -77,7 +77,7 @@ exports.ComponentController = Montage.create(Montage, {
     },
 
     addComponent: {
-        value: function (componentPath, componentName, markup, properties) {
+        value: function (componentPath, componentName, markup, properties, postProcess) {
 
             var self = this;
 
@@ -101,6 +101,10 @@ exports.ComponentController = Montage.create(Montage, {
                 // NOTE not having this ended up not putting this component in the component tree
                 // TODO be able to specify parentage...
                 componentInstance.attachToParentComponent(self.owner);
+
+                if (typeof postProcess === "function") {
+                    postProcess.call(componentInstance, componentInstance.element);
+                }
 
                 self._didAddObject(deferredId, componentInstance, properties);
             });

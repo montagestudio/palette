@@ -100,8 +100,14 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
     //TODO given how high above the frame we are, should the API accept a constructor at this level?
     // it needs to be strings by the time it goes to the frameManager
     addComponent: {
-        value: function (componentPath, componentName, markup) {
-            this.montageFrame.addComponent(componentPath, componentName, markup);
+        value: function (componentPath, componentName, markup, properties, postProcess) {
+            this.montageFrame.addComponent(
+                componentPath,
+                componentName,
+                markup,
+                properties,
+                postProcess
+            );
         }
     },
 

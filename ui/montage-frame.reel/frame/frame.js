@@ -163,8 +163,14 @@ window.Frame = {
 
     // Modification Methods
 
-    addComponent: function (componentModule, componentName, markup, properties) {
-        return this.componentController.addComponent(componentModule, componentName, markup, properties);
+    addComponent: function (componentModule, componentName, markup, properties, postProcess) {
+        return this.componentController.addComponent(
+                        componentModule,
+                        componentName,
+                        markup,
+                        properties,
+                        postProcess
+                    );
     },
 
     addObject: function (objectModule, objectName, properties) {

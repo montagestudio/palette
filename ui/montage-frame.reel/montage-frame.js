@@ -126,10 +126,10 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
     // Add an instance of a component to the owner
     addComponent: {
-        value: function (componentModule, componentName, markup, properties) {
+        value: function (componentModule, componentName, markup, properties, postProcess) {
             // TODO emit an event that this is happening, so others can react
             // TODO maybe just pass in a componentDefinition that has a createComponent(document) method
-            return this._frameManager.addComponent(componentModule, componentName, markup, properties);
+            return this._frameManager.addComponent(componentModule, componentName, markup, properties, postProcess);
         }
     },
 
