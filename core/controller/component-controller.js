@@ -16,6 +16,13 @@ exports.ComponentController = Montage.create(Montage, {
         }
     },
 
+    //TODO cache this
+    ownerRequire: {
+        get: function() {
+            return this.owner.element.ownerDocument.defaultView.require;
+        }
+    },
+
     //TODO what to do if owner changes in the middle of adding a childComponent?
     //TODO should the owner be able to be changed?
     owner: {
@@ -48,7 +55,7 @@ exports.ComponentController = Montage.create(Montage, {
             var deferredObject = Promise.defer();
             this._deferredObjects[deferredObject.uuid] = deferredObject;
 
-            require.async(objectPath).then(function (fulfilled) {
+            this.ownerRequire.async(objectPath).then(function (fulfilled) {
                 onRequire(fulfilled, deferredObject.uuid);
             }).done();
 
