@@ -89,6 +89,39 @@ exports.components = [
         },
         icon: null,
         html: '<ul data-montage-id=""><li>Item</li></ul>'
+    },
+    {
+        label: "Flow", name: "Flow",
+        x: -29, y: -125, left: 19, width: 30,
+        serialization: {
+            "prototype": "montage/ui/flow.reel",
+            "properties": {
+                "objects": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                "paths": [
+                    {
+                        "knots": [
+                            {
+                                "knotPosition": [-1200, 0, 0],
+                                "nextHandlerPosition": [-400, 0, 0],
+                                "previousDensity": 12,
+                                "nextDensity": 12
+                            },
+                            {
+                                "knotPosition": [1200, 0, 0],
+                                "previousHandlerPosition": [400, 0, 0],
+                                "previousDensity": 12,
+                                "nextDensity": 12
+                            }
+                        ],
+                        "headOffset":0,
+                        "tailOffset": 0,
+                        "units": {}
+                    }
+                ]
+            }
+        },
+        icon: null,
+        html: '<div data-montage-id="" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0">ti</div>'
     }
 ];
 
