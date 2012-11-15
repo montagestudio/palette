@@ -177,8 +177,80 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
             if (this._object === value) {
                 return;
             }
+
+            this._restoreDraw(this._object);
             this._object = value;
+            this._replaceDraw(value);
+
             this.needsDraw = true;
+        }
+    },
+
+    /**
+     * If `object` is a component, and it had it's *own* draw method, store
+     * a reference to it here.
+     * @default null
+     * @type {Function}
+     * @private
+     */
+    _componentOwnOldDraw: {
+        value: null
+    },
+    /**
+     * Restore the given object's original draw method.
+     *
+     * If it originally had its own then it is replaced, otherwise the draw
+     * property is deleted so that it falls back to the prototype draw.
+     * Only runs if the object has a `draw` property in its prototype chain.
+     * @param {Object} oldObject The old object to replace the draw of.
+     * @function
+     * @private
+     */
+    _restoreDraw: {
+        value: function(oldObject) {
+            if (oldObject && oldObject.draw) {
+                // if all the above are true then we have replaced the draw
+                if (this._componentOwnOldDraw) {
+                    // if it had its own draw method then put it back
+                    oldObject.draw = this._componentOwnOldDraw;
+                    this._componentOwnOldDraw = null;
+                } else {
+                    // otherwise the draw was on its prototype and we can
+                    // just delete the property
+                    delete oldObject.draw;
+                }
+            }
+
+        }
+    },
+    /**
+     * Replace the draw with a hook to trigger a needsDraw on this
+     * selection component.
+     *
+     * So that the selection reseizes with the component. If it has its
+     * own draw method then a reference is store in `_componentOwnOldDraw`.
+     * Only runs if the object has a `draw` property in its prototype chain.
+     * for restoration later.
+     *
+     * There might be a less intrusive way to achieving the same thing.
+     * @param  {Object} object The object to replace the draw method of.
+     * @return {null}
+     * @private
+     */
+    _replaceDraw: {
+        value: function(object) {
+            if (object && object.draw) {
+                var self = this, oldDraw = object.draw;
+
+                if (object.hasOwnProperty("draw")) {
+                    this._componentOwnOldDraw = object.draw;
+                }
+
+                object.draw = function() {
+                    oldDraw.apply(object, arguments);
+                    self.needsDraw = true;
+                };
+            }
         }
     },
 
