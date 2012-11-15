@@ -1,5 +1,5 @@
 /**
-    @module "ui/inspector.reel"
+    @module "ui/inspector/inspector.reel"
     @requires montage
     @requires montage/ui/component
 */
@@ -10,10 +10,10 @@ var Montage = require("montage").Montage,
 
 /**
     Description TODO
-    @class module:"ui/inspector.reel".Inspector
+    @class module:"ui/inspector/inspector.reel".Inspector
     @extends module:montage/ui/component.Component
 */
-exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.reel".Inspector# */ {
+exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/inspector.reel".Inspector# */ {
 
     didCreate: {
         value: function () {

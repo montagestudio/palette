@@ -1,5 +1,5 @@
 /**
-    @module "ui/property-inspector.reel"
+    @module "ui/inspector/property-inspector.reel"
     @requires montage
     @requires montage/ui/component
 */
@@ -8,10 +8,10 @@ var Montage = require("montage").Montage,
 
 /**
     Description TODO
-    @class module:"ui/property-inspector.reel".PropertyInspector
+    @class module:"ui/inspector/property-inspector.reel".PropertyInspector
     @extends module:montage/ui/component.Component
 */
-exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/property-inspector.reel".PropertyInspector# */ {
+exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/inspector/property-inspector.reel".PropertyInspector# */ {
 
     object: {
         value: null
