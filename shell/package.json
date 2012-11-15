@@ -1,0 +1,10 @@
+{
+    "name": "palette-shell",
+    "version": "0.0.0",
+    "dependencies": {
+        "montage": "*",
+        "qs": "0.5.x",
+        "mr": "*",
+        "q": "*"
+    }
+}
