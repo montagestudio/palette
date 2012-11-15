@@ -35,92 +35,35 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Promise = require("montage/core/promise").Promise;
+    Promise = require("montage/core/promise").Promise,
+    ComponentController = require("core/controller/component-controller").ComponentController;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
 var RUN_MODE = 1;
 
 /**
-    Description TODO
     @class module:"ui/montage-frame.reel".MontageFrame
     @extends module:ui/component.Component
 */
 exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/montage-frame.reel".MontageFrame# */ {
 
-    // The object installed on the iframe's contentView that coordinates interacting with the frame itself
-    // this is the real demarcation point between frames.
-    // Clients of the MontageFrame shouldn't ever need to know this object is behind the scenes.
-    // The MontageFrame mediates interaction between the frameManager and the outside world.
-    _frameManager: {
-        value: null
-    },
-
-    _deferredFrameManager: {
-        value: null
-    },
-
-    delegate: {
-        value: null
-    },
-
-    logMessages: {
-        distinct: true,
-        value: []
-    },
-
-    currentComponent: {
-        value: null
-    },
-
-    _deferredOwner: {
-        value: null
-    },
-
-    didCreate: {
-        value: function() {
-            this._deferredFrameManager = Promise.defer();
-            this.selectedObjects = [];
-        }
-    },
-
-    // FrameManager Forwarding Methods
-
-    clear: {
-        value: function () {
-            this._frameManager.clear();
-        }
-    },
-
     load: {
-        value: function (serialization, html, javascript, css) {
+        value: function (reelUrl) {
 
-            if (this._deferredOwner) {
-                this._deferredOwner.reject();
+            // If already loading a component reject it and load the new one
+            if (this._deferredComponent) {
+                this._deferredComponent.reject();
             }
 
-            this._deferredOwner = Promise.defer();
+            this._deferredComponent = Promise.defer();
 
-            var ownerPromise,
-                self = this;
+            var reelLocation = encodeURIComponent(reelUrl)
+            this._shellUrl = require.location + "/shell/shell.html?reel-location=" + reelLocation;
+            this.needsDraw = true;
 
-            this._deferredFrameManager.promise.then(function(frameManager) {
-                ownerPromise = frameManager.load(self, serialization, html, javascript, css);
-
-                if (ownerPromise) {
-                    self._deferredOwner.resolve(ownerPromise);
-                }
-            }, function(err) {
-                self._deferredOwner.reject(err);
-            });
-
-            return this._deferredOwner.promise;
-        }
-    },
-
-    save: {
-        value: function () {
-            return this._frameManager.save();
+            //TODO what do we actually want to promise to return? probably the componentController...
+            return this._deferredComponent.promise;
         }
     },
 
@@ -129,7 +72,8 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         value: function (componentModule, componentName, markup, properties, postProcess) {
             // TODO emit an event that this is happening, so others can react
             // TODO maybe just pass in a componentDefinition that has a createComponent(document) method
-            return this._frameManager.addComponent(componentModule, componentName, markup, properties, postProcess);
+            return this.componentController.addComponent(componentModule, componentName, markup, properties, postProcess);
+
         }
     },
 
@@ -137,7 +81,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
     addObject: {
         value: function (objectModule, objectName, properties) {
             // TODO emit an event that this is happening, so others can react
-            return this._frameManager.addObject(objectModule, objectName, properties);
+            return this.componentController.addObject(objectModule, objectName, properties);
         }
     },
 
@@ -145,9 +89,6 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
     prepareForDraw: {
         value: function () {
-            this.element.addEventListener("load", this, false);
-            this.element.src = require.location + "/ui/montage-frame.reel/frame/frame.html";
-
             if (null === this._height) {
                 this.height = this.element.offsetHeight;
             }
@@ -155,6 +96,8 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             if (null === this._width) {
                 this.width = this.element.offsetWidth;
             }
+
+            this.element.identifier = "editingFrame";
         }
     },
 
@@ -167,68 +110,37 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 this.element.classList.remove("designMode");
             }
 
+            if (this._shellUrl && this._shellUrl !== this.element.src) {
+                this.element.addEventListener("load", this, false);
+                this.element.src = this._shellUrl;
+            }
+
             this.element.width = this.width;
             this.element.height = this.height;
         }
     },
 
-    handleLoad: {
-        value: function (evt) {
-
-            if (evt.target !== this.element) {
-                return;
-            }
-
-            var frameElement = this.element,
-                frameDoc = frameElement.contentWindow.document,
-                montageScript = frameDoc.createElement("script");
-
-            frameElement.removeEventListener("load", this);
-
-            montageScript.setAttribute("data-package", "../../../package.json");
-            montageScript.setAttribute("data-module", "ui/montage-frame.reel/frame/frame");
-            montageScript.setAttribute("src", require.getPackage({name: "montage"}).location + "montage.js");
-            frameDoc.head.appendChild(montageScript);
-
-            console.log("montageFrame: append montage.js script element inside frame", frameDoc.head.outerHTML);
-
-            window.addEventListener("message", this, false);
+    handleEditingFrameLoad: {
+        value: function () {
+            this.element.removeEventListener("load", this, false);
+            window.addEventListener("message", this);
         }
     },
 
     handleMessage: {
         value: function (evt) {
-            if (evt._event.source === this._element.contentWindow && evt.data === "ready") {
 
+            var iFrameWindow = this._element.contentWindow;
+
+            if (evt._event.source === iFrameWindow && evt.data === "ready") {
                 window.removeEventListener("message", this);
+                iFrameWindow.defaultEventManager.delegate = this;
 
-                var iframeWindow = this._element.contentWindow,
-                    ownerPromise,
-                    self = this;
-
-                iframeWindow.console.debug = this.debug.bind(this);
-                iframeWindow.console.log = this.log.bind(this);
-
-                this._frameManager = iframeWindow.Frame;
-                this._deferredFrameManager.resolve(iframeWindow.Frame);
+                this.componentController = ComponentController.create();
+                this.componentController.owner = iFrameWindow.ownerComponent;
+                this._deferredComponent.resolve(iFrameWindow.ownerComponent);
             }
-        }
-    },
 
-    debug: {
-        value: function (message) {
-            if (message.indexOf("Syntax error") === 0) {
-                this._iframeDocument.body.innerHTML = "<pre>" + message + "</pre>";
-            } else {
-                console.debug.apply(console, arguments);
-            }
-        }
-    },
-
-    log: {
-        value: function (message) {
-            this.logMessages.push(Array.prototype.join.call(arguments, " "));
-            console.log.apply(console, arguments);
         }
     },
 
@@ -276,6 +188,29 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
     },
 
     // MontageFrame Properties
+
+    componentController: {
+        value: null
+    },
+
+    // The Url of the Component's Reel being edited
+    reelUrl: {
+        value: null
+    },
+
+    // The deferred component the montageFrame is waiting to fulfill
+    _deferredComponent: {
+        value: null
+    },
+
+    // The current component being edited
+    currentComponent: {
+        value: null
+    },
+
+    delegate: {
+        value: null
+    },
 
     _width: {
         value: null

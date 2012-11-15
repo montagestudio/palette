@@ -20,45 +20,40 @@ var Montage = require("montage").Montage,
 
 exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.reel".Workbench# */ {
 
-    // TODO project? would be nice to avoid confusion with the DOM document
-    _currentDocument: {
+    _currentProject: {
         value: null
     },
 
-    currentDocument:{
-        get:function () {
-            return this._currentDocument;
+    currentProject: {
+        get: function () {
+            return this._currentProject;
         },
-        set:function (value) {
-            if (value === this._currentDocument) {
+        set: function (value) {
+            if (value === this._currentProject) {
                 return;
             }
 
-            this._currentDocument = value;
-            this.loadDocument();
+            this._currentProject = value;
+            this.loadProject();
         }
     },
 
-    _needsDocumentLoad: {
+    _needsProjectLoaded: {
         value: false
     },
 
-    loadDocument: {
+    loadProject: {
         value: function () {
             if (!this.montageFrame) {
-                this._needsDocumentLoad = true;
+                this._needsProjectLoaded = true;
                 return;
             }
 
-            this.montageFrame.addEventListener("firstdraw", this, true);
-
-            var doc = this.currentDocument;
-
-            if (doc) {
-                this.montageFrame.load(doc.serialization, doc.structure, doc.behavior, doc.styling);
+            if (this.currentProject) {
+                this.montageFrame.load(this.currentProject.reelUrl);
             }
 
-            this._needsDocumentLoad = false;
+            this._needsProjectLoaded = false;
         }
     },
 
@@ -91,8 +86,8 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
                 this._montageFrame.delegate = this;
             }
 
-            if (this._montageFrame && this._needsDocumentLoad) {
-                this.loadDocument();
+            if (this._montageFrame && this._needsProjectLoaded) {
+                this.loadProject();
             }
         }
     },
