@@ -57,14 +57,12 @@ function run (packageLocation, moduleId) {
     packageLocation = URL.resolve(window.location, packageLocation);
     moduleId = moduleId || "";
 
-
     //TODO this is relying on some private methods, they should be available somewhere
     Deserializer._findObjectNameRegExp.test(moduleId);
-    var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase);
+    var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
+        ownerComponent;
 
     console.log("Require:", "package:", JSON.stringify(packageLocation), "moduleId:", JSON.stringify(moduleId), "objectName", objectName);
-
-    var ownerComponent;
 
     require.loadPackage(packageLocation)
         .then(function (packageRequire) {
@@ -89,6 +87,15 @@ function run (packageLocation, moduleId) {
             document.title = objectName + " (" + moduleId + ") - Palette Shell";
 
             ownerComponent.needsDraw = true;
+
+            //TODO better communicate that the ownerComponent is available
+            ownerComponent.addEventListener("firstDraw", function () {
+                window.ownerComponent = ownerComponent;
+
+                if (window.parent) {
+                    window.parent.postMessage("ready", "*");
+                }
+            });
         })
         .done();
 }
