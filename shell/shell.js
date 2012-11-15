@@ -7,7 +7,10 @@ if (window.location.search) {
     var query = QS.parse(window.location.search.slice(1));
 
     getPackageLocation(query["reel-location"]).then(function (packageLocation) {
-        run(packageLocation, query['module-id']);
+
+        var moduleId = query['module-id'] ? query['module-id'] : query["reel-location"].replace(packageLocation, "");
+
+        run(packageLocation, moduleId);
     });
 
 } else {
