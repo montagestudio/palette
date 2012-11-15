@@ -5,6 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
+    Promise = require("montage/core/promise").Promise,
     ArrayController = require("montage/ui/controller/array-controller").ArrayController;
 
 /**
@@ -28,7 +29,6 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.re
     _object: {
         value: null
     },
-
     object: {
         get: function () {
             return this._object;
@@ -37,13 +37,17 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.re
             if (value === this._object) {
                 return;
             }
+            this._objectDescriptionDeferred.reject("object changed before description was resolved");
 
             this._object = value;
 
-            // TODO if object changes before promise resolved ignore the old promise
             if (this._object) {
                 var self = this;
-                this._object.description.then(function (description) {
+
+                this._objectDescriptionDeferred = Promise.defer();
+                this._object.description.then(this._objectDescriptionDeferred.resolve);
+
+                this._objectDescriptionDeferred.promise.then(function (description) {
                     self.objectDescription = description;
                 });
             } else {
@@ -55,6 +59,19 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector.re
     propertyDescriptionController: {
         serializable: false,
         value: null
+    },
+
+    /**
+     * Used to prevent objectDescription being resolved if this.object changes
+     * while the description is being loaded.
+     *
+     * Takes advantage of the fact that a promise cannot be resolved after
+     * being rejected and vice versa.
+     * @type {Promise}
+     * @private
+     */
+    _objectDescriptionDeferred: {
+        value: Promise.defer()
     },
 
     objectDescription: {
