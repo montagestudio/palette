@@ -46,18 +46,18 @@
     </script>
 </head>
 <body>
-    <section data-montage-id="inspector" class="Inspector component">
+    <section data-montage-id="inspector" class="Inspector">
 
-        <header class="configurator-header">
-            <h1 data-montage-id="title" class="title"></h1>
+        <header>
+            <h1 data-montage-id="title"></h1>
 
             <!--TODO bind to isFavorite property of selectedObjectWrapper-->
-            <button class="star" data-icon="&#9733;"></button>
+            <button data-icon="&#9733;"></button>
         </header>
 
-        <ul class="list" data-montage-id="propertyGroups">
-            <li class="list-item" data-montage-id="propertyGroup"></li>
-        </ul>
+        <div data-montage-id="propertyGroups">
+            <div data-montage-id="propertyGroup"></div>
+        </div>
     </section>
 </body>
 </html>
