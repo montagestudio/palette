@@ -48,10 +48,11 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     // we could create a binding to the componentPropertyDescriptionGroups,
                     // but at the moment I'm not expecting the component description
                     // to change at runtime
-                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function(groupName) {
+                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function(groupName, index) {
                         return {
                             name: groupName,
-                            properties: description.componentPropertyDescriptionGroupForName(groupName)
+                            properties: description.componentPropertyDescriptionGroupForName(groupName),
+                            open: index === 0
                         };
                     });
                 });
