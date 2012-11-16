@@ -27,18 +27,19 @@
                 "element": {"#": "propertyGroups"}
             },
             "bindings": {
-                "contentController": {"<-": "@owner.propertyDescriptionController"}
+                "contentController": {"<-": "@owner.propertyGroupsController"}
             }
         },
 
-        "propertyInspector": {
-            "prototype": "../property-inspector.reel",
+        "propertyGroup": {
+            "prototype": "../property-group.reel",
             "properties": {
-                "element": {"#": "property-inspector"}
+                "element": {"#": "propertyGroup"}
             },
             "bindings": {
                 "object": {"<-": "@owner.object"},
-                "propertyDescription": {"<-": "@propertyList.objectAtCurrentIteration"}
+                "name": {"<-": "@propertyGroups.objectAtCurrentIteration.name"},
+                "properties": {"<-": "@propertyGroups.objectAtCurrentIteration.properties"}
             }
         }
     }
@@ -55,7 +56,7 @@
         </header>
 
         <ul class="list" data-montage-id="propertyGroups">
-            <li class="list-item" data-montage-id="property-inspector"></li>
+            <li class="list-item" data-montage-id="propertyGroup"></li>
         </ul>
     </section>
 </body>

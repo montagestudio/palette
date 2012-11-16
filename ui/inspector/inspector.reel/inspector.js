@@ -17,12 +17,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     didCreate: {
         value: function () {
-            this.propertyDescriptionController = ArrayController.create();
-            Object.defineBinding(this.propertyDescriptionController, "content", {
-                boundObject: this,
-                boundObjectPropertyPath: "objectDescription.componentPropertyDescriptions",
-                oneway: true
-            });
+            this.propertyGroupsController = ArrayController.create();
         }
     },
 
@@ -49,6 +44,16 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
                 this._objectDescriptionDeferred.promise.then(function (description) {
                     self.objectDescription = description;
+
+                    // we could create a binding to the componentPropertyDescriptionGroups,
+                    // but at the moment I'm not expecting the component description
+                    // to change at runtime
+                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function(groupName) {
+                        return {
+                            name: groupName,
+                            properties: description.componentPropertyDescriptionGroupForName(groupName)
+                        };
+                    });
                 });
             } else {
                 this.objectDescription = null;
@@ -56,7 +61,14 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
-    propertyDescriptionController: {
+    handleChange: {
+        value: function(change) {
+            var self = this;
+
+        }
+    },
+
+    propertyGroupsController: {
         serializable: false,
         value: null
     },

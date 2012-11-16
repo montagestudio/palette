@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="property-group.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "property-group"}
+            }
+        },
+
+        "name": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "name"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.name"}
+            }
+        },
+
+        "propertyList": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "propertyList"}
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner.propertiesController"}
+            }
+        },
+
+        "propertyInspector": {
+            "prototype": "../property-inspector.reel",
+            "properties": {
+                "element": {"#": "propertyInspector"}
+            },
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyDescription": {"<-": "@propertyList.objectAtCurrentIteration"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="property-group" class="PropertyGroup">
+        <div data-montage-id="name">Group name</div>
+        <div data-montage-id="propertyList">
+            <div data-montage-id="propertyInspector"></div>
+        </div>
+    </div>
+</body>
+</html>
