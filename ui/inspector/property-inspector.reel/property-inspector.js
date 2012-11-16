@@ -6,6 +6,11 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
+var InputCheckbox = require("montage/ui/input-checkbox.reel").InputCheckbox;
+var InputText = require("montage/ui/input-text.reel").InputText;
+
+
+
 /**
     Description TODO
     @class module:"ui/inspector/property-inspector.reel".PropertyInspector
@@ -17,8 +22,38 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
         value: null
     },
 
-    propertyDescription: {
+    _propertyDescription: {
         value: null
+    },
+    propertyDescription: {
+        get: function() {
+            return this._propertyDescription;
+        },
+        set: function(value) {
+            if (this._propertyDescription === value) {
+                return;
+            }
+            this._propertyDescription = value;
+            if (value.valueType === "boolean") {
+                var component = InputCheckbox.create();
+
+                var element = document.createElement("input");
+                element.type = "checkbox";
+
+                component.element = element;
+
+                this.fieldComponent = component;
+            } else {
+                var component = InputText.create();
+
+                var element = document.createElement("input");
+                element.type = "text";
+
+                component.element = element;
+
+                this.fieldComponent = component;
+            }
+        }
     },
 
     propertyValueField: {
@@ -41,6 +76,10 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             //where does this happen? how do we know about it?
             this.object.setProperty(this.propertyDescription.name, this.propertyValueField.value);
         }
+    },
+
+    fieldComponent: {
+        value: null
     }
 
 });

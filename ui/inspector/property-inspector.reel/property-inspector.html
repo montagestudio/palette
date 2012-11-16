@@ -27,6 +27,16 @@
             "properties": {
                 "element": {"#": "property-value"}
             }
+        },
+
+        "fieldSlot": {
+            "prototype": "montage/ui/slot.reel",
+            "properties": {
+                "element": {"#": "fieldSlot"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.fieldComponent"}
+            }
         }
     }
     </script>
@@ -36,6 +46,9 @@
         <span data-montage-id="property-name" class="label"></span>
         <span class="field">
             <input type="text" data-montage-id="property-value">
+        </span>
+        <span data-montage-id="fieldSlot" class="field">
+
         </span>
     </label>
 </body>
