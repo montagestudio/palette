@@ -1,3 +1,15 @@
 .PropertyGroup {
+    display: table;
+}
 
+.PropertyGroup .propertyList {
+    display: table-row-group;
+}
+
+.PropertyGroup .PropertyInspector {
+    display: table-row;
+}
+
+.PropertyGroup .PropertyInspector .label, .PropertyGroup .PropertyInspector .field {
+    display: table-cell;
 }
