@@ -121,7 +121,28 @@ exports.components = [
             }
         },
         icon: null,
-        html: '<div data-montage-id="" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0">ti</div>'
+        html: '<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0"></div>',
+        postProcess: function (element, require) {
+            var innerElement = element.appendChild(element.ownerDocument.createElement("div"));
+
+                var dynamicText = require("montage/ui/component").Component.create();
+                require("montage").Montage.defineProperty(dynamicText, "hasTemplate", {
+                    value: false,
+                    serializable: true
+                });
+                dynamicText.element = innerElement;
+                dynamicText.attachToParentComponent();
+                dynamicText.value = "foo";
+                dynamicText.needsDraw = true;
+                this._orphanedChildren = [dynamicText];
+                innerElement.setAttribute("data-montage-id", "foo");
+                innerElement.style.width = "160px";
+                innerElement.style.height = "160px";
+                innerElement.style.background = "white";
+                innerElement.style.boxShadow = "0 0 10px rgba(0, 0, 0, .4)";
+                innerElement.style.margin = "-80px 0 0 -80px";
+                innerElement.style.borderRadius = "12px";
+        }
     }
 ];
 
