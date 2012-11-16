@@ -122,11 +122,11 @@ exports.components = [
         },
         icon: null,
         html: '<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0"></div>',
-        postProcess: function (element, require) {
+        postProcess: function (element, iRequire) {
             var innerElement = element.appendChild(element.ownerDocument.createElement("div"));
 
-                var dynamicText = require("montage/ui/component").Component.create();
-                require("montage").Montage.defineProperty(dynamicText, "hasTemplate", {
+                var dynamicText = iRequire("montage/ui/component").Component.create();
+                iRequire("montage/ui/component").Component.__proto__.defineProperty(dynamicText, "hasTemplate", {
                     value: false,
                     serializable: true
                 });

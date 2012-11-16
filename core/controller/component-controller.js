@@ -110,7 +110,7 @@ exports.ComponentController = Montage.create(Montage, {
                 componentInstance.attachToParentComponent(self.owner);
 
                 if (typeof postProcess === "function") {
-                    postProcess.call(componentInstance, componentInstance.element, require);
+                    postProcess.call(componentInstance, componentInstance.element, self.ownerRequire);
                 }
 
                 self._didAddObject(deferredId, componentInstance, properties);
