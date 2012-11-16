@@ -7,8 +7,7 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "property-inspector"},
-                "propertyValueField": {"@": "propertyValueField"}
+                "element": {"#": "property-inspector"}
             }
         },
 
@@ -22,20 +21,13 @@
             }
         },
 
-        "propertyValueField": {
-            "prototype": "montage/ui/input-text.reel",
-            "properties": {
-                "element": {"#": "property-value"}
-            }
-        },
-
         "fieldSlot": {
             "prototype": "montage/ui/slot.reel",
             "properties": {
                 "element": {"#": "fieldSlot"}
             },
             "bindings": {
-                "content": {"<-": "@owner.fieldComponent"}
+                "content": {"<-": "@owner.propertyValueField"}
             }
         }
     }
@@ -44,9 +36,6 @@
 <body>
     <label data-montage-id="property-inspector" class="PropertyInspector">
         <span data-montage-id="property-name" class="label"></span>
-        <span class="field">
-            <input type="text" data-montage-id="property-value">
-        </span>
         <span data-montage-id="fieldSlot" class="field">
 
         </span>
