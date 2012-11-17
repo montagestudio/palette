@@ -1,3 +1,11 @@
 .Inspector {
+	
+}
 
+.Inspector-header {
+	font-size: 14px;
+	padding: 10px;
+	font-weight: bold;
+	color: hsl(0,0%,30%);
+	background: hsl(0,0%,95%);
 }
