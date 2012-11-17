@@ -35,8 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 exports = typeof exports !== "undefined" ? exports : {};
 
-var Montage = require("montage/core/core").Montage;
-var Template = require("montage/ui/template").Template;
+var Montage = require("montage/core/core").Montage,
+    Template = require("montage/ui/template").Template,
+    Serializer = require("montage/core/serializer").Serializer;
 
 /**
     @class module:montage/tools/template/template-creator.TemplateCreator
@@ -44,31 +45,33 @@ var Template = require("montage/ui/template").Template;
 */
 var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @lends module:montage/tools/template/template-creator.TemplateCreator# */ {
     initWithDocument: {
-        value: function(doc, montageJsPath) {
-            return this.initWithHeadAndBodyElements(doc.head, doc.body, montageJsPath);
+        value: function (doc, appRequire) {
+            return this.initWithHeadAndBodyElements(doc.head, doc.body, appRequire, doc);
         }
     },
 
     initWithBodyElement: {
-        value: function(body, montageJsPath) {
-            return this.initWithHeadAndBodyElements(null, body, montageJsPath);
+        value: function (body, appRequire) {
+            return this.initWithHeadAndBodyElements(null, body, appRequire, body.ownerDocument);
         }
     },
 
     initWithHeadAndBodyElements: {
-        value: function(head, body, montageJsPath) {
-            var serializer = this.serializer,
+        value: function (head, body, appRequire, appDoc) {
+            var serializer = this.serializer = Serializer.create().initWithRequire(appRequire),
                 objects = {},
                 components = {},
                 componentsChildComponents = {},
                 componentsElements = {},
                 doc,
-                script,
                 self = this;
+
+            //TODO not sure this is the best place to do this
+            this._require = appRequire;
 
             this._componentNamesIndex = {};
             this._objectNamesIndex = {};
-            doc = this._document = document.implementation.createHTMLDocument("");
+            doc = this._document = appDoc.implementation.createHTMLDocument("");
 
             function copyNode(sourceNode, targetNode, isRootNode) {
                 var childNodes = sourceNode.childNodes,
@@ -96,12 +99,6 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
 
             if (head) {
                 doc.head.innerHTML = head.innerHTML;
-            }
-            if (montageJsPath) {
-               script = doc.createElement("script");
-               script.setAttribute("src", montageJsPath);
-               doc.head.appendChild(script);
-               doc.head.insertBefore(doc.createTextNode("\n    "), script);
             }
 
             // try to make things look nice...

@@ -57,9 +57,9 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
-    save: {
-        value: function () {
-            return this._montageFrame.save();
+    template: {
+        get: function () {
+            return this._montageFrame.template;
         }
     },
 

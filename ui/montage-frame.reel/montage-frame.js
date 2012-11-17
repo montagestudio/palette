@@ -36,7 +36,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ComponentController = require("core/controller/component-controller").ComponentController;
+    ComponentController = require("core/controller/component-controller").ComponentController,
+    Exporter = require("core/exporter").Exporter;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
@@ -82,6 +83,22 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         value: function (objectModule, objectName, properties) {
             // TODO emit an event that this is happening, so others can react
             return this.componentController.addObject(objectModule, objectName, properties);
+        }
+    },
+
+    template: {
+        get: function () {
+
+            var iframeWindow = this._element.contentWindow,
+                exporter,
+                template;
+
+            if (iframeWindow) {
+                exporter = Exporter.create();
+                template = exporter.export(iframeWindow, this.componentController.ownerRequire);
+            }
+
+            return template;
         }
     },
 

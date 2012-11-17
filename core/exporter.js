@@ -12,9 +12,9 @@ exports.Exporter = Montage.create(Montage, {
     // TODO I don't think we'll just pass a view in...I'd like some higher-level abstraction for
     // "what's being edited"
     export: {
-        value: function (view) {
+        value: function (view, require) {
             //NOTE this appears to do everything I'd want, but the serialization fails
-            return TemplateCreator.create().initWithDocument(view.document);
+            return TemplateCreator.create().initWithDocument(view.document, require);
         }
     },
 
