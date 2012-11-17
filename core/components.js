@@ -84,11 +84,11 @@ exports.components = [
         serialization: {
             "prototype": "montage/ui/image.reel",
             "properties": {
-                "src": ""
+                "src": "http://client/node_modules/palette/assets/image/placeholder.png"
             }
         },
         icon: null,
-        html: '<img data-montage-id="" src="#">'
+        html: '<img data-montage-id="">'
     },
     {
         label: "Repetition", name: "Repetition",
