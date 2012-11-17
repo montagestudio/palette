@@ -1,0 +1,25 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	display: -webkit-box;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	margin: 0;
+	background: url(bg-stage.png) hsl(0, 0%, 90%);
+	background-size: 3px;
+	border-left: 1px solid hsl(0,0%,75%);
+	border-right: 1px solid hsl(0,0%,75%);
+}
+
+[data-montage-id="owner"] {
+	padding: 20px;
+	background: hsl(0, 0%, 90%);
+}
+
+.montage-Slot {
+	min-width: 30px;
+	min-height: 20px;
+	background-color: hsla(0, 100%, 70%, .5);
+}
