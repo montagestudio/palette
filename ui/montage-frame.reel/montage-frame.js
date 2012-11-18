@@ -188,12 +188,26 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             evt.stop();
             console.log("stopped", evt.type);
 
-            var selectionCandidate = evt.target.controller;
+            if (evt.type === "mousedown" && 0 === evt.button) {
 
-            if (selectionCandidate) {
+                var selectionCandidate = evt.target.controller,
+                    isAddingToSelection = false,
+                    isRemovingFromSelection = false;
 
-                if (!this.selectedObjects) {
-                    this.selectObject(selectionCandidate);
+                if (selectionCandidate) {
+
+                    //TODO if selectionCandidate is currently selected, drill down to find new one
+
+                    if (isAddingToSelection) {
+                        this.selectObject(selectionCandidate);
+                    } else if (isRemovingFromSelection) {
+                        this.deselectObject(selectionCandidate);
+                    } else {
+                        this.clearSelectedObjects();
+                        this.selectObject(selectionCandidate);
+                    }
+                } else {
+                    this.clearSelectedObjects();
                 }
             }
 
@@ -203,6 +217,21 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         }
     },
 
+    // Selects nothing
+    clearSelectedObjects: {
+        value: function () {
+            this.selectedObjects = null;
+        }
+    },
+
+    // Remove object from current set of selectedObjects
+    deselectObject: {
+        value: function (object) {
+            //TODO implement this
+        }
+    },
+
+    // Add object to current set of selectedObjects
     selectObject: {
         value: function (object) {
 
