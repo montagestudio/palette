@@ -16,6 +16,10 @@ exports.ComponentController = Montage.create(Montage, {
         }
     },
 
+    frame: {
+        value: null
+    },
+
     //TODO cache this
     ownerRequire: {
         get: function() {
@@ -98,7 +102,20 @@ exports.ComponentController = Montage.create(Montage, {
 
                 componentInstance.element = self._createElementFromMarkup(markup, id);
                 componentInstance.setElementWithParentComponent(self._createElementFromMarkup(markup, id), self.owner);
-                self.owner.element.appendChild(componentInstance.element);
+                //decide where to put this...
+                if (self.frame.selectedObjects != null && self.frame.selectedObjects.length > 0) {
+                    var selectedComponent = self.frame.selectedObjects[0];
+                    console.log("selectedComponent", selectedComponent)
+                    if (selectedComponent._montage_metadata.module === "montage/ui/slot.reel") {
+                        selectedComponent.content = componentInstance.element;
+                    } else {
+                        selectedComponent.element.appendChild(componentInstance.element);
+                    }
+                } else {
+                    self.owner.element.appendChild(componentInstance.element);
+                }
+
+
                 componentInstance.needsDraw = true;
 
 

@@ -73,7 +73,13 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         value: function (componentModule, componentName, markup, properties, postProcess) {
             // TODO emit an event that this is happening, so others can react
             // TODO maybe just pass in a componentDefinition that has a createComponent(document) method
-            return this.componentController.addComponent(componentModule, componentName, markup, properties, postProcess);
+            return this.componentController.addComponent(
+                componentModule,
+                componentName,
+                markup,
+                properties,
+                postProcess
+            );
 
         }
     },
@@ -154,6 +160,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 iFrameWindow.defaultEventManager.delegate = this;
 
                 this.componentController = ComponentController.create();
+                this.componentController.frame = this;
                 this.componentController.owner = iFrameWindow.ownerComponent;
                 this._deferredComponent.resolve(iFrameWindow.ownerComponent);
             }
@@ -188,13 +195,20 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                     this.selectedObjects = [];
                 }
 
+                //HACK
+                // if it's a repetition skip it for now... this just to select the flow
+                if (selectionCandidate._montage_metadata.module === "ui/repetition.reel") {
+                    selectionCandidate = selectionCandidate.parentComponent;
+                }
+                // end HACK
+
                 var index;
                 if ((index = this.selectedObjects.indexOf(selectionCandidate)) !== -1) {
                     // remove
                     this.selectedObjects.splice(index, 1);
                 } else {
                     // add
-                    this.selectedObjects.push(selectionCandidate);
+                    this.selectedObjects.setProperty("0",selectionCandidate);
                 }
 
                 if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
