@@ -191,30 +191,42 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             var selectionCandidate = evt.target.controller;
 
             if (selectionCandidate) {
+
                 if (!this.selectedObjects) {
-                    this.selectedObjects = [];
-                }
-
-                //HACK
-                // if it's a repetition skip it for now... this just to select the flow
-                if (selectionCandidate._montage_metadata.module === "ui/repetition.reel") {
-                    selectionCandidate = selectionCandidate.parentComponent;
-                }
-                // end HACK
-
-                var index;
-                if ((index = this.selectedObjects.indexOf(selectionCandidate)) !== -1) {
-                    // remove
-                    this.selectedObjects.splice(index, 1);
-                } else {
-                    // add
-                    this.selectedObjects.setProperty("0",selectionCandidate);
-                }
-
-                if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
-                    this.delegate.didObserveEvent(this, evt);
+                    this.selectObject(selectionCandidate);
                 }
             }
+
+            if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
+                this.delegate.didObserveEvent(this, evt);
+            }
+        }
+    },
+
+    selectObject: {
+        value: function (object) {
+
+            if (!this.selectedObjects) {
+                this.selectedObjects = [];
+            }
+
+            //HACK
+            // if it's a repetition skip it for now... this just to select the flow
+            if (object._montage_metadata.module === "ui/repetition.reel") {
+                object = object.parentComponent;
+            }
+            // end HACK
+
+            var index;
+            if ((index = this.selectedObjects.indexOf(object)) !== -1) {
+                // remove
+                this.selectedObjects.splice(index, 1);
+            } else {
+                // add
+                this.selectedObjects.setProperty("0", object);
+            }
+
+
         }
     },
 
