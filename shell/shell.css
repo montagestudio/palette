@@ -8,8 +8,6 @@ body {
 	-webkit-box-align: center;
 	margin: 0;
 	background: url(bg-stage.svg) hsl(0, 0%, 90%);
-	border-left: 1px solid hsl(0,0%,75%);
-	border-right: 1px solid hsl(0,0%,75%);
 }
 
 [data-montage-id="owner"] {
