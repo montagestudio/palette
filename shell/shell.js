@@ -1,39 +1,35 @@
-var URL = require("montage/core/mini-url");
-var QS = require("qs");
-var Promise = require("q");
-var Deserializer = require("montage/core/deserializer").Deserializer;
 
-if (window.location.search) {
-    var query = QS.parse(window.location.search.slice(1));
+window.addEventListener("message", function (event) {
 
-    getPackageLocation(query["reel-location"]).then(function (packageLocation) {
 
-        var moduleId = query['module-id'] ? query['module-id'] : query["reel-location"].replace(packageLocation, "");
+    if (event.data.type === "montageReady") {
 
-        run(packageLocation, moduleId);
-    });
+        if (window.location.search) {
+            var reelMatch = window.location.search.match(/reel-location=(\S+)/);
 
-} else {
-    console.debug("No component specified for loading");
-}
+            if (reelMatch && reelMatch[1]) {
+                var reelLocation = decodeURIComponent(reelMatch[1]);
 
-function getPackageLocation (location, deferredLocation) {
+                getPackageLocation(reelLocation, function (packageLocation) {
+                    var moduleId = reelLocation.replace(packageLocation, "");
+                    run(packageLocation, moduleId);
+                });
+            }
+
+        } else {
+            console.debug("No component specified for loading");
+        }
+    }
+}, true);
+
+function getPackageLocation (location, callback) {
 
     if (!location || (window.location.protocol + "//") === location) {
-        if (deferredLocation) {
-            deferredLocation.reject();
-            return;
-        } else {
-            return Promise.reject();
-        }
+       return;
     }
 
     if (!/\/$/.test(location)) {
         location = location += "/";
-    }
-
-    if (!deferredLocation) {
-        deferredLocation = Promise.defer();
     }
 
     var packageReq = new XMLHttpRequest();
@@ -41,61 +37,33 @@ function getPackageLocation (location, deferredLocation) {
     packageReq.addEventListener("load", function (evt) {
         if (404 === evt.target.status) {
             location = location.replace(/[^\/]+\/$/, "");
-            getPackageLocation(location, deferredLocation);
+            getPackageLocation(location, callback);
         } else {
-            deferredLocation.resolve(location);
+            callback(location);
         }
     });
     packageReq.send();
-
-
-    return deferredLocation.promise;
 }
 
 function run (packageLocation, moduleId) {
 
-    packageLocation = URL.resolve(window.location, packageLocation);
-    moduleId = moduleId || "";
+    //TODO formalize passing this information along
+    window.shellData = {
+        packageLocation: packageLocation,
+        moduleId: moduleId
+    };
 
-    //TODO this is relying on some private methods, they should be available somewhere
-    Deserializer._findObjectNameRegExp.test(moduleId);
-    var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
-        ownerComponent;
-
-    console.log("Require:", "package:", JSON.stringify(packageLocation), "moduleId:", JSON.stringify(moduleId), "objectName", objectName);
-
-    require.loadPackage(packageLocation)
-        .then(function (packageRequire) {
-          return packageRequire.async(moduleId);
-        })
-        .then(function (exports) {
-            console.log("Exports:", exports);
-            console.log("Packages:", require.packages);
-
-            ownerComponent = exports[objectName].create();
-            return require.async("montage/ui/component");
-        }).
-        then(function (exports) {
-            var rootComponent = exports.__root__;
-            //TODO how do we know what kind of element to use?
-            ownerComponent.element = document.createElement("div");
-            ownerComponent.setElementWithParentComponent(ownerComponent.element, rootComponent);
-            document.body.appendChild(ownerComponent.element);
-            ownerComponent.ownerComponent = rootComponent;
-            ownerComponent.attachToParentComponent(rootComponent);
-
-            document.title = objectName + " (" + moduleId + ") - Palette Shell";
-
-            ownerComponent.needsDraw = true;
-
-            //TODO better communicate that the ownerComponent is available
-            ownerComponent.addEventListener("firstDraw", function () {
-                window.ownerComponent = ownerComponent;
-
-                if (window.parent) {
-                    window.parent.postMessage("ready", "*");
-                }
-            });
-        })
-        .done();
+    //TODO not hardcode this all
+    window.postMessage({
+        type: "montageInit",
+        location: "",
+        packageDescription: {
+            "dependencies": {
+                "montage": "*"
+            },
+            mappings: {
+                client: packageLocation
+            }
+        }
+    }, "*");
 }
