@@ -8,4 +8,6 @@
 	font-weight: bold;
 	color: hsl(0,0%,30%);
 	background: hsl(0,0%,95%);
+	border-top: 1px solid hsla(0,0%,100%,.5);
+	border-bottom: 1px solid hsla(0,0%,0%,.08);
 }
