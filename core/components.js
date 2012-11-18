@@ -79,6 +79,18 @@ exports.components = [
         html: '<p data-montage-id=""></p>'
     },
     {
+        label: "Image", name: "Image",
+        x: 0, y: 0, left: 0, width: 0,
+        serialization: {
+            "prototype": "montage/ui/image.reel",
+            "properties": {
+                "src": ""
+            }
+        },
+        icon: null,
+        html: '<img data-montage-id="" src="#">'
+    },
+    {
         label: "Repetition", name: "Repetition",
         x: -29, y: -125, left: 19, width: 30,
         serialization: {
