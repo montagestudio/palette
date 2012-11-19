@@ -78,19 +78,31 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                     childNode,
                     targetChildNode,
                     label,
-                    script,
-                    component = isRootNode ? null : sourceNode.controller;
+                    component = isRootNode ? null : sourceNode.controller,
+                    i;
 
                 if (component) {
+
+                    //TODO improve check for parent component
+                    var isOwner = (component.element.parentNode === component.element.ownerDocument.body);
+
                     label = self._generateLabelForComponent(component, Object.keys(components));
                     componentsElements[label] = component._element;
                     component._element = targetNode;
                     components[label] = component;
-                    componentsChildComponents[label] = component.childComponents;
-                    component._element.setAttribute('data-ninja-node', 'true');
-                    delete component.childComponents;
+
+                    if (isOwner) {
+                        //TODO not duplicate code
+                        for (i = 0; (childNode = childNodes[i]); i++) {
+                            targetChildNode = targetNode.appendChild(childNode.cloneNode(false));
+                            copyNode(childNode, targetChildNode);
+                        }
+                    } else {
+                        componentsChildComponents[label] = component.childComponents;
+                        delete component.childComponents;
+                    }
                 } else {
-                    for (var i = 0; (childNode = childNodes[i]); i++) {
+                    for (i = 0; (childNode = childNodes[i]); i++) {
                         targetChildNode = targetNode.appendChild(childNode.cloneNode(false));
                         copyNode(childNode, targetChildNode);
                     }
