@@ -80,13 +80,21 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         value: function (componentModule, componentName, markup, properties, postProcess) {
             // TODO emit an event that this is happening, so others can react
             // TODO maybe just pass in a componentDefinition that has a createComponent(document) method
-            return this.componentController.addComponent(
+            var deferredComponent = this.componentController.addComponent(
                 componentModule,
                 componentName,
                 markup,
                 properties,
                 postProcess
             );
+
+            var self = this;
+            deferredComponent.then(function (component) {
+                self.selectObject(component);
+                return component;
+            });
+
+            return deferredComponent;
 
         }
     },
