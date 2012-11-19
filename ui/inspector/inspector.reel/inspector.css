@@ -1,13 +1,25 @@
 .Inspector {
-	
+
 }
 
 .Inspector-header {
 	font-size: 14px;
-	padding: 10px;
+	padding: 4px;
 	font-weight: bold;
 	color: hsl(0,0%,30%);
 	background: hsl(0,0%,95%);
 	border-top: 1px solid hsla(0,0%,100%,.5);
 	border-bottom: 1px solid hsla(0,0%,0%,.08);
+}
+
+.Inspector-header input {
+    font-weight: bold;
+    color: hsl(0,0%,30%);
+    background: hsl(0,0%,95%);
+    border: 1px solid transparent;
+}
+
+.Inspector-header input:hover, .Inspector-header input:focus{
+    background: white;
+    border: 1px solid #B3B3B3;
 }

@@ -12,12 +12,12 @@
         },
 
         "title": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/input-text.reel",
             "properties": {
                 "element": {"#": "title"}
             },
             "bindings": {
-                "value": {"<-": "@owner.object.identifier"}
+                "value": {"<->": "@owner.object.identifier"}
             }
         },
 
@@ -50,7 +50,7 @@
     <section data-montage-id="inspector" class="Inspector">
 
         <header class="Inspector-header">
-            <span data-montage-id="title">Inspector title</span>
+            <input type="text" data-montage-id="title" value="Inspector title">
         </header>
 
         <div data-montage-id="propertyGroups">
