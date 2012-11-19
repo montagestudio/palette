@@ -48,7 +48,13 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
              if (this._offsetComponent === value) {
                  return;
              }
+
+             if (this._offsetComponent) {
+                this._offsetComponent.removeEventListener("update", this, false);
+             }
+
              this._offsetComponent = value;
+             this._offsetComponent.addEventListener("update", this, false);
              this.needsDraw = true;
          }
      },
@@ -85,7 +91,25 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     handleChange: {
         value: function() {
+            this.drawAll();
+        }
+    },
+
+    handleUpdate: {
+        value: function(event) {
+            this.drawAll();
+        }
+    },
+
+    drawAll: {
+        value: function() {
             this.needsDraw = true;
+
+            // all selections need to be redrawn
+            var kids = this.templateObjects.repetition.childComponents;
+            for (var i = 0, len = kids.length; i < len; i++) {
+                kids[i].needsDraw = true;
+            }
         }
     },
 

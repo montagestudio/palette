@@ -49,6 +49,13 @@ var RUN_MODE = 1;
 */
 exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/montage-frame.reel".MontageFrame# */ {
 
+    /**
+     * @name update
+     * @event
+     * @description Fired whenever a draw cycle occurs in the root component
+     * of the frame
+     */
+
     load: {
         value: function (reelUrl) {
 
@@ -59,7 +66,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
             this._deferredComponent = Promise.defer();
 
-            var reelLocation = encodeURIComponent(reelUrl)
+            var reelLocation = encodeURIComponent(reelUrl);
             this._shellUrl = require.location + "/shell/shell.html?reel-location=" + reelLocation;
             this.needsDraw = true;
 
@@ -143,6 +150,21 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         }
     },
 
+    _replaceDraw: {
+        value: function(iFrameWindow) {
+            var self = this;
+            // inspired by frameLoad in Montage testpageloader
+            iFrameWindow.montageRequire.async("ui/component")
+            .get("__root__").then(function(root) {
+                var originalDrawIfNeeded = root.drawIfNeeded;
+                root.drawIfNeeded = function() {
+                    originalDrawIfNeeded.call(root);
+                    self.dispatchEventNamed("update", true, false);
+                };
+            });
+        }
+    },
+
     handleEditingFrameLoad: {
         value: function () {
             this.element.removeEventListener("load", this, false);
@@ -158,6 +180,8 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             if (evt._event.source === iFrameWindow && evt.data === "ready") {
                 window.removeEventListener("message", this);
                 iFrameWindow.defaultEventManager.delegate = this;
+
+                this._replaceDraw(iFrameWindow);
 
                 this.componentController = ComponentController.create();
                 this.componentController.frame = this;
