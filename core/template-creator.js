@@ -86,7 +86,12 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                     //TODO improve check for parent component
                     var isOwner = (component.element.parentNode === component.element.ownerDocument.body);
 
-                    label = self._generateLabelForComponent(component, Object.keys(components));
+                    if (isOwner) {
+                        label = "owner";
+                    } else {
+                        label = self._generateLabelForComponent(component, Object.keys(components));
+                    }
+
                     componentsElements[label] = component._element;
                     component._element = targetNode;
                     components[label] = component;
