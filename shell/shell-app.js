@@ -1,4 +1,7 @@
 Deserializer = require("montage/core/deserializer").Deserializer;
+//HACK!!! is need so that we can drop the flow synchronously on the stage
+require("montage/ui/dynamic-text.reel");
+require("montage/ui/image.reel");
 
 var moduleId = window.shellData.moduleId;
 var packageLocation = window.shellData.packageLocation;
