@@ -20,12 +20,29 @@
                 "value": {"<->": "@owner.object.identifier"}
             }
         },
-        
-        "button": {
+
+        "editorCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "editor-condition"},
+                "removalStrategy": "hide"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.inspectorController.hasEditor"}
+            }
+        },
+
+        "editorButton": {
             "prototype": "montage/ui/button.reel",
             "properties": {
-                "element": {"#": "button"}
-            }
+                "element": {"#": "editor-button"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
 
         "propertyGroups": {
@@ -58,7 +75,9 @@
 
         <header class="Inspector-header">
             <input data-montage-id="title" class="Inspector-header-title" type="text" value="Inspector title" >
-            <button data-montage-id="button" class="Inspector-header-button" data-icon="&#59204;"></button>
+            <div data-montage-id="editor-condition">
+                <button data-montage-id="editor-button" class="Inspector-header-button" data-icon="&#59204;"></button>
+            </div>
         </header>
 
         <div data-montage-id="propertyGroups">

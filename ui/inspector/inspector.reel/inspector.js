@@ -92,6 +92,28 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
     objectDescription: {
         serializable: false,
         value: null
+    },
+
+    inspectorController: {
+        serializable: false,
+        value: null
+    },
+
+    handleEditorButtonAction: {
+        value: function (evt) {
+            if (!(this.inspectorController && this.inspectorController.hasEditor)) {
+                return;
+            }
+
+            var self = this;
+            this.inspectorController.editorComponent().then(function (Editor) {
+                var editor = Editor.create();
+                editor.object = self.object;
+                self.dispatchEventNamed("enterEditor", true, true, {
+                    component: editor
+                });
+            });
+        }
     }
 
 });
