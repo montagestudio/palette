@@ -20,6 +20,13 @@
                 "value": {"<->": "@owner.object.identifier"}
             }
         },
+        
+        "button": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "button"}
+            }
+        },
 
         "propertyGroups": {
             "prototype": "montage/ui/repetition.reel",
@@ -50,7 +57,8 @@
     <section data-montage-id="inspector" class="Inspector">
 
         <header class="Inspector-header">
-            <input type="text" data-montage-id="title" value="Inspector title">
+            <input data-montage-id="title" class="Inspector-header-title" type="text" value="Inspector title" >
+            <button data-montage-id="button" class="Inspector-header-button" data-icon="&#59204;"></button>
         </header>
 
         <div data-montage-id="propertyGroups">
