@@ -1,7 +1,4 @@
 .Inspector {
-    -webkit-flex: 1;
-    min-height: 0;
-    overflow: scroll;
 }
 
 .Inspector-header {
