@@ -17,10 +17,6 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     didCreate: {
         value: function() {
-            this._objectSelectionMap  = Object.create(null);
-            this._minusSelectedObjects  = [];
-            this._elementsToAdd = [];
-
             this.addPropertyChangeListener("_selectedObjects", this, false);
 
             this.selectedObjectsController = ArrayController.create();
@@ -32,29 +28,31 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
-     _offsetComponent: {
+     _contentComponent: {
          value: null
      },
      /**
       * The Montage component that contains the selected objects. This used to
       * offset the selection borders so that they appear in the correct place.
+      * It should also fire an "update" event when the content is updated or
+      * redrawn so that the selections can be updated to match.
       * @type {Component}
       */
-     offsetComponent: {
+     contentComponent: {
          get: function() {
-             return this._offsetComponent;
+             return this._contentComponent;
          },
          set: function(value) {
-             if (this._offsetComponent === value) {
+             if (this._contentComponent === value) {
                  return;
              }
 
-             if (this._offsetComponent) {
-                this._offsetComponent.removeEventListener("update", this, true);
+             if (this._contentComponent) {
+                this._contentComponent.removeEventListener("update", this, true);
              }
 
-             this._offsetComponent = value;
-             this._offsetComponent.addEventListener("update", this, true);
+             this._contentComponent = value;
+             this._contentComponent.addEventListener("update", this, true);
              this.needsDraw = true;
          }
      },
@@ -131,8 +129,8 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     willDraw: {
         value: function() {
-            this._offsetLeft = this.offsetComponent.element.offsetLeft;
-            this._offsetTop = this.offsetComponent.element.offsetTop;
+            this._offsetLeft = this.contentComponent.element.offsetLeft;
+            this._offsetTop = this.contentComponent.element.offsetTop;
         }
     }
 
