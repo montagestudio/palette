@@ -40,7 +40,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 var self = this;
 
                 this._objectDescriptionDeferred = Promise.defer();
-                this._object.description.then(this._objectDescriptionDeferred.resolve);
+                this._object.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
 
                 this._objectDescriptionDeferred.promise.then(function (description) {
                     self.objectDescription = description;
@@ -55,6 +55,8 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                             open: index === 0
                         };
                     });
+                }, function() {
+                    self.propertyGroupsController.content = [];
                 });
             } else {
                 this.objectDescription = null;
