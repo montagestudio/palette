@@ -105,9 +105,9 @@ exports.ComponentController = Montage.create(Montage, {
                 //decide where to put this...
                 if (self.frame.selectedObjects != null && self.frame.selectedObjects.length > 0) {
                     var selectedComponent = self.frame.selectedObjects[0];
-                    console.log("selectedComponent", selectedComponent)
-                    if (selectedComponent._montage_metadata.module === "montage/ui/slot.reel") {
-                        selectedComponent.content = componentInstance.element;
+                    console.log("selectedComponent", selectedComponent.element.outerHTML)
+                    if (selectedComponent._montage_metadata.moduleId === "ui/slot.reel") {
+                        selectedComponent.content = componentInstance;
                     } else {
                         selectedComponent.element.appendChild(componentInstance.element);
                     }
