@@ -152,6 +152,8 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
             // watch field changes and update object value
             this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
+
+            this.needsDraw = true;
         }
     },
 
@@ -199,6 +201,12 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             component.element = element;
 
             return component;
+        }
+    },
+
+    draw: {
+        value: function() {
+            this._element.title = this._propertyDescription.helpString;
         }
     }
 });
