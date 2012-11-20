@@ -136,6 +136,19 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
             }
             components = componentsChildComponents = null;
             this._externalObjects = serializer.getExternalObjects();
+            var externalElements = serializer.getExternalElements();
+
+            // HACK: add to the template all the elements that are referenced
+            // by components but are not present in the serialized document.
+            // We only serialize the element itself and not the child
+            // nodes, because for that we would also need to search for
+            // components, let's only support components with a childless
+            // nodes for now.
+            for (var i = 0, externalElement; externalElement = externalElements[i]; i++) {
+                if (!this._document.body.contains(externalElement)) {
+                    this._document.body.appendChild(externalElement.cloneNode(false));
+                }
+            }
 
             return this;
         }
