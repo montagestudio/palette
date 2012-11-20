@@ -142,6 +142,10 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 this.propertyValueField.removePropertyChangeListener("value", this, false);
             }
 
+            if (!value) {
+                return;
+            }
+
             var componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
 
             this.propertyValueField = this._createFieldComponent(componentDescriptor);
