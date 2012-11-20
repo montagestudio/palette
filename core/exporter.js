@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
-    TemplateCreator = require("core/template-creator").TemplateCreator;
+    TemplateCreator = require("core/template-creator").TemplateCreator,
+    Template = require("montage/ui/template").Template;
 
 // This object exports a live DOM into a clean template object for eventual serialization into
 // whatever format.
@@ -12,9 +13,21 @@ exports.Exporter = Montage.create(Montage, {
     // TODO I don't think we'll just pass a view in...I'd like some higher-level abstraction for
     // "what's being edited"
     export: {
-        value: function (view, require) {
+        value: function (view, ownerComponent, require) {
             //NOTE this appears to do everything I'd want, but the serialization fails
-            return TemplateCreator.create().initWithDocument(view.document, require);
+            var head = this._getComponentTemplateHeader(ownerComponent);
+            return TemplateCreator.create().initWithHeadAndBodyElements(
+                    head,
+                    view.document.body,
+                    require,
+                    view.document);
+        }
+    },
+
+    _getComponentTemplateHeader: {
+        value: function(component) {
+            var string = component._montage_metadata.require(component.templateModuleId).content;
+            return Template.createHtmlDocumentFromString(string).head;
         }
     },
 

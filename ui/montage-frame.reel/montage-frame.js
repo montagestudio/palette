@@ -116,7 +116,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
 
             if (iframeWindow) {
                 exporter = Exporter.create();
-                template = exporter.export(iframeWindow, this.componentController.ownerRequire);
+                template = exporter.export(iframeWindow, this.componentController.owner, this.componentController.ownerRequire);
             }
 
             return template;

@@ -116,6 +116,8 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
 
             if (head) {
                 doc.head.innerHTML = head.innerHTML;
+                // make sure the head doesn't have any serialization
+                this._removeSerialization();
             }
 
             // try to make things look nice...
