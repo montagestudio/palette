@@ -71,7 +71,7 @@ exports.Exporter = Montage.create(Montage, {
             var packageLocation = this._exportRequire.location.replace(FS_RE, "");
 
             // HACK
-            if (properties.indexOf("src") !== -1) {
+            if (properties.indexOf("src") !== -1 && typeof object.src === "string") {
                 var absolutePath = object.src.replace(FS_RE, "");
                 if (absolutePath.toLowerCase().indexOf(packageLocation.toLowerCase()) === 0) {
                     // inside package. Make relative
