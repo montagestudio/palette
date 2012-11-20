@@ -10,13 +10,21 @@ var Montage = require("montage").Montage,
 // The ninja approach is provided to illustrate the sanitization process ninja used
 exports.Exporter = Montage.create(Montage, {
 
+    _exportRequire: {
+        value: null
+    },
+
     // TODO I don't think we'll just pass a view in...I'd like some higher-level abstraction for
     // "what's being edited"
     export: {
         value: function (view, ownerComponent, require) {
+            this._exportRequire = ownerComponent._montage_metadata.require;
+
             //NOTE this appears to do everything I'd want, but the serialization fails
             var head = this._getComponentTemplateHeader(ownerComponent);
-            return TemplateCreator.create().initWithHeadAndBodyElements(
+            var creator = TemplateCreator.create();
+            creator.delegate = this;
+            return creator.initWithHeadAndBodyElements(
                     head,
                     view.document.body,
                     ownerComponent._montage_metadata.require,
@@ -54,6 +62,28 @@ exports.Exporter = Montage.create(Montage, {
             }
 
             return node;
+        }
+    },
+
+    serializeObjectProperties: {
+        value: function(serializer, object, properties) {
+            var FS_RE = /^fs:\//;
+            var packageLocation = this._exportRequire.location.replace(FS_RE, "");
+
+            // HACK
+            if (properties.indexOf("src") !== -1) {
+                var absolutePath = object.src.replace(FS_RE, "");
+                if (absolutePath.toLowerCase().indexOf(packageLocation.toLowerCase()) === 0) {
+                    // inside package. Make relative
+                    var path = absolutePath.substring(packageLocation.length);
+                    serializer.set("src", path);
+                } else {
+                    console.error("Image src '" + absolutePath + "' is outside package '" + packageLocation + "'");
+                    // var filename = fs.basename(absolutePath);
+                    // var path = Path.join("assets", "images", filename);
+                    // copy(absolutePath, Path.join(packageLocation, filename));
+                }
+            }
         }
     },
 

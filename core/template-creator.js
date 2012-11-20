@@ -69,6 +69,9 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
             //TODO not sure this is the best place to do this
             this._require = appRequire;
 
+            // TODO this is definitely not the best place to do this
+            serializer.delegate = this.delegate;
+
             this._componentNamesIndex = {};
             this._objectNamesIndex = {};
             doc = this._document = appDoc.implementation.createHTMLDocument("");
