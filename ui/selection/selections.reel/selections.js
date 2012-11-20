@@ -50,11 +50,11 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
              }
 
              if (this._offsetComponent) {
-                this._offsetComponent.removeEventListener("update", this, false);
+                this._offsetComponent.removeEventListener("update", this, true);
              }
 
              this._offsetComponent = value;
-             this._offsetComponent.addEventListener("update", this, false);
+             this._offsetComponent.addEventListener("update", this, true);
              this.needsDraw = true;
          }
      },
@@ -95,14 +95,30 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
-    handleUpdate: {
+    captureUpdate: {
         value: function(event) {
             this.drawAll();
         }
     },
 
+    captureResize: {
+        value: function(event) {
+            this.drawAll();
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            window.addEventListener("resize", this, true);
+        }
+    },
+
     drawAll: {
         value: function() {
+            if (!this._selectedObjects || !this._selectedObjects.length) {
+                return;
+            }
+
             this.needsDraw = true;
 
             // all selections need to be redrawn
