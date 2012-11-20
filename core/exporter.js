@@ -19,7 +19,7 @@ exports.Exporter = Montage.create(Montage, {
             return TemplateCreator.create().initWithHeadAndBodyElements(
                     head,
                     view.document.body,
-                    require,
+                    ownerComponent._montage_metadata.require,
                     view.document);
         }
     },
