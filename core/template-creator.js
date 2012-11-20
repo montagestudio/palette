@@ -76,6 +76,8 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
             this._objectNamesIndex = {};
             doc = this._document = appDoc.implementation.createHTMLDocument("");
 
+            var labelLookup = {};
+
             function copyNode(sourceNode, targetNode, isRootNode) {
                 var childNodes = sourceNode.childNodes,
                     childNode,
@@ -95,6 +97,7 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                         label = self._generateLabelForComponent(component, Object.keys(components));
                     }
 
+                    labelLookup[component.uuid] = label;
                     componentsElements[label] = component._element;
                     component._element = targetNode;
                     components[label] = component;
@@ -135,25 +138,45 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
 
             copyNode(body, this._document.body, true);
             this._ownerSerialization = serializer.serialize(components);
-            for (var label in components) {
-                components[label].childComponents = componentsChildComponents[label];
-                components[label]._element = componentsElements[label];
-            }
-            components = componentsChildComponents = null;
-            this._externalObjects = serializer.getExternalObjects();
-            var externalElements = serializer.getExternalElements();
 
+            var externalElements = serializer.getExternalElements();
             // HACK: add to the template all the elements that are referenced
             // by components but are not present in the serialized document.
             // We only serialize the element itself and not the child
             // nodes, because for that we would also need to search for
             // components, let's only support components with a childless
             // nodes for now.
+            var parentComponent;
+
             for (var i = 0, externalElement; externalElement = externalElements[i]; i++) {
+                // We need to add the elements that are not in the Template
                 if (!this._document.body.contains(externalElement)) {
-                    this._document.body.appendChild(externalElement.cloneNode(false));
+                    // Try to find where the element fits if it's not even accessed in the original document (assume its a template)
+                    if (!body.contains(externalElement)) {
+                        externalElementComponent = externalElement.controller;
+                        while (externalElementComponent = externalElementComponent.parentComponent) {
+                            var componentLabel = labelLookup[externalElementComponent.uuid];
+                            if (componentLabel in components) {
+                                components[componentLabel]._element.appendChild(externalElement.cloneNode(true));
+
+                                break;
+                            }
+                        }
+                    // just add it to the end of the document, assume it's something like a slot content, that doesn't matter where the element is in the document because it's going to be sucked in anyway.
+                    } else {
+                        this._document.body.appendChild(externalElement.cloneNode(false));
+                    }
+                } else {
+                    //console.log("outside original document: " ,  externalElement, externalElement.uuid, externalElement.controller);
                 }
             }
+
+            for (var label in components) {
+                components[label].childComponents = componentsChildComponents[label];
+                components[label]._element = componentsElements[label];
+            }
+            components = componentsChildComponents = null;
+            this._externalObjects = serializer.getExternalObjects();
 
             return this;
         }
