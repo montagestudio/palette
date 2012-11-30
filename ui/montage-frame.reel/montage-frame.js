@@ -67,7 +67,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
             this._deferredComponent = Promise.defer();
 
             var reelLocation = encodeURIComponent(reelUrl);
-            this._shellUrl = require.location + "/shell/shell.html?reel-location=" + reelLocation;
+            this._stageUrl = require.location + "/stage/?reel-location=" + reelLocation;
             this.needsDraw = true;
 
             //TODO what do we actually want to promise to return? probably the componentController...
@@ -148,9 +148,9 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
                 this.element.classList.remove("designMode");
             }
 
-            if (this._shellUrl && this._shellUrl !== this.element.src) {
+            if (this._stageUrl && this._stageUrl !== this.element.src) {
                 this.element.addEventListener("load", this, false);
-                this.element.src = this._shellUrl;
+                this.element.src = this._stageUrl;
             }
 
             this.element.width = this.width;
