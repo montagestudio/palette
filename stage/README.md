@@ -14,13 +14,19 @@ for use inside the stage for the time being.
 Usage
 =====
 The stage application's index.html can be requested with a "reel-location" query parameter
-specifying a URI-component-encoded URL of the reel to load. If this query parameter is not
-detected, a standard prompt will be presented for the user to specify the reel's URL at
-runtime.
+specifying a URI-component-encoded URL of the reel to load.
+
+Similarly, the "package-location" parameter can also be used to specify the exact package to use.
+This parameter may end in "package.json" or the directory housing the package.json.
+Either way, the stage assumes the package.json is actually named "package.json"
+
+If the "reel-location" query parameter is not detected, a standard prompt will be
+presented for the user to specify the reel's URL, followed by an option to specify the
+package's URL as well.
 
 Notes
 =====
 Without further information specifying the URL of the package.json governing the package
 this component is a part of the stage sets off to discover the package.json itself. This
-discovery process inevitably triggers several requests for nonexistent URLs that should
+discovery process inevitably triggers several requests for non-existent URLs that should
 be ignored.

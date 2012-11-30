@@ -1,36 +1,84 @@
+//TODO not create so many globals
+var REEL_LOCATION_KEY = "reel-location",
+    PACKAGE_LOCATION_KEY = "package-location";
+
 window.addEventListener("message", function (event) {
 
-    var reelMatch,
-        reelLocation;
+    var search,
+        userInput,
+        keyValues,
+        keyValuesCount,
+        value,
+        params,
+        reelLocation,
+        packageLocation;
 
     // Recognize when bootstrapping montage has come along far enough
     // along to wait for any instructions it was told to expect when we
     // provided the remote-trigger attribute to the bootstrapping script
     if (event.data.type === "montageReady") {
 
-        if (window.location.search) {
-            //TODO improve this regex...a lot
-            reelMatch = window.location.search.match(/reel-location=(\S+)/);
+        search = window.location.search;
 
-            if (reelMatch && reelMatch[1]) {
-                reelLocation = decodeURIComponent(reelMatch[1]);
-                loadReel(reelLocation);
+        if (search) {
+
+            search = search.replace(/^\?/, "");
+            search = search.replace(/=/g, "&");
+            keyValues = search.split("&");
+            keyValuesCount = keyValues.length;
+
+            params = {};
+
+            for (i = 0; i < keyValuesCount; i += 2) {
+                value = keyValues[i + 1];
+                params[keyValues[i]] = value ? decodeURIComponent(value) : null;
             }
 
+            reelLocation = params[REEL_LOCATION_KEY];
+            packageLocation = params[PACKAGE_LOCATION_KEY];
         } else {
-            reelLocation = prompt("Load component URL", window.location.origin);
-            if (reelLocation) {
-                loadReel(reelLocation);
+            userInput = requestParams();
+            reelLocation = userInput[REEL_LOCATION_KEY];
+            packageLocation = userInput[PACKAGE_LOCATION_KEY];
+        }
+
+        if (reelLocation) {
+
+            if (packageLocation) {
+                packageLocation = packageLocation.replace("package.json", "");
             }
+
+            loadReel(reelLocation, packageLocation);
         }
     }
 }, true);
 
-function loadReel (reelLocation) {
-    getPackageLocation(reelLocation, function (packageLocation) {
+function requestParams () {
+    var params = {},
+        reelLocation,
+        packageLocation;
+
+        params[REEL_LOCATION_KEY] = reelLocation = prompt("Load component", window.location.origin);
+
+        if (reelLocation) {
+            params[PACKAGE_LOCATION_KEY] = prompt("Load package (Blank to search)");
+        }
+
+        return params;
+}
+
+function loadReel (reelLocation, packageLocation) {
+
+    if (packageLocation) {
+        continueBootstrap(packageLocation);
+    } else {
+        getPackageLocation(reelLocation, continueBootstrap);
+    }
+
+    function continueBootstrap (packageLocation) {
         var moduleId = reelLocation.replace(packageLocation, "");
         injectPackageInformation(packageLocation, moduleId);
-    });
+    }
 }
 
 // Crawl up the directory tree from the specified location until a
