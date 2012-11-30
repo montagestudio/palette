@@ -44,13 +44,13 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
 
     loadProject: {
         value: function () {
-            if (!this.montageFrame) {
+            if (!this.editingFrame) {
                 this._needsProjectLoaded = true;
                 return;
             }
 
             if (this.currentProject) {
-                this.montageFrame.load(this.currentProject.reelUrl);
+                this.editingFrame.load(this.currentProject.reelUrl);
             }
 
             this._needsProjectLoaded = false;
@@ -59,34 +59,34 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
 
     template: {
         get: function () {
-            return this._montageFrame.template;
+            return this._editingFrame.template;
         }
     },
 
-    _montageFrame: {
+    _editingFrame: {
         value: null
     },
 
-    montageFrame: {
+    editingFrame: {
         get: function () {
-            return this._montageFrame;
+            return this._editingFrame;
         },
         set: function (value) {
-            if (value === this._montageFrame) {
+            if (value === this._editingFrame) {
                 return;
             }
 
-            if (this._montageFrame && this === this._montageFrame.delegate) {
-                this._montageFrame.delegate = null;
+            if (this._editingFrame && this === this._editingFrame.delegate) {
+                this._editingFrame.delegate = null;
             }
 
-            this._montageFrame = value;
+            this._editingFrame = value;
 
-            if (this._montageFrame) {
-                this._montageFrame.delegate = this;
+            if (this._editingFrame) {
+                this._editingFrame.delegate = this;
             }
 
-            if (this._montageFrame && this._needsProjectLoaded) {
+            if (this._editingFrame && this._needsProjectLoaded) {
                 this.loadProject();
             }
         }
@@ -96,7 +96,7 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
     // it needs to be strings by the time it goes to the frameManager
     addComponent: {
         value: function (componentPath, componentName, markup, properties, postProcess) {
-            this.montageFrame.addComponent(
+            this.editingFrame.addComponent(
                 componentPath,
                 componentName,
                 markup,
@@ -126,7 +126,7 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
     },
 
     didObserveEvent: {
-        value: function(montageFrame, evt) {
+        value: function(editingFrame, evt) {
             var observedEvent = Event.create();
             observedEvent.type = evt.type;
             observedEvent.target = evt.target;

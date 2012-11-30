@@ -177,7 +177,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 return;
             }
 
-            //TODO perform edit in an undoable manner montageFrame/workbench/authoringDoc.setOwnedObjectProperty(object, newValue)
+            //TODO perform edit in an undoable manner editingFrame/workbench/authoringDoc.setOwnedObjectProperty(object, newValue)
             //where does this happen? how do we know about it?
             this.object.setProperty(this.propertyDescription.name, this.propertyValueField[this._propertyValueFieldValueProperty]);
         }

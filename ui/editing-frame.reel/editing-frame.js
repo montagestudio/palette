@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-    @module "montage/ui/montage-frame.reel"
+    @module "montage/ui/editing-frame.reel"
     @requires montage
     @requires montage/ui/component
 */
@@ -44,10 +44,10 @@ var DESIGN_MODE = 0;
 var RUN_MODE = 1;
 
 /**
-    @class module:"ui/montage-frame.reel".MontageFrame
+    @class module:"ui/editing-frame.reel".EditingFrame
     @extends module:ui/component.Component
 */
-exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/montage-frame.reel".MontageFrame# */ {
+exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/editing-frame.reel".EditingFrame# */ {
 
     /**
      * @name update
@@ -123,7 +123,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         }
     },
 
-    // MontageFrame Methods
+    // EditingFrame Methods
 
     prepareForDraw: {
         value: function () {
@@ -200,7 +200,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         }
     },
 
-    // MontageFrame Delegate Methods
+    // EditingFrame Delegate Methods
 
     willDistributeEvent: {
         value: function (evt) {
@@ -291,7 +291,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         }
     },
 
-    // MontageFrame Properties
+    // EditingFrame Properties
 
     componentController: {
         value: null
@@ -302,7 +302,7 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
         value: null
     },
 
-    // The deferred component the montageFrame is waiting to fulfill
+    // The deferred component the editingFrame is waiting to fulfill
     _deferredComponent: {
         value: null
     },

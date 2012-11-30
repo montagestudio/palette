@@ -8,17 +8,17 @@
         "owner": {
             "properties": {
                 "element": {"#": "workbench"},
-                "montageFrame": {"@": "montageFrame"}
+                "editingFrame": {"@": "editingFrame"}
             },
             "bindings": {
-                "selectedObjects": {"<->": "@montageFrame.selectedObjects"}
+                "selectedObjects": {"<->": "@editingFrame.selectedObjects"}
             }
         },
 
-        "montageFrame": {
-           "prototype": "ui/montage-frame.reel",
+        "editingFrame": {
+           "prototype": "ui/editing-frame.reel",
             "properties": {
-                "element": {"#": "montageFrame"}
+                "element": {"#": "editingFrame"}
             }
         },
 
@@ -26,7 +26,7 @@
             "prototype": "ui/selection/selections.reel",
             "properties": {
                 "element": {"#": "selections"},
-                "contentComponent": {"@": "montageFrame"}
+                "contentComponent": {"@": "editingFrame"}
             },
             "bindings": {
                 "selectedObjects": {"<-": "@owner.selectedObjects"}
@@ -37,7 +37,7 @@
 </head>
 <body>
     <div data-montage-id="workbench" class="Workbench">
-        <div data-montage-id="montageFrame"></div>
+        <div data-montage-id="editingFrame"></div>
         <div data-montage-id="selections"></div>
     </div>
 </body>

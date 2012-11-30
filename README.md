@@ -14,5 +14,5 @@ dependencies:
 Otherwise, runtime dependencies are typically expected to be provided by a
 host environment.
 
-The editing context provided by the MontageFrame component can be seen within
+The editing context provided by the EditingFrame component can be seen within
 the palette.html file; no UI is provided in this particular example.
