@@ -57,7 +57,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
      */
 
     load: {
-        value: function (reelUrl) {
+        value: function (reelUrl, packageLocation) {
 
             // If already loading a component reject it and load the new one
             if (this._deferredComponent) {
@@ -68,6 +68,11 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var reelLocation = encodeURIComponent(reelUrl);
             this._stageUrl = require.location + "/stage/index.html?reel-location=" + reelLocation;
+
+            if (packageLocation) {
+                this._stageUrl += "&package-location=" + encodeURIComponent(packageLocation);
+            }
+
             this.needsDraw = true;
 
             //TODO what do we actually want to promise to return? probably the componentController...
