@@ -5,6 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
+    Promise = require("montage/core/promise").Promise,
     Event = require("core/event").Event;
 
 /**
@@ -20,46 +21,11 @@ var Montage = require("montage").Montage,
 
 exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.reel".Workbench# */ {
 
-    _currentProject: {
-        value: null
-    },
-
-    currentProject: {
-        get: function () {
-            return this._currentProject;
-        },
-        set: function (value) {
-            if (value === this._currentProject) {
-                return;
-            }
-
-            this._currentProject = value;
-            this.loadProject();
-        }
-    },
-
-    _needsProjectLoaded: {
-        value: false
-    },
-
-    loadProject: {
-        value: function () {
-            if (!this.editingFrame) {
-                this._needsProjectLoaded = true;
-                return;
-            }
-
-            if (this.currentProject) {
-                this.editingFrame.load(this.currentProject.reelUrl);
-            }
-
-            this._needsProjectLoaded = false;
-        }
-    },
-
-    template: {
-        get: function () {
-            return this._editingFrame.template;
+    // Load the specified reel onto the workbench, optionally specifying the packageUrl
+    // Returns a promised editingDocument
+    load: {
+        value: function (reelUrl, packageUrl) {
+            return this.editingFrame.load(reelUrl, packageUrl);
         }
     },
 
@@ -85,24 +51,6 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
             if (this._editingFrame) {
                 this._editingFrame.delegate = this;
             }
-
-            if (this._editingFrame && this._needsProjectLoaded) {
-                this.loadProject();
-            }
-        }
-    },
-
-    //TODO given how high above the frame we are, should the API accept a constructor at this level?
-    // it needs to be strings by the time it goes to the frameManager
-    addComponent: {
-        value: function (componentPath, componentName, markup, properties, postProcess) {
-            this.editingFrame.addComponent(
-                componentPath,
-                componentName,
-                markup,
-                properties,
-                postProcess
-            );
         }
     },
 
@@ -112,27 +60,12 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
+    // TODO why is the workbench so involved in selections?
     handleMousedown: {
         value: function(evt) {
             if (evt.target === this.element) {
                 this.selectedObjects = null;
             }
-        }
-    },
-
-    observedEvents:{
-        distinct:true,
-        value:[]
-    },
-
-    didObserveEvent: {
-        value: function(editingFrame, evt) {
-            var observedEvent = Event.create();
-            observedEvent.type = evt.type;
-            observedEvent.target = evt.target;
-            observedEvent.timestamp = evt.timeStamp;
-
-            this.observedEvents.push(observedEvent);
         }
     },
 

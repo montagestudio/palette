@@ -4,17 +4,17 @@ require("montage/ui/dynamic-text.reel");
 require("montage/ui/image.reel");
 
 var moduleId = window.stageData.moduleId,
-    packageLocation = window.stageData.packageLocation;
+    packageUrl = window.stageData.packageUrl;
 
 //TODO this is relying on some private methods, they should be available somewhere given their utility
 Deserializer._findObjectNameRegExp.test(moduleId);
 var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
     ownerComponent;
 
-console.debug("Require:", "package:", JSON.stringify(packageLocation), "moduleId:", JSON.stringify(moduleId), "objectName", objectName);
+console.debug("Require:", "package:", JSON.stringify(packageUrl), "moduleId:", JSON.stringify(moduleId), "objectName", objectName);
 
 // Load the specified package
-require.loadPackage(packageLocation)
+require.loadPackage(packageUrl)
 .then(function (packageRequire) {
     return packageRequire.async(moduleId);
 })
@@ -44,7 +44,7 @@ require.loadPackage(packageLocation)
 
     //TODO better communicate that the ownerComponent is available
     ownerComponent.addEventListener("firstDraw", function () {
-        window.ownerComponent = ownerComponent;
+        window.stageData.ownerComponent = ownerComponent;
 
         // Palette expects to be told when the stage is ready with a drawn component
         // that can be interacted with

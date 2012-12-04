@@ -1,10 +1,11 @@
 var Montage = require("montage").Montage,
-    Promise = require("montage/core/promise").Promise;
+    Promise = require("montage/core/promise").Promise,
+    Exporter = require("core/exporter").Exporter;
 
 // The actual object responsible for add, removing, and altering components that belong to the owner it controls.
 // This controller will inform others of the intent and result of each operation it performs allowing consumers
 // to react to changes for whatever reason.
-exports.ComponentController = Montage.create(Montage, {
+exports.EditingController = Montage.create(Montage, {
 
     _objectId: {value: 1},
 
@@ -18,6 +19,22 @@ exports.ComponentController = Montage.create(Montage, {
 
     frame: {
         value: null
+    },
+
+    template: {
+        get: function () {
+
+            var iframeWindow = this.frame._element.contentWindow,
+                exporter,
+                template;
+
+            if (iframeWindow) {
+                exporter = Exporter.create();
+                template = exporter.export(iframeWindow, this.owner, this.ownerRequire);
+            }
+
+            return template;
+        }
     },
 
     //TODO cache this

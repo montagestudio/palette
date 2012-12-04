@@ -36,8 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ComponentController = require("core/controller/component-controller").ComponentController,
-    Exporter = require("core/exporter").Exporter;
+    EditingDocument = require("core/editing-document").EditingDocument;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
@@ -57,74 +56,26 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
      */
 
     load: {
-        value: function (reelUrl, packageLocation) {
+        value: function (reelUrl, packageUrl) {
 
-            // If already loading a component reject it and load the new one
-            if (this._deferredComponent) {
-                this._deferredComponent.reject();
+            // If already loading reject current loading request and load the new one
+            if (this._deferredEditingDocument) {
+                this._deferredEditingDocument.reject();
             }
 
-            this._deferredComponent = Promise.defer();
+            this._deferredEditingDocument = Promise.defer();
 
-            var reelLocation = encodeURIComponent(reelUrl);
-            this._stageUrl = require.location + "/stage/index.html?reel-location=" + reelLocation;
+            var encodedReelUrl = encodeURIComponent(reelUrl);
+            this._stageUrl = require.location + "/stage/index.html?reel-location=" + encodedReelUrl;
 
-            if (packageLocation) {
-                this._stageUrl += "&package-location=" + encodeURIComponent(packageLocation);
+            if (packageUrl) {
+                this._stageUrl += "&package-location=" + encodeURIComponent(packageUrl);
             }
 
             this.needsDraw = true;
 
             //TODO what do we actually want to promise to return? probably the componentController...
-            return this._deferredComponent.promise;
-        }
-    },
-
-    // Add an instance of a component to the owner
-    addComponent: {
-        value: function (componentModule, componentName, markup, properties, postProcess) {
-            // TODO emit an event that this is happening, so others can react
-            // TODO maybe just pass in a componentDefinition that has a createComponent(document) method
-            var deferredComponent = this.componentController.addComponent(
-                componentModule,
-                componentName,
-                markup,
-                properties,
-                postProcess
-            );
-
-            var self = this;
-            deferredComponent.then(function (component) {
-                self.selectObject(component);
-                return component;
-            });
-
-            return deferredComponent;
-
-        }
-    },
-
-    // Add an instance of an object to the owner
-    addObject: {
-        value: function (objectModule, objectName, properties) {
-            // TODO emit an event that this is happening, so others can react
-            return this.componentController.addObject(objectModule, objectName, properties);
-        }
-    },
-
-    template: {
-        get: function () {
-
-            var iframeWindow = this._element.contentWindow,
-                exporter,
-                template;
-
-            if (iframeWindow) {
-                exporter = Exporter.create();
-                template = exporter.export(iframeWindow, this.componentController.owner, this.componentController.ownerRequire);
-            }
-
-            return template;
+            return this._deferredEditingDocument.promise;
         }
     },
 
@@ -140,7 +91,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this.width = this.element.offsetWidth;
             }
 
+            // TODO this is a little dirty, we should accept whatever identifier we were given, not demand one
+            // TODO why is this even necessary?
             this.element.identifier = "editingFrame";
+
+            // At this point the editingFrame can now "load" a reel from a package
+            this.dispatchEventNamed("canLoadReel", true, true);
         }
     },
 
@@ -190,16 +146,20 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var iFrameWindow = this._element.contentWindow;
 
+            //TODO verify event.origin
+
             if (evt._event.source === iFrameWindow && evt.data === "ready") {
                 window.removeEventListener("message", this);
                 iFrameWindow.defaultEventManager.delegate = this;
 
                 this._replaceDraw(iFrameWindow);
 
-                this.componentController = ComponentController.create();
-                this.componentController.frame = this;
-                this.componentController.owner = iFrameWindow.ownerComponent;
-                this._deferredComponent.resolve(iFrameWindow.ownerComponent);
+                var packageUrl = iFrameWindow.stageData.packageUrl,
+                    reelUrl = packageUrl + iFrameWindow.stageData.moduleId,
+                    ownerComponent = iFrameWindow.stageData.ownerComponent;
+
+                this.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent);
+                this._deferredEditingDocument.resolve(this.editingDocument);
             }
 
         }
@@ -298,26 +258,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // EditingFrame Properties
 
-    componentController: {
+    // The deferred editing controller
+    _deferredEditingDocument: {
         value: null
     },
 
-    // The Url of the Component's Reel being edited
-    reelUrl: {
-        value: null
-    },
-
-    // The deferred component the editingFrame is waiting to fulfill
-    _deferredComponent: {
-        value: null
-    },
-
-    // The current component being edited
-    currentComponent: {
-        value: null
-    },
-
-    delegate: {
+    editingDocument: {
         value: null
     },
 

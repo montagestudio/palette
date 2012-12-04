@@ -115,7 +115,7 @@ function injectPackageInformation (packageLocation, moduleId) {
 
     //TODO formalize passing this information along
     window.stageData = {
-        packageLocation: packageLocation,
+        packageUrl: packageLocation,
         moduleId: moduleId
     };
 
