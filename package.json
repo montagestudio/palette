@@ -1,7 +1,7 @@
 {
     "name": "palette",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "dependencies": {
-        "montage": "0.12.x"
+        "montage": "0.10.0"
     }
 }
