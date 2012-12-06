@@ -8,6 +8,7 @@ var Montage = require("montage").Montage,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
     defaultEventManager;
 
+var PAGE_LOAD_TIMEOUT = 10000;
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     init: {
@@ -139,7 +140,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             };
 
             if (!timeoutLength) {
-                timeoutLength = 2000;
+                timeoutLength = PAGE_LOAD_TIMEOUT;
             }
             var pageLoadTimeout = setTimeout(pageLoadTimedOut, timeoutLength);
 
@@ -149,7 +150,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 // this is little bit ugly and I'd like to find a better solution
                 theTestPage.window.montageWillLoad = function() {
                     var firstDraw = true;
-                    this.window.montageRequire.async("ui/component", function (COMPONENT) {
+                    this.window.montageRequire.async("ui/component")
+                    .then(function (COMPONENT) {
                         var root = COMPONENT.__root__;
                         // override the default drawIfNeeded behaviour
                         var originalDrawIfNeeded = root.drawIfNeeded;
@@ -210,11 +212,14 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                         };
 
                         defaultEventManager = null;
-                        this.window.montageRequire.async("core/event/event-manager", function (exports) {
+
+                        return this.window.montageRequire.async("core/event/event-manager")
+                        .then(function (exports) {
                             defaultEventManager = exports.defaultEventManager;
                         });
 
-                    });
+                    })
+                    .done();
 
 
                 };

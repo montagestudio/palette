@@ -33,21 +33,18 @@ var Promise = require("montage/core/promise").Promise;
 
 var spec = queryString("spec");
 if (spec) {
-    require.async(decodeURIComponent(spec)).then(function() {
+    require.async(decodeURIComponent(spec))
+    .then(function() {
         jasmine.getEnv().execute();
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 } else {
     var modules = [
         // Please keep in alphabetical order
-        "test/core/exporter-spec",
-
-        "test/ui/frame-add-component-spec",
-        "test/ui/frame-add-object-spec",
-        "test/ui/frame-spec"
-
+               "test/ui/editing-frame-spec"
     ];
     Promise.all(modules.map(require.deepLoad))
     .then(function () {
@@ -56,6 +53,7 @@ if (spec) {
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 }
 

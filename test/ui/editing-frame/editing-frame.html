@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="../../../node_modules/montage/montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "prototype": "ui/editing-frame/test",
+                "properties": {
+                    "editingFrame": {"@": "editingFrame"}
+                }
+            },
+
+            "editingFrame": {
+                "prototype": "palette/ui/editing-frame.reel",
+                "properties": {
+                    "element": {"#": "editingFrame"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div id="editingFrame"></div>
+</body>
+</html>

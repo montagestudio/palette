@@ -36,9 +36,11 @@ addMontageMetadataToProto = function(objectName, moduleId, proto) {
 
 var waitsThen = function(promise, resolved) {
     waitsFor(function() {
-        return promise._pending == null;
+        return promise.isResolved();
     }, "promise", 500);
-    resolved(promise.valueOf());
+    runs(function() {
+        resolved(promise.valueOf());
+    })
 };
 
 var expectationToDispatch = function(object, expectation, handleEvent) {
