@@ -6,6 +6,7 @@ var Montage = require("montage").Montage,
     URL = require("montage/core/url"),
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
+    Promise = require("montage/core/promise").Promise,
     defaultEventManager;
 
 var PAGE_LOAD_TIMEOUT = 10000;
@@ -166,6 +167,9 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                             var continueDraw = function() {
                                 originalDrawIfNeeded.call(root);
                                 theTestPage.drawHappened++;
+
+                                theTestPage.acknowledgeDraw();
+
                                 if(firstDraw) {
                                     theTestPage.loaded = true;
                                     // assign the application delegate to test so that the convenience methods work
@@ -260,6 +264,70 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 this.iframe.src = "";
             }
             return this;
+        }
+    },
+
+    acknowledgeDraw: {
+        value: function () {
+            if (this._deferredNextDraw && !this._deferredNextDraw.promise.isResolved()) {
+                console.log("acknowledgeDraw");
+                this._deferredNextDraw.resolve();
+            }
+        }
+    },
+
+    acknowledgeComponentDraw: {
+        value: function (component) {
+            var deferredDraw = this._deferredComponentDraws[component.uuid];
+
+            if (deferredDraw && !deferredDraw.promise.isResolved()) {
+                console.log("acknowledgeComponentDraw");
+                deferredDraw.resolve();
+            }
+        }
+    },
+
+    _deferredNextDraw: {
+        value: null
+    },
+
+    nextDraw: {
+        value: function() {
+
+            if (!this._deferredNextDraw || this._deferredNextDraw.promise.isResolved()) {
+                this._deferredNextDraw = Promise.defer();
+            }
+
+            return this._deferredNextDraw.promise;
+        }
+    },
+
+    _deferredComponentDraws: {
+        value: {},
+        distinct: true
+    },
+
+    nextComponentDraw: {
+        value: function(component) {
+            var deferredDraw = this._deferredComponentDraws[component.uuid],
+                originalDraw,
+                theTestPage = this;
+
+            if (!deferredDraw || deferredDraw.promise.isResolved()) {
+
+                if (!deferredDraw) {
+
+                    originalDraw = component.draw;
+                    component.draw = function draw () {
+                        theTestPage.acknowledgeComponentDraw(this);
+                        return originalDraw.apply(this, arguments);
+                    };
+                }
+
+                this._deferredComponentDraws[component.uuid] = deferredDraw = Promise.defer();
+            }
+
+            return deferredDraw.promise;
         }
     },
 
