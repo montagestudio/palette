@@ -55,8 +55,31 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
      * of the frame
      */
 
+    _stageUrl: {
+        value: null
+    },
+
+    reset: {
+        value: function () {
+
+            if (this._deferredEditingDocument) {
+                this._deferredEditingDocument.reject();
+            }
+
+            this.selectedObjects = null;
+            this.editingDocument = null;
+
+            this._stageUrl = null;
+            this.needsDraw = true;
+        }
+    },
+
     load: {
         value: function (reelUrl, packageUrl) {
+
+            if (!reelUrl) {
+                throw "Missing required 'reelUrl' parameter";
+            }
 
             // If already loading reject current loading request and load the new one
             if (this._deferredEditingDocument) {
@@ -71,6 +94,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             if (packageUrl) {
                 this._stageUrl += "&package-location=" + encodeURIComponent(packageUrl);
             }
+
+            //Normalize slashes a bit, without affecting the protocol
+            this._stageUrl = this._stageUrl.replace(/([^:])\/\//g, "$1/");
 
             this.needsDraw = true;
 
@@ -112,6 +138,11 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             if (this._stageUrl && this._stageUrl !== this.element.src) {
                 this.element.addEventListener("load", this, false);
                 this.element.src = this._stageUrl;
+            } else if (!this._stageUrl && this.element.src) {
+//                var frameDoc = this.element.contentWindow.document;
+
+//                frameDoc.removeChild(frameDoc.documentElement);
+                this.element.removeAttribute("src");
             }
 
             this.element.width = this.width;

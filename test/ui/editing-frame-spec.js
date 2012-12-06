@@ -22,6 +22,46 @@ var testPage = TestPageLoader.queueTest("editing-frame", function () {
                 expect(editingFrame.element.src).toBeFalsy();
             });
 
+            describe("once loaded", function () {
+
+                var nextDraw;
+
+                beforeEach(function () {
+                    editingFrame.reset();
+                    nextDraw = testPage.nextComponentDraw(editingFrame);
+                });
+
+                it("should not load without a reelUrl specified", function () {
+                    return nextDraw.then(function () {
+                        expect(function () {
+                            editingFrame.load();
+                        }).toThrow();
+                    });
+                });
+
+                it("should load the specified reelUrl", function () {
+                    return nextDraw.then(function () {
+                        var componentUrl = require.location + "templates/component.reel";
+                        return editingFrame.load(componentUrl).then(function (editingDocument) {
+                            var stageUrl = require.location + "stage/index.html?reel-location=" + encodeURIComponent(componentUrl);
+                            expect(editingFrame.element.src).toBe(stageUrl);
+                        }).timeout(WAITSFOR_TIMEOUT);
+                    });
+                });
+
+                it("should fulfill an editing document for the loaded reel", function () {
+                    return nextDraw.then(function () {
+                        var componentUrl = require.location + "templates/component.reel";
+                        return editingFrame.load(componentUrl).then(function (editingDocument) {
+                            expect(editingDocument).toBeTruthy();
+                            expect(editingDocument.reelUrl).toBe(componentUrl);
+                        }).timeout(WAITSFOR_TIMEOUT);
+                    });
+                });
+
+
+            });
+
         });
 
     });
