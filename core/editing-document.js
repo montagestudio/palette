@@ -5,9 +5,9 @@ var Montage = require("montage").Montage,
 exports.EditingDocument = Montage.create(Montage, {
 
     title: {
-        dependencies: ["reelUrl", "packageUrl"],
+        dependencies: ["reelUrl"],
         get: function () {
-            return this.reelUrl.replace(this.packageUrl, "").replace(/[^\/]+\//, "");
+            return this.reelUrl.substring(this.reelUrl.lastIndexOf("/") + 1);
         }
     },
 
