@@ -1,6 +1,7 @@
 {
     "name": "palette-stage",
     "version": "0.1.0",
+    "private": true,
     "dependencies": {
         "montage": "0.12.x",
         "qs": "0.5.x",

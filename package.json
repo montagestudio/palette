@@ -1,7 +1,12 @@
 {
     "name": "palette",
     "version": "0.2.0",
+    "private": true,
     "dependencies": {
         "montage": "0.12.x"
+    },
+    "scripts": {
+        "install": "cd stage && npm install",
+        "update": "cd stage && npm update"
     }
 }
