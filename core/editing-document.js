@@ -1,6 +1,8 @@
 var Montage = require("montage").Montage,
     EditingController = require("core/controller/editing-controller").EditingController,
-    UndoManager = require("montage/core/undo-manager").UndoManager;
+    UndoManager = require("montage/core/undo-manager").UndoManager,
+    Template = require("montage/ui/template").Template,
+    Promise = require("montage/core/promise").Promise;
 
 exports.EditingDocument = Montage.create(Montage, {
 
@@ -15,8 +17,14 @@ exports.EditingDocument = Montage.create(Montage, {
         value: null
     },
 
-    editingController: {
+    _editingController: {
         value: null
+    },
+
+    editingController: {
+        get: function () {
+            return this._editingController;
+        }
     },
 
     _reelUrl: {
@@ -40,17 +48,18 @@ exports.EditingDocument = Montage.create(Montage, {
     },
 
     init: {
-        value: function (reelUrl, packageUrl, editingFrame, owner) {
+        value: function (reelUrl, packageUrl, editingFrame, owner, ownerSerialization) {
 
             this._reelUrl = reelUrl;
             this._packageUrl = packageUrl;
 
-            this.editingController = EditingController.create();
-            this.editingController.frame = editingFrame;
-            this.editingController.owner = owner;
+            var editController = this._editingController = EditingController.create();
+            editController.frame = editingFrame;
+            editController.owner = owner;
 
             this.undoManager = UndoManager.create();
 
+            this._editingModel = JSON.parse(ownerSerialization);
             return this;
         }
     },
@@ -64,9 +73,13 @@ exports.EditingDocument = Montage.create(Montage, {
 
     // Editing Document APIs
     addComponent: {
-        value: function() {
+        value: function () {
             this.editingController.addComponent.apply(this.editingController, arguments);
         }
+    },
+
+    _editingModel: {
+        value: null
     }
 
 });

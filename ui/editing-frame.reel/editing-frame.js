@@ -100,7 +100,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             this.needsDraw = true;
 
-            //TODO what do we actually want to promise to return? probably the componentController...
             return this._deferredEditingDocument.promise;
         }
     },
@@ -175,7 +174,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     handleMessage: {
         value: function (evt) {
 
-            var iFrameWindow = this._element.contentWindow;
+            var iFrameWindow = this._element.contentWindow,
+                packageUrl,
+                reelUrl,
+                ownerComponent,
+                editingDocument,
+                self;
 
             //TODO verify event.origin
 
@@ -185,12 +189,16 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 this._replaceDraw(iFrameWindow);
 
-                var packageUrl = iFrameWindow.stageData.packageUrl,
-                    reelUrl = packageUrl + iFrameWindow.stageData.moduleId,
-                    ownerComponent = iFrameWindow.stageData.ownerComponent;
+                packageUrl = iFrameWindow.stageData.packageUrl;
+                reelUrl = packageUrl + iFrameWindow.stageData.moduleId;
+                ownerComponent = iFrameWindow.stageData.ownerComponent;
+                self = this;
 
-                this.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent);
-                this._deferredEditingDocument.resolve(this.editingDocument);
+                ownerComponent._loadTemplate(function (template) {
+                    editingDocument = self.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent, template._ownerSerialization);
+                    self._deferredEditingDocument.resolve(editingDocument);
+                });
+
             }
 
         }
