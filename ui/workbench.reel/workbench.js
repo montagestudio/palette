@@ -25,7 +25,27 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
     // Returns a promised editingDocument
     load: {
         value: function (reelUrl, packageUrl) {
-            return this.editingFrame.load(reelUrl, packageUrl);
+            var self = this,
+                proxyConverter;
+
+            return this.editingFrame.load(reelUrl, packageUrl).then(function (editingDocument) {
+
+                self.dispatchPropertyChange("editingDocument", function () {
+                    self._editingDocument = editingDocument;
+                });
+
+                return editingDocument;
+            });
+        }
+    },
+
+    _editingDocument: {
+        value: null
+    },
+
+    editingDocument: {
+        get: function () {
+            return this._editingDocument;
         }
     },
 

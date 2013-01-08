@@ -15,9 +15,23 @@ var Montage = require("montage").Montage,
 */
 exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/inspector.reel".Inspector# */ {
 
+    editingDocument: {
+        value: null
+    },
+
     didCreate: {
         value: function () {
             this.propertyGroupsController = ArrayController.create();
+        }
+    },
+
+    _hasAcceptedIdentifier: {
+        value: false
+    },
+
+    prepareForDraw: {
+        value: function () {
+            this.templateObjects.title.addPropertyChangeListener("value", this);
         }
     },
 
@@ -32,15 +46,26 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             if (value === this._object) {
                 return;
             }
-            this._objectDescriptionDeferred.reject("object changed before description was resolved");
+
+            if (this._objectDescriptionDeferred && !this._objectDescriptionDeferred.promise.isFulfilled()) {
+                this._objectDescriptionDeferred.reject("object changed before description was resolved");
+            }
 
             this._object = value;
+            this._hasAcceptedIdentifier = false;
+
+            this.needsDraw = true;
 
             if (this._object) {
-                var self = this;
+
+                this.templateObjects.title.value = this._object.properties.identifier;
+
+                var self = this,
+                    stageObject = this._object.stageObject;
 
                 this._objectDescriptionDeferred = Promise.defer();
-                this._object.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
+                // Fetch the description, but ignore whether we find it or not
+                stageObject.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
 
                 this._objectDescriptionDeferred.promise.then(function (description) {
                     self.objectDescription = description;
@@ -48,25 +73,34 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     // we could create a binding to the componentPropertyDescriptionGroups,
                     // but at the moment I'm not expecting the component description
                     // to change at runtime
-                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function(groupName, index) {
+                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function (groupName, index) {
                         return {
                             name: groupName,
                             properties: description.componentPropertyDescriptionGroupForName(groupName),
                             open: index === 0
                         };
                     });
-                }, function() {
+                }, function () {
                     self.propertyGroupsController.content = [];
                 });
             } else {
                 this.objectDescription = null;
+                this.templateObjects.title.value = null;
             }
         }
     },
 
     handleChange: {
-        value: function(change) {
-            var self = this;
+        value: function (notification) {
+
+            if ("value" === notification.propertyPath && notification.target === this.templateObjects.title) {
+
+                if (!this._hasAcceptedIdentifier) {
+                    this._hasAcceptedIdentifier = true;
+                } else {
+                    this.editingDocument.setOwnedObjectProperty(this.object, "identifier", notification.plus);
+                }
+            }
 
         }
     },
@@ -108,11 +142,19 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             var self = this;
             this.inspectorController.editorComponent().then(function (Editor) {
                 var editor = Editor.create();
-                editor.object = self.object;
+                //TODO the editors should work with the editing proxies exactly the same as the rest of filament
+                editor.object = self._object.stageObject;
                 self.dispatchEventNamed("enterEditor", true, true, {
                     component: editor
                 });
             });
+        }
+    },
+
+    handlePropertyInspectorChange: {
+        value: function (evt) {
+            var detail = evt.detail;
+            this.editingDocument.setOwnedObjectProperty(this.object, detail.propertyName, detail.value);
         }
     }
 

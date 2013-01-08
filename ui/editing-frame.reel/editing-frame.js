@@ -195,7 +195,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 self = this;
 
                 ownerComponent._loadTemplate(function (template) {
-                    editingDocument = self.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent, template._ownerSerialization);
+                    editingDocument = self.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent, template);
                     self._deferredEditingDocument.resolve(editingDocument);
                 });
 
@@ -281,6 +281,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 object = object.parentComponent;
             }
             // end HACK
+
+            // the object at this point is an object from the live stage
+            // we need to find its mate in the underlying editing model
+            object = this.editingDocument.editingProxyForObject(object);
+            console.log("editingFrame selected:", object)
+
 
             var index;
             if ((index = this.selectedObjects.indexOf(object)) !== -1) {
