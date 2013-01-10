@@ -210,6 +210,11 @@ exports.EditingDocument = Montage.create(Montage, {
             undoManager.add("Set " + property + " on " + proxy.label,
                 this.setOwnedObjectProperty, this, proxy, property, undoneValue);
 
+            //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
+            // throughout the editingEnfironment, I don't want to expose accessible editing APIs
+            // that do not go through the editingDocument...or do I?
+
+            // Might be nice to have an editing API that avoid undoability and event dispatching?
             proxy.setObjectProperty(property, value);
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
@@ -219,6 +224,17 @@ exports.EditingDocument = Montage.create(Montage, {
                 undone: undoManager.isUndoing,
                 redone: undoManager.isRedoing
             });
+        }
+    },
+
+    defineBinding: {
+        value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
+
+            //TODO add undoablitiy
+            //TODO dispatch editingEvent, should we literally just dispatch a generic "edit" event?
+
+            //Similar concerns above, where does this API belong?
+            sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
         }
     },
 

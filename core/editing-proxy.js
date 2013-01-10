@@ -65,6 +65,43 @@ exports.EditingProxy = Montage.create(Montage, {
         value: function (property) {
             return this.getProperty("properties." + property);
         }
+    },
+
+    defineBinding: {
+        value: function (sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
+
+            //TODO handle converter
+
+            if (!this.serialization.bindings) {
+                this.serialization.bindings = {};
+            }
+
+            var bindingSerialization = {},
+                bindingDescriptor;
+
+            //TODO what happenes when the labels change, we should either update or indicate they're broken...
+            bindingSerialization[(oneWay ? "<-" : "<->")] = "@" + boundObject.label + "." + boundObjectPropertyPath;
+            this.serialization.bindings[sourceObjectPropertyPath] = bindingSerialization;
+
+            bindingDescriptor = {
+                boundObject: boundObject.stageObject,
+                boundObjectPropertyPath: boundObjectPropertyPath
+            };
+
+            if (oneWay) {
+                bindingDescriptor.oneWay = oneWay;
+            }
+
+            if (converter) {
+                bindingDescriptor.converter = converter;
+            }
+
+            //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
+            if (this.stageObject._bindingDescriptors) {
+                Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+            }
+            Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
+        }
     }
 
 });
