@@ -120,7 +120,7 @@ exports.EditingDocument = Montage.create(Montage, {
     addComponent: {
         value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
 
-            var proxyMap = this._editingProxyMap,
+            var self = this,
                 objectName,
                 proxy;
 
@@ -142,7 +142,12 @@ exports.EditingDocument = Montage.create(Montage, {
             return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
                 proxy.stageObject = result.component;
-                proxyMap[labelInOwner] = proxy;
+                self._editingProxyMap[labelInOwner] = proxy;
+
+                self.dispatchEventNamed("didAddComponent", true, true, {
+                    component: proxy
+                });
+
                 return proxy;
             });
         }
@@ -151,10 +156,15 @@ exports.EditingDocument = Montage.create(Montage, {
     setOwnedObjectProperty: {
         //TODO accept the object itself as well (we should accept either objects or their proxies)
         value: function (proxy, property, value) {
-            //TODO emit editing events
             //TODO add to undo manager
 
             proxy.setObjectProperty(property, value);
+
+            this.dispatchEventNamed("didSetObjectProperty", true, true, {
+                object: proxy,
+                property: property,
+                value: value
+            });
         }
     },
 
