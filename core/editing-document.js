@@ -204,7 +204,7 @@ exports.EditingDocument = Montage.create(Montage, {
 
     editingProxyMap: {
         get: function () {
-            return this._editingProxies;
+            return this._editingProxyMap;
         }
     },
 
