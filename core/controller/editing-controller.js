@@ -127,6 +127,21 @@ exports.EditingController = Montage.create(Montage, {
         }
     },
 
+    removeComponent: {
+        value: function (component, originalElement) {
+
+            var element = component.element;
+
+            //TODO if we had an original element, put it back
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+
+            //TODO well I'm sure there's more to this...
+            return Promise.resolve(element);
+        }
+    },
+
     setComponentProperty: {
         value: function (component, property, value) {
             //ensure component is child of controlledComponent

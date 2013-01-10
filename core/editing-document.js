@@ -144,11 +144,33 @@ exports.EditingDocument = Montage.create(Montage, {
                 proxy.stageObject = result.component;
                 self._editingProxyMap[labelInOwner] = proxy;
 
+                //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
+                self.undoManager.add("Remove " + labelInOwner, self.removeComponent, self, proxy, null);
+
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: proxy
                 });
 
                 return proxy;
+            });
+        }
+    },
+
+    removeComponent: {
+        value: function (proxy, originalElement) {
+
+            var self = this;
+
+            return this.editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
+
+                //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
+                // its added to the undo stack, not the redo stack…
+                self.undoManager.add("Add " + proxy.label, self.addComponent, self,
+                    proxy.label, proxy.serialization, element.outerHTML,
+                    element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier"));
+
+                //TODO does this trigger a change in the editingProxies computed collection? I assume not
+                delete self.editingProxyMap[proxy.label];
             });
         }
     },
