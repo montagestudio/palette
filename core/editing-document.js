@@ -109,20 +109,22 @@ exports.EditingDocument = Montage.create(Montage, {
 
             this.undoManager = UndoManager.create();
 
-            this._createProxiesFromSerialization(JSON.parse(ownerTemplate._ownerSerialization));
+            this._createProxiesFromSerialization(JSON.parse(ownerTemplate._ownerSerialization), owner);
 
             return this;
         }
     },
 
     _createProxiesFromSerialization: {
-        value: function (serialization) {
+        value: function (serialization, owner) {
 
             var labels = Object.keys(serialization),
-                proxyMap = this._editingProxyMap = Object.create(null);
+                proxyMap = this._editingProxyMap = Object.create(null),
+                stageObject;
 
             labels.forEach(function (label) {
-                proxyMap[label] = EditingProxy.create().initWithLabelAndSerialization(label, serialization[label]);
+                stageObject = owner.templateObjects[label];
+                proxyMap[label] = EditingProxy.create().initWithLabelAndSerializationAndStageObject(label, serialization[label], stageObject);
             });
         }
     },
@@ -163,8 +165,7 @@ exports.EditingDocument = Montage.create(Montage, {
             }
 
             return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
-                proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
-                proxy.stageObject = result.component;
+                proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.component);
                 self._editingProxyMap[labelInOwner] = proxy;
 
                 //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
@@ -251,10 +252,6 @@ exports.EditingDocument = Montage.create(Montage, {
             if (!proxy) {
                 throw new Error("No editing proxy found for object with label '" + label + "'");
             }
-
-            //TODO we should do this when the objects on the stage are deserialized in the first place
-            // so we have the proxies populated ahead of time
-            proxy.stageObject = object;
 
             return proxy;
         }

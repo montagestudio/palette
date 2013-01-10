@@ -2,10 +2,11 @@ var Montage = require("montage").Montage;
 
 exports.EditingProxy = Montage.create(Montage, {
 
-    initWithLabelAndSerialization: {
-        value: function (label, serialization) {
+    initWithLabelAndSerializationAndStageObject: {
+        value: function (label, serialization, stageObject) {
             this.label = label;
             this._serialization = serialization;
+            this._stageObject = stageObject;
             return this;
         }
     },
@@ -24,6 +25,16 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
+    _stageObject: {
+        value: null
+    },
+
+    stageObject: {
+        get: function () {
+            return this._stageObject;
+        }
+    },
+
     prototype: {
         get: function () {
             return this.serialization.prototype;
@@ -34,10 +45,6 @@ exports.EditingProxy = Montage.create(Montage, {
         get: function () {
             return this.serialization.properties;
         }
-    },
-
-    stageObject: {
-        value: null
     },
 
     setObjectProperty: {
