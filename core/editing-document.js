@@ -158,12 +158,20 @@ exports.EditingDocument = Montage.create(Montage, {
         value: function (proxy, property, value) {
             //TODO add to undo manager
 
+            var undoManager = this.undoManager,
+                undoneValue = proxy.getObjectProperty(property);
+
+            undoManager.add("Set " + property + " on " + proxy.label,
+                this.setOwnedObjectProperty, this, proxy, property, undoneValue);
+
             proxy.setObjectProperty(property, value);
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
                 object: proxy,
                 property: property,
-                value: value
+                value: value,
+                undone: undoManager.isUndoing,
+                redone: undoManager.isRedoing
             });
         }
     },

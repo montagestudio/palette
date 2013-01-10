@@ -43,12 +43,20 @@ exports.EditingProxy = Montage.create(Montage, {
     setObjectProperty: {
         value: function (property, value) {
 
+            //TODO remove properties if last property is set to undefined? for "correct" undoing especially
+
             if (!this.serialization.properties) {
                 this.serialization.properties = {};
             }
 
             this.serialization.properties.setProperty(property, value);
             this.stageObject.setProperty(property, value);
+        }
+    },
+
+    getObjectProperty: {
+        value: function (property) {
+            return this.getProperty("properties." + property);
         }
     }
 
