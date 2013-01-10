@@ -16,13 +16,37 @@ exports.EditingDocument = Montage.create(Montage, {
         }
     },
 
-    _objectId: {value: 1},
+    _generateLabel: {
+        value: function (serialization) {
+            var name = this._objectNameFromModuleId(serialization.prototype),
+                label = name.substring(0, 1).toLowerCase() + name.substring(1),
+                labelRegex = new RegExp("^" + label + "(\\d+)$", "i"),
+                match,
+                lastUsedIndex;
 
-    _generateObjectId: {
-        value: function (name) {
+            lastUsedIndex = Object.keys(this.editingProxyMap).map(function (existingLabel) {
+                match = existingLabel.match(labelRegex);
+                return match && match[1] ? match[1] : null;
+            }).reduce(function (lastFoundIndex, index) {
+                if (null == index) {
+                    return lastFoundIndex;
+                } else {
+                    index = parseInt(index, 10);
 
-            //TODO increment from latest id in serialization of the owner component per base name
-            return name + this._objectId++;
+                    if (null == lastFoundIndex) {
+                        return index;
+                        //TODO should we fill in gaps? or find the highest used index?
+                    } else if (index > lastFoundIndex) {
+                        return index;
+                    } else {
+                        return lastFoundIndex;
+                    }
+                }
+            });
+
+            lastUsedIndex = lastUsedIndex || 0;
+
+            return label + (lastUsedIndex + 1);
         }
     },
 
@@ -125,8 +149,7 @@ exports.EditingDocument = Montage.create(Montage, {
                 proxy;
 
             if (!labelInOwner) {
-                objectName = this._objectNameFromModuleId(serialization.prototype);
-                labelInOwner = this._generateObjectId(objectName);
+                labelInOwner = this._generateLabel(serialization);
             }
 
             //Only set these if they were not explicitly falsy; assume that if they
