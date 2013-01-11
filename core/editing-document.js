@@ -169,7 +169,7 @@ exports.EditingDocument = Montage.create(Montage, {
                 self._editingProxyMap[labelInOwner] = proxy;
 
                 //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                self.undoManager.add("Remove " + labelInOwner, self.removeComponent, self, proxy, null);
+                self.undoManager.add("Add " + labelInOwner, self.removeComponent, self, proxy, null);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: proxy
@@ -189,7 +189,7 @@ exports.EditingDocument = Montage.create(Montage, {
 
                 //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
                 // its added to the undo stack, not the redo stack…
-                self.undoManager.add("Add " + proxy.label, self.addComponent, self,
+                self.undoManager.add("Remove " + proxy.label, self.addComponent, self,
                     proxy.label, proxy.serialization, element.outerHTML,
                     element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier"));
 
