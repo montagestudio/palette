@@ -149,21 +149,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
-    _replaceDraw: {
-        value: function(iFrameWindow) {
-            var self = this;
-            // inspired by frameLoad in Montage testpageloader
-            iFrameWindow.montageRequire.async("ui/component")
-            .get("__root__").then(function(root) {
-                var originalDrawIfNeeded = root.drawIfNeeded;
-                root.drawIfNeeded = function() {
-                    originalDrawIfNeeded.call(root);
-                    self.dispatchEventNamed("update", true, false);
-                };
-            });
-        }
-    },
-
     handleEditingFrameLoad: {
         value: function () {
             this.element.removeEventListener("load", this, false);
@@ -188,6 +173,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 iFrameWindow.defaultEventManager.delegate = this;
 
                 this._replaceDraw(iFrameWindow);
+                this._addDragAndDropEvents(iFrameWindow);
 
                 packageUrl = iFrameWindow.stageData.packageUrl;
                 reelUrl = packageUrl + iFrameWindow.stageData.moduleId;
@@ -201,6 +187,31 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             }
 
+        }
+    },
+
+    _replaceDraw: {
+        value: function(iFrameWindow) {
+            var self = this;
+            // inspired by frameLoad in Montage testpageloader
+            iFrameWindow.montageRequire.async("ui/component")
+            .get("__root__").then(function(root) {
+                var originalDrawIfNeeded = root.drawIfNeeded;
+                root.drawIfNeeded = function() {
+                    originalDrawIfNeeded.call(root);
+                    self.dispatchEventNamed("update", true, false);
+                };
+            });
+        }
+    },
+
+    _addDragAndDropEvents: {
+        value: function(iFrameWindow) {
+            var body = iFrameWindow.document.body;
+            body.addEventListener("dragenter", this, false);
+            body.addEventListener("dragleave", this, false);
+            body.addEventListener("dragover", this, false);
+            body.addEventListener("drop", this, false);
         }
     },
 
@@ -222,7 +233,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
 
             evt.stop();
-            console.log("stopped", evt.type);
 
             if (evt.type === "mousedown" && 0 === evt.button) {
 

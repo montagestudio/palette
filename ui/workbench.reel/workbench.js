@@ -74,6 +74,20 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
+    didObserveEvent: {
+        value: function(frame, event) {
+            switch (event.type) {
+                // Propogate drag and drop events up
+                case "dragenter":
+                case "dragleave":
+                case "dragover":
+                case "drop":
+                    event.propagationStopped = false;
+                    this.dispatchEvent(event);
+            }
+        }
+    },
+
     prepareForActivationEvents: {
         value: function() {
             this.element.addEventListener("mousedown", this, false);
