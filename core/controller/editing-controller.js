@@ -15,8 +15,7 @@ exports.EditingController = Montage.create(Montage, {
 
     template: {
         get: function () {
-
-            var iframeWindow = this.frame._element.contentWindow,
+            var iframeWindow = this.frame.window,
                 exporter,
                 template;
 
