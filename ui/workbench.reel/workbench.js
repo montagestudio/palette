@@ -86,25 +86,6 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
                     this.dispatchEvent(event);
             }
         }
-    },
-
-    prepareForActivationEvents: {
-        value: function() {
-            this.element.addEventListener("mousedown", this, false);
-        }
-    },
-
-    // TODO why is the workbench so involved in selections?
-    handleMousedown: {
-        value: function(evt) {
-            if (evt.target === this.element) {
-                this.selectedObjects = null;
-            }
-        }
-    },
-
-    selectedObjects: {
-        value: null
     }
 
 });

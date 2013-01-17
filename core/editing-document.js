@@ -280,6 +280,10 @@ exports.EditingDocument = Montage.create(Montage, {
 
             return proxy;
         }
+    },
+
+    selectedObjects: {
+        value: null
     }
 
 });

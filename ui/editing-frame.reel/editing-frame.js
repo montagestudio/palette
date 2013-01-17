@@ -376,6 +376,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
+    //TODO only store selection on editingDocument
     selectedObjects: {
         value: null
     }

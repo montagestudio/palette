@@ -11,7 +11,7 @@
                 "editingFrame": {"@": "editingFrame"}
             },
             "bindings": {
-                "selectedObjects": {"<->": "@editingFrame.selectedObjects"}
+                "editingDocument.selectedObjects": {"<->": "@editingFrame.selectedObjects"}
             }
         },
 
@@ -29,7 +29,7 @@
                 "contentComponent": {"@": "editingFrame"}
             },
             "bindings": {
-                "selectedObjects": {"<-": "@owner.selectedObjects"}
+                "selectedObjects": {"<-": "@owner.editingDocument.selectedObjects"}
             }
         }
     }
