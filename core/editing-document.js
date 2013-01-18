@@ -119,7 +119,7 @@ exports.EditingDocument = Montage.create(Montage, {
         value: function (serialization, owner) {
 
             var labels = Object.keys(serialization),
-                proxyMap = this._editingProxyMap = Object.create(null),
+                proxyMap = this._editingProxyMap = {},
                 stageObject;
 
             labels.forEach(function (label) {
@@ -175,7 +175,9 @@ exports.EditingDocument = Montage.create(Montage, {
 
             return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.component);
-                self._editingProxyMap[labelInOwner] = proxy;
+                self.dispatchPropertyChange("editingProxyMap", function () {
+                    self._editingProxyMap[labelInOwner] = proxy;
+                });
 
                 //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
                 self.undoManager.add("Add " + labelInOwner, self.removeComponent, self, proxy, null);
@@ -258,6 +260,7 @@ exports.EditingDocument = Montage.create(Montage, {
     },
 
     editingProxies: {
+        dependencies: ["editingProxyMap"],
         get: function () {
             //TODO cache this
             var proxyMap = this._editingProxyMap,
