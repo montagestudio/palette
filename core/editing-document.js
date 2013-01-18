@@ -101,6 +101,7 @@ exports.EditingDocument = Montage.create(Montage, {
             this._reelUrl = reelUrl;
             this._packageUrl = packageUrl;
             this._ownerTemplate = ownerTemplate;
+            this.selectedObjects = [];
 
             //TODO merge editingController and editingDocument, all of these are
             var editController = this._editingController = EditingController.create();
@@ -287,6 +288,35 @@ exports.EditingDocument = Montage.create(Montage, {
 
     selectedObjects: {
         value: null
+    },
+
+    // Selects nothing
+    clearSelectedObjects: {
+        value: function () {
+            //TODO use clear() instead?
+            this.selectedObjects = [];
+        }
+    },
+
+    // Remove object from current set of selectedObjects
+    deselectObject: {
+        value: function (object) {
+            this.selectedObjects.splice(0, this.selectedObjects.length, object);
+        }
+    },
+
+    // Add object to current set of selectedObjects
+    selectObject: {
+        value: function (object) {
+            var selectedObjects = this.selectedObjects;
+
+            if (selectedObjects.indexOf(object) === -1) {
+                //TODO what is the order ofthe selectedObjects?
+                selectedObjects.push(object);
+            }
+            //TODO otherwise, do we remove it here?
+
+        }
     }
 
 });

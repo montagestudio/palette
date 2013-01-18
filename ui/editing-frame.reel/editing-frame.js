@@ -236,24 +236,28 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             if (evt.type === "mousedown" && 0 === evt.button) {
 
-                var selectionCandidate = evt.target.controller,
+                var editingDocument = this.editingDocument,
+                    selectionCandidate = evt.target.controller,
                     isAddingToSelection = false,
                     isRemovingFromSelection = false;
 
+
                 if (selectionCandidate) {
+
+                    selectionCandidate = editingDocument.editingProxyForObject(selectionCandidate);
 
                     //TODO if selectionCandidate is currently selected, drill down to find new one
 
                     if (isAddingToSelection) {
-                        this.selectObject(selectionCandidate);
+                        editingDocument.selectObject(selectionCandidate);
                     } else if (isRemovingFromSelection) {
-                        this.deselectObject(selectionCandidate);
+                        editingDocument.deselectObject(selectionCandidate);
                     } else {
-                        this.clearSelectedObjects();
-                        this.selectObject(selectionCandidate);
+                        editingDocument.clearSelectedObjects();
+                        editingDocument.selectObject(selectionCandidate);
                     }
                 } else {
-                    this.clearSelectedObjects();
+                    editingDocument.clearSelectedObjects();
                 }
             }
 
@@ -263,53 +267,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
-    // Selects nothing
-    clearSelectedObjects: {
-        value: function () {
-            this.selectedObjects = null;
-        }
-    },
 
-    // Remove object from current set of selectedObjects
-    deselectObject: {
-        value: function (object) {
-            //TODO implement this
-        }
-    },
-
-    // Add object to current set of selectedObjects
-    selectObject: {
-        value: function (object) {
-
-            if (!this.selectedObjects) {
-                this.selectedObjects = [];
-            }
-
-            //HACK
-            // if it's a repetition skip it for now... this just to select the flow
-            if (object._montage_metadata.module === "ui/repetition.reel") {
-                object = object.parentComponent;
-            }
-            // end HACK
-
-            // the object at this point is an object from the live stage
-            // we need to find its mate in the underlying editing model
-            object = this.editingDocument.editingProxyForObject(object);
-            console.log("editingFrame selected:", object)
-
-
-            var index;
-            if ((index = this.selectedObjects.indexOf(object)) !== -1) {
-                // remove
-                this.selectedObjects.splice(index, 1);
-            } else {
-                // add
-                this.selectedObjects.setProperty("0", object);
-            }
-
-
-        }
-    },
 
     // EditingFrame Properties
 
@@ -374,10 +332,5 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             this._currentMode = value;
             this.needsDraw = true;
         }
-    },
-
-    //TODO only store selection on editingDocument
-    selectedObjects: {
-        value: null
     }
 });
