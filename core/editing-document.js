@@ -138,8 +138,8 @@ exports.EditingDocument = Montage.create(Montage, {
     //TODO this is still somewhat mid-refactoring, probably could be cleaned up
     template: {
         get: function () {
-            var template = this.editingController.template;
-            var components = {};
+            var template = this.editingController.template,
+                components = {};
 
             Object.keys(this._editingProxyMap).forEach(function (label) {
                 components[label] = this._editingProxyMap[label].serialization;
