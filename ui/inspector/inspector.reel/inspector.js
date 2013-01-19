@@ -29,6 +29,14 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: false
     },
 
+    templateDidLoad: {
+        value: function () {
+            if (this._object) {
+                this.templateObjects.title.value = this._object.properties.identifier;
+            }
+        }
+    },
+
     prepareForDraw: {
         value: function () {
             this.templateObjects.title.addPropertyChangeListener("value", this);
@@ -58,7 +66,9 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
             if (this._object) {
 
-                this.templateObjects.title.value = this._object.properties.identifier;
+                if (this.templateObjects) {
+                    this.templateObjects.title.value = this._object.properties.identifier;
+                }
 
                 var self = this,
                     stageObject = this._object.stageObject;
@@ -85,7 +95,10 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 });
             } else {
                 this.objectDescription = null;
-                this.templateObjects.title.value = null;
+
+                if (this.templateObjects) {
+                    this.templateObjects.title.value = null;
+                }
             }
         }
     },
