@@ -146,7 +146,7 @@ exports.EditingDocument = Montage.create(Montage, {
                 components[label] = this._editingProxyMap[label].serialization;
             }, this);
 
-            template._ownerSerialization = JSON.stringify(components);
+            template._ownerSerialization = JSON.stringify(components, null, 4);
 
             return template;
         }
