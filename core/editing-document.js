@@ -242,11 +242,51 @@ exports.EditingDocument = Montage.create(Montage, {
     defineBinding: {
         value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
 
-            //TODO add undoablitiy
             //TODO dispatch editingEvent, should we literally just dispatch a generic "edit" event?
+
+            this.undoManager.add("Define Binding", this.deleteBinding, this, sourceObject, sourceObjectPropertyPath);
 
             //Similar concerns above, where does this API belong?
             sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+        }
+    },
+
+    deleteBinding: {
+        value: function (sourceObject, sourceObjectPropertyPath) {
+            var binding = sourceObject.bindings ? sourceObject.bindings[sourceObjectPropertyPath] : null,
+                bindingString,
+                converterEntry,
+                boundObjectLabel,
+                boundObject,
+                boundObjectPropertyPath,
+                oneWay,
+                converter;
+
+            if (!binding) {
+                throw new Error("Cannot remove binding that does not exist");
+            }
+
+            //TODO what if we can't find an object with the label?
+            //TODO rely on a deserializer from the package to help us decode this string
+            oneWay = !!binding["<-"];
+            bindingString = oneWay ? binding["<-"] : binding["<->"];
+            bindingString.match(/^@([^\.]+)\.?(.*)$/);
+
+            boundObjectLabel = RegExp.$1;
+            boundObjectPropertyPath = RegExp.$2;
+
+            //TODO what if boundObjectLabel and boundObjectPropertyPath are malformed?
+
+            boundObject = this.editingProxyMap[boundObjectLabel];
+
+            converterEntry = binding.converter;
+            if (converterEntry) {
+                converter = this.editingProxyMap[converterEntry["@"]];
+            }
+
+            this.undoManager.add("Delete Binding", this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+
+            sourceObject.deleteBinding(sourceObjectPropertyPath);
         }
     },
 

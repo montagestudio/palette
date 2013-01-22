@@ -47,6 +47,18 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
+    bindings: {
+        get: function () {
+            return this.serialization.bindings || null;
+        }
+    },
+
+    listeners: {
+        get: function () {
+            return this.serialization.listeners || null;
+        }
+    },
+
     setObjectProperty: {
         value: function (property, value) {
 
@@ -80,6 +92,8 @@ exports.EditingProxy = Montage.create(Montage, {
                 bindingDescriptor;
 
             //TODO what happenes when the labels change, we should either update or indicate they're broken...
+            //TODO what happens if the serialization format changes, we shouldn't be doing this ourselves
+            // we should rely on the serializer of the package's version of montage
             bindingSerialization[(oneWay ? "<-" : "<->")] = "@" + boundObject.label + "." + boundObjectPropertyPath;
             this.serialization.bindings[sourceObjectPropertyPath] = bindingSerialization;
 
@@ -101,6 +115,16 @@ exports.EditingProxy = Montage.create(Montage, {
                 Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
             }
             Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
+        }
+    },
+
+    deleteBinding: {
+        value: function (sourceObjectPropertyPath) {
+            delete this.serialization.bindings[sourceObjectPropertyPath];
+
+            if (this.stageObject._bindingDescriptors) {
+                Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+            }
         }
     }
 
