@@ -248,6 +248,16 @@ exports.EditingDocument = Montage.create(Montage, {
 
             //Similar concerns above, where does this API belong?
             sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+
+            this.dispatchEventNamed("didDefineBinding", true, true, {
+                sourceObject: sourceObject,
+                sourceObjectPropertyPath: sourceObjectPropertyPath,
+                boundObject: boundObject,
+                boundObjectPropertyPath: boundObjectPropertyPath,
+                oneWay: oneWay,
+                converter: converter
+            });
+
         }
     },
 
@@ -287,6 +297,13 @@ exports.EditingDocument = Montage.create(Montage, {
             this.undoManager.add("Delete Binding", this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
 
             sourceObject.deleteBinding(sourceObjectPropertyPath);
+
+            this.dispatchEventNamed("didDeleteBinding", true, true, {
+                sourceObject: sourceObject,
+                sourceObjectPropertyPath: sourceObjectPropertyPath,
+                boundObject: boundObject,
+                boundObjectPropertyPath: boundObjectPropertyPath
+            });
         }
     },
 
