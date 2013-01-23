@@ -11,8 +11,6 @@ Deserializer._findObjectNameRegExp.test(moduleId);
 var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
     ownerComponent;
 
-console.debug("Require:", "package:", JSON.stringify(packageUrl), "moduleId:", JSON.stringify(moduleId), "objectName", objectName);
-
 if (packageUrl && moduleId) {
     // Load the specified package
     require.loadPackage(packageUrl)
@@ -20,9 +18,6 @@ if (packageUrl && moduleId) {
             return packageRequire.async(moduleId);
         })
         .then(function (exports) {
-            console.debug("Exports:", exports);
-            console.debug("Packages:", require.packages);
-
             ownerComponent = exports[objectName].create();
 
             // Now with an instance of what will be our owner component,
