@@ -67,7 +67,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             if (this._object) {
 
                 if (this.templateObjects) {
-                    this.templateObjects.title.value = this._object.properties.identifier;
+                    this.templateObjects.title.value = this._object.getProperty("properties.identifier");
                 }
 
                 var self = this,
@@ -75,7 +75,11 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
                 this._objectDescriptionDeferred = Promise.defer();
                 // Fetch the description, but ignore whether we find it or not
-                stageObject.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
+                if (stageObject.description) {
+                    stageObject.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
+                } else {
+                    this._objectDescriptionDeferred.reject(null);
+                }
 
                 this._objectDescriptionDeferred.promise.then(function (description) {
                     self.objectDescription = description;

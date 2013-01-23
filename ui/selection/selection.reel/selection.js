@@ -187,7 +187,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
 
     willDraw: {
         value: function() {
-            if (!this.object) {
+            if (!(this.object && this.object.element)) {
                 return;
             }
 
