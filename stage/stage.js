@@ -122,14 +122,6 @@ function injectPackageInformation (packageLocation, moduleId) {
     //TODO not hardcode this all
     window.postMessage({
         type: "montageInit",
-        location: "",
-        packageDescription: {
-            "dependencies": {
-                "montage": "*"
-            },
-            mappings: {
-                client: packageLocation
-            }
-        }
+        location: packageLocation + "/package.json"
     }, "*");
 }

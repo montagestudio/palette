@@ -87,9 +87,15 @@ if (typeof window !== "undefined") {
             var config = platform.getConfig();
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
+            var indexLocation = URL.resolve(config.location, params["package"] || ".");
 
             // setup the reel loader
             config.makeLoader = function (config) {
+                config.mappings.__stage = {
+                    location: indexLocation,
+                    name: "stage",
+                    version: "*"
+                };
                 return exports.ReelLoader(
                     config,
                     Require.makeLoader(config)
@@ -107,7 +113,6 @@ if (typeof window !== "undefined") {
                 );
             };
 
-            var location = URL.resolve(config.location, params["package"] || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -178,16 +183,7 @@ if (typeof window !== "undefined") {
                         window.addEventListener("message", function (event) {
 
                             if (event.source === remoteInjector && event.data.type === "montageInit") {
-                                if (event.data.location) {
-                                    location = event.data.location;
-                                }
-                                if (event.data.packageDescription) {
-                                    montageRequire.injectPackageDescription(
-                                        location,
-                                        event.data.packageDescription
-                                    );
-                                }
-                                trigger.resolve();
+                                trigger.resolve(event.data.location);
                             }
                         });
 
@@ -206,8 +202,7 @@ if (typeof window !== "undefined") {
                         });
                     }
 
-                    return trigger.promise.then(function () {
-
+                    return trigger.promise.then(function (location) {
                         // handle explicit package.json location
                         if (location.slice(location.length - 5) === ".json") {
                             var packageDescriptionLocation = location;
@@ -221,12 +216,11 @@ if (typeof window !== "undefined") {
                         return montageRequire.loadPackage({
                             location: location,
                             hash: applicationHash
-                        })
-                            .then(function (applicationRequire) {
-                                global.require = applicationRequire;
-                                global.montageRequire = montageRequire;
-                                platform.initMontage(montageRequire, applicationRequire, params);
-                            })
+                        }).then(function (applicationRequire) {
+                            global.require = applicationRequire;
+                            global.montageRequire = montageRequire;
+                            platform.initMontage(montageRequire, applicationRequire, params);
+                        }).done();
 
                     });
                 })
