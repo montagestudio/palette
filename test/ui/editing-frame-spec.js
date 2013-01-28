@@ -31,7 +31,7 @@ var testPage = TestPageLoader.queueTest("editing-frame", function () {
                     nextDraw = testPage.nextComponentDraw(editingFrame);
                 });
 
-                it("should not load without a reelUrl specified", function () {
+                it("should not load without a fileUrl specified", function () {
                     return nextDraw.then(function () {
                         expect(function () {
                             editingFrame.load();
@@ -39,7 +39,7 @@ var testPage = TestPageLoader.queueTest("editing-frame", function () {
                     });
                 });
 
-                it("should load the specified reelUrl", function () {
+                it("should load the specified fileUrl", function () {
                     return nextDraw.then(function () {
                         var componentUrl = require.location + "templates/component.reel";
                         return editingFrame.load(componentUrl).then(function (editingDocument) {
@@ -54,7 +54,7 @@ var testPage = TestPageLoader.queueTest("editing-frame", function () {
                         var componentUrl = require.location + "templates/component.reel";
                         return editingFrame.load(componentUrl).then(function (editingDocument) {
                             expect(editingDocument).toBeTruthy();
-                            expect(editingDocument.reelUrl).toBe(componentUrl);
+                            expect(editingDocument.fileUrl).toBe(componentUrl);
                         }).timeout(WAITSFOR_TIMEOUT);
                     });
                 });

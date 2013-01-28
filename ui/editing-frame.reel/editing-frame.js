@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    EditingDocument = require("core/editing-document").EditingDocument;
+    ReelDocument = require("core/reel-document").ReelDocument;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
@@ -75,10 +75,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     },
 
     load: {
-        value: function (reelUrl, packageUrl) {
+        value: function (fileUrl, packageUrl) {
 
-            if (!reelUrl) {
-                throw "Missing required 'reelUrl' parameter";
+            if (!fileUrl) {
+                throw new Error("Missing required fileUrl");
             }
 
             // If already loading reject current loading request and load the new one
@@ -88,8 +88,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             this._deferredEditingDocument = Promise.defer();
 
-            var encodedReelUrl = encodeURIComponent(reelUrl);
-            this._stageUrl = require.location + "/stage/index.html?reel-location=" + encodedReelUrl;
+            var encodedFileUrl = encodeURIComponent(fileUrl);
+            this._stageUrl = require.location + "/stage/index.html?reel-location=" + encodedFileUrl;
 
             if (packageUrl) {
                 this._stageUrl += "&package-location=" + encodeURIComponent(packageUrl);
@@ -161,7 +161,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var iFrameWindow = this._element.contentWindow,
                 packageUrl,
-                reelUrl,
+                fileUrl,
                 ownerComponent,
                 editingDocument,
                 self;
@@ -176,12 +176,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this._addDragAndDropEvents(iFrameWindow);
 
                 packageUrl = iFrameWindow.stageData.packageUrl;
-                reelUrl = packageUrl + iFrameWindow.stageData.moduleId;
+                fileUrl = packageUrl + iFrameWindow.stageData.moduleId;
                 ownerComponent = iFrameWindow.stageData.ownerComponent;
                 self = this;
 
                 ownerComponent._loadTemplate(function (template) {
-                    editingDocument = self.editingDocument = EditingDocument.create().init(reelUrl, packageUrl, this, ownerComponent, template);
+                    editingDocument = self.editingDocument = ReelDocument.create().init(fileUrl, packageUrl, this, ownerComponent, template);
                     self._deferredEditingDocument.resolve(editingDocument);
                 });
 

@@ -24,11 +24,10 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
     // Load the specified reel onto the workbench, optionally specifying the packageUrl
     // Returns a promised editingDocument
     load: {
-        value: function (reelUrl, packageUrl) {
-            var self = this,
-                proxyConverter;
+        value: function (fileUrl, packageUrl) {
+            var self = this;
 
-            return this.editingFrame.load(reelUrl, packageUrl).then(function (editingDocument) {
+            return this.editingFrame.load(fileUrl, packageUrl).then(function (editingDocument) {
 
                 self.dispatchPropertyChange("editingDocument", function () {
                     self._editingDocument = editingDocument;
