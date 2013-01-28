@@ -152,12 +152,55 @@ exports.EditingDocument = Montage.create(Montage, {
         }
     },
 
+    addObject: {
+        value: function (labelInOwner, serialization) {
+            var self = this,
+                proxy;
+
+            if (!labelInOwner) {
+                labelInOwner = this._generateLabel(serialization);
+            }
+
+            return this.editingController.addObject(labelInOwner, serialization).then(function (result) {
+                proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.object);
+
+                self.dispatchPropertyChange("editingProxyMap", function () {
+                    self._editingProxyMap[labelInOwner] = proxy;
+                });
+
+                self.undoManager.add("Add " + labelInOwner, self.removeObject, self, proxy, null);
+
+                self.dispatchEventNamed("didAddObject", true, true, {
+                    object: proxy
+                });
+
+                return proxy;
+            });
+        }
+    },
+
+    removeObject: {
+        value: function (proxy) {
+
+            var self = this;
+
+            return this.editingController.removeObject(proxy.stageObject).then(function (element) {
+
+                //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
+                // its added to the undo stack, not the redo stack…
+                self.undoManager.add("Remove " + proxy.label, self.addObject, self,
+                    proxy.label, proxy.serialization);
+
+                //TODO does this trigger a change in the editingProxies computed collection? I assume not
+                delete self.editingProxyMap[proxy.label];
+            });
+        }
+    },
+
     // Editing Document APIs
     addComponent: {
         value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
-
             var self = this,
-                objectName,
                 proxy;
 
             if (!labelInOwner) {

@@ -55,23 +55,33 @@ exports.EditingController = Montage.create(Montage, {
         }
     },
 
+    //TODO clean up object vs component APIs
+
     addObject: {
-        value: function (objectModule, objectName, serialization) {
+        value: function (labelInOwner, serialization) {
 
-            var self = this;
-            return this.installObject(objectModule, objectName, function (objectModule, deferredId) {
+            if (!labelInOwner) {
+                throw new Error("Cannot add an object without a label for the owner's serialization");
+            }
 
-                var objectPrototype = objectModule[objectName],
-                    objectInstance = objectPrototype.create();
+            var deserializer = Deserializer.create(),
+                self = this,
+                serializationWithinOwner = {},
+                deferredComponent = Promise.defer(),
+                ownerDocument = this.owner.element.ownerDocument,
+                newObject;
 
-                objectInstance.identifier = self._generateObjectId(objectName);
+            serialization = Object.clone(serialization);
 
-                // TODO set as a property on the owner?
-                // how does this end up in the serialization if not exposed as property on owner?
-                // self.owner;
+            serializationWithinOwner[labelInOwner] = serialization;
 
-                self._didAddObject(deferredId, objectInstance);
+            deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
+            deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
+                newObject = objects[labelInOwner];
+                deferredComponent.resolve({label: labelInOwner, serialization: serialization, object: newObject});
             });
+
+            return deferredComponent.promise;
         }
     },
 
