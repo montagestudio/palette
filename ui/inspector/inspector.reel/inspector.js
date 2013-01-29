@@ -160,7 +160,8 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             this.inspectorController.editorComponent().then(function (Editor) {
                 var editor = Editor.create();
                 //TODO the editors should work with the editing proxies exactly the same as the rest of filament
-                editor.object = self._object.stageObject;
+                editor.object = self._object;
+                editor.editingDocument = self.editingDocument;
                 self.dispatchEventNamed("enterEditor", true, true, {
                     component: editor
                 });
