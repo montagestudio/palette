@@ -17,7 +17,7 @@
                 "element": {"#": "content"}
             },
             "bindings": {
-                "content": {"<-": "@owner.content"}
+                "content": {"<-": "@owner.originalContent"}
             }
         },
 
@@ -25,13 +25,16 @@
             "prototype": "montage/ui/native/button.reel",
             "properties": {
                 "element": {"#": "close"}
-            }
+            },
+            "listeners": [
+                {"type": "action", "listener": {"@": "owner"}}
+            ]
         }
     }
     </script>
 </head>
 <body>
-    <div data-montage-id="infobar" class="Infobar Infobar--open">
+    <div data-montage-id="infobar" class="Infobar">
         <div data-montage-id="content" class="Infobar-content"></div>
         <button data-montage-id="close" class="Infobar-close">×</button>
     </div>

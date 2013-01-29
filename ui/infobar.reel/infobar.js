@@ -13,8 +13,34 @@ var Montage = require("montage").Montage,
 */
 exports.Infobar = Montage.create(Component, /** @lends module:"ui/infobar.reel".Infobar# */ {
 
-    content: {
-        value: null
+    open: {
+        value: false
+    },
+
+    show: {
+        value: function() {
+            this.open = true;
+            this.needsDraw = true;
+        }
+    },
+
+    hide: {
+        value: function() {
+            this.open = false;
+            this.needsDraw = true;
+        }
+    },
+
+    handleCloseAction: {
+        value: function(event) {
+            this.hide();
+        }
+    },
+
+    draw: {
+        value: function() {
+            this.element.classList[this.open ? "add" : "remove"]("Infobar--open");
+        }
     }
 
 });
