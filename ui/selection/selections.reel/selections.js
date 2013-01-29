@@ -105,9 +105,19 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
+    captureWebkitTransitionEnd: {
+        value: function(event) {
+            this.drawAll();
+        }
+    },
+
     prepareForDraw: {
         value: function() {
+            // changing the size of the window causes selections to be shifted
             window.addEventListener("resize", this, true);
+            // CSS animations can change the size of elements, causing
+            // selections to be shifted
+            window.addEventListener("webkitTransitionEnd", this, true);
         }
     },
 
