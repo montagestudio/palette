@@ -37,6 +37,20 @@ exports.Infobar = Montage.create(Component, /** @lends module:"ui/infobar.reel".
         }
     },
 
+    handleWebkitTransitionEnd: {
+        value: function (event) {
+            if (!this.open) {
+                this.dispatchEventNamed("closed");
+            }
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            this._element.addEventListener("webkitTransitionEnd", this, false);
+        }
+    },
+
     draw: {
         value: function() {
             this.element.classList[this.open ? "add" : "remove"]("Infobar--open");
