@@ -1,0 +1,44 @@
+.Infobar {
+    position: relative;
+
+    width: 100%;
+    height: 5px;
+    background: rgb(253, 235, 163);
+    overflow: hidden;
+
+    -webkit-transition: height 200ms ease-in-out;
+}
+
+.Infobar--open, /* TODO remove hover selector after testing: */ .Infobar:hover {
+    height: 30px;
+ }
+
+.Infobar-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.Infobar-close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+
+    height: 20px;
+    width: 20px;
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    border-radius: 20px;
+
+    background: rgba(192, 192, 192, 0.8);
+    text-shadow: rgba(255, 255, 255, 0.8) 1px 1px 0;
+}
+
+.Infobar-close:hover {
+    background: rgba(200, 200, 200, 0.8);
+    cursor: pointer;
+}

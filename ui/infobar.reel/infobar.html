@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="infobar.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "infobar"}
+            }
+        },
+
+        "content": {
+            "prototype": "montage/ui/slot.reel",
+            "properties": {
+                "element": {"#": "content"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.content"}
+            }
+        },
+
+        "close": {
+            "prototype": "montage/ui/native/button.reel",
+            "properties": {
+                "element": {"#": "close"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="infobar" class="Infobar Infobar--open">
+        <div data-montage-id="content" class="Infobar-content"></div>
+        <button data-montage-id="close" class="Infobar-close">×</button>
+    </div>
+</body>
+</html>
