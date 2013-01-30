@@ -32,6 +32,18 @@ exports.EditingDocument = Montage.create(Montage, {
 
             return this;
         }
+    },
+
+    undo: {
+        value: function () {
+            this.undoManager.undo();
+        }
+    },
+
+    redo: {
+        value: function () {
+            this.undoManager.redo();
+        }
     }
 
 });

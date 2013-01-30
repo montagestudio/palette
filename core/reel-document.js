@@ -140,11 +140,14 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     addObject: {
         value: function (labelInOwner, serialization) {
             var self = this,
+                deferredUndo = Promise.defer(),
                 proxy;
 
             if (!labelInOwner) {
                 labelInOwner = this._generateLabel(serialization);
             }
+
+            self.undoManager.register("Add Object", deferredUndo.promise);
 
             return this.editingController.addObject(labelInOwner, serialization).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.object);
@@ -153,7 +156,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self._editingProxyMap[labelInOwner] = proxy;
                 });
 
-                self.undoManager.add("Add " + labelInOwner, self.removeObject, self, proxy, null);
+                deferredUndo.resolve([self.removeObject, self, proxy, null]);
 
                 self.dispatchEventNamed("didAddObject", true, true, {
                     object: proxy
@@ -167,17 +170,19 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     removeObject: {
         value: function (proxy) {
 
-            var self = this;
+            var self = this,
+                deferredUndo = Promise.defer();
+
+            this.undoManager.register("Remove Object", deferredUndo.promise);
 
             return this.editingController.removeObject(proxy.stageObject).then(function (element) {
 
-                //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
-                // its added to the undo stack, not the redo stack…
-                self.undoManager.add("Remove " + proxy.label, self.addObject, self,
-                    proxy.label, proxy.serialization);
+                deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
 
-                //TODO does this trigger a change in the editingProxies computed collection? I assume not
-                delete self.editingProxyMap[proxy.label];
+                self.dispatchPropertyChange("editingProxyMap", function () {
+                    delete self.editingProxyMap[proxy.label];
+                });
+
             });
         }
     },
@@ -186,6 +191,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     addComponent: {
         value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
             var self = this,
+                deferredUndo,
                 proxy;
 
             if (!labelInOwner) {
@@ -202,6 +208,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 identifier = labelInOwner; //TODO lower case the identifier?
             }
 
+            deferredUndo = Promise.defer();
+            self.undoManager.register("Add Component", deferredUndo.promise);
+
             return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.component);
                 self.dispatchPropertyChange("editingProxyMap", function () {
@@ -209,7 +218,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 });
 
                 //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                self.undoManager.add("Add " + labelInOwner, self.removeComponent, self, proxy, null);
+                deferredUndo.resolve([self.removeComponent, self, proxy, null]);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: proxy
@@ -223,18 +232,22 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     removeComponent: {
         value: function (proxy, originalElement) {
 
-            var self = this;
+            var self = this,
+                deferredUndo = Promise.defer();
+
+            this.undoManager.register("Remove Component", deferredUndo.promise);
 
             return this.editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
 
                 //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
                 // its added to the undo stack, not the redo stack…
-                self.undoManager.add("Remove " + proxy.label, self.addComponent, self,
+                deferredUndo.resolve([self.addComponent, self,
                     proxy.label, proxy.serialization, element.outerHTML,
-                    element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier"));
+                    element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier")]);
 
-                //TODO does this trigger a change in the editingProxies computed collection? I assume not
-                delete self.editingProxyMap[proxy.label];
+                self.dispatchPropertyChange("editingProxyMap", function () {
+                    delete self.editingProxyMap[proxy.label];
+                });
             });
         }
     },
@@ -247,8 +260,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var undoManager = this.undoManager,
                 undoneValue = proxy.getObjectProperty(property);
 
-            undoManager.add("Set " + property + " on " + proxy.label,
-                this.setOwnedObjectProperty, this, proxy, property, undoneValue);
+            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
 
             //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
             // throughout the editingEnfironment, I don't want to expose accessible editing APIs
@@ -270,9 +282,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     defineBinding: {
         value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
 
-            //TODO dispatch editingEvent, should we literally just dispatch a generic "edit" event?
-
-            this.undoManager.add("Define Binding", this.deleteBinding, this, sourceObject, sourceObjectPropertyPath);
+            this.undoManager.register("Define Binding", Promise.resolve([this.deleteBinding, this, sourceObject, sourceObjectPropertyPath]));
 
             //Similar concerns above, where does this API belong?
             sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
@@ -322,7 +332,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 converter = this.editingProxyMap[converterEntry["@"]];
             }
 
-            this.undoManager.add("Delete Binding", this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+            this.undoManager.register("Delete Binding", Promise.resolve([this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter]));
 
             sourceObject.deleteBinding(sourceObjectPropertyPath);
 
