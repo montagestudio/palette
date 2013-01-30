@@ -150,20 +150,21 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: null
     },
 
-    handleEditorButtonAction: {
+    handleModalEditorButtonAction: {
         value: function (evt) {
             if (!(this.inspectorController && this.inspectorController.hasEditor)) {
                 return;
             }
 
-            var self = this;
+            var self = this,
+                editor;
+
             this.inspectorController.editorComponent().then(function (Editor) {
-                var editor = Editor.create();
-                //TODO the editors should work with the editing proxies exactly the same as the rest of filament
+                editor = Editor.create();
                 editor.object = self._object;
                 editor.editingDocument = self.editingDocument;
-                self.dispatchEventNamed("enterEditor", true, true, {
-                    component: editor
+                self.dispatchEventNamed("enterModalEditor", true, true, {
+                    modalEditor: editor
                 });
             });
         }
