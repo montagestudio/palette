@@ -4,7 +4,8 @@ var Montage = require("montage").Montage,
     Template = require("montage/ui/template").Template,
     Promise = require("montage/core/promise").Promise,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    EditingProxy = require("core/editing-proxy").EditingProxy;
+    EditingProxy = require("core/editing-proxy").EditingProxy,
+    SORTERS = require("core/sorters");
 
 exports.ReelDocument = Montage.create(EditingDocument, {
 
@@ -127,8 +128,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var template = this.editingController.template,
                 components = {};
 
-            Object.keys(this._editingProxyMap).forEach(function (label) {
-                components[label] = this._editingProxyMap[label].serialization;
+            Object.keys(this._editingProxyMap).sort(SORTERS.labelComparator).forEach(function (label) {
+                components[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
             }, this);
 
             template._ownerSerialization = JSON.stringify(components, null, 4);
