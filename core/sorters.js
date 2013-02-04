@@ -30,7 +30,7 @@ function sortedStringComparator(strings) {
  * returns a new object with the properties in the order created by sorting
  * the keys with comparator.
  * @param  {Function} comparator A comparator function.
- * @param  {Function} sort       A function to sort object properties with.
+ * @param  {Function} [sort]     A function to sort object properties with.
  * @return {Function}
  */
 exports.makeObjectPropertySorter = objectPropertySorter;
@@ -41,20 +41,18 @@ function objectPropertySorter(comparator, sort) {
         }
         var newObject = {};
         Object.keys(object).sort(comparator).forEach(function (name) {
-            newObject[name] = sort(object[name], name);
+            newObject[name] = sort ? sort(object[name], name) : object[name];
         });
         return newObject;
     };
 }
 
-var noopSorter = function (object) { return object; };
 var alphabeticSorter = exports.alphabeticSorter = objectPropertySorter(
-    String.prototype.localeCompare.call.bind(String.prototype.localeCompare),
-    noopSorter
+    String.prototype.localeCompare.call.bind(String.prototype.localeCompare)
 );
 
 var propertiesComparator = exports.propertiesComparator = sortedStringComparator(["element"]);
-var propertiesSorter = exports.propertiesSorter = objectPropertySorter(propertiesComparator, noopSorter);
+var propertiesSorter = exports.propertiesSorter = objectPropertySorter(propertiesComparator);
 
 var unitComparator = exports.unitComparator = sortedStringComparator(["prototype", "object", "module", "name", "properties"]);
 var unitSorter = exports.unitSorter = objectPropertySorter(unitComparator, function (object, name) {
