@@ -55,8 +55,8 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 return;
             }
 
-            if (this._objectDescriptionDeferred && !this._objectDescriptionDeferred.promise.isFulfilled()) {
-                this._objectDescriptionDeferred.reject("object changed before description was resolved");
+            if (this._blueprintDeferred && !this._blueprintDeferred.promise.isFulfilled()) {
+                this._blueprintDeferred.reject("object changed before blueprint was resolved");
             }
 
             this._object = value;
@@ -73,24 +73,24 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 var self = this,
                     stageObject = this._object.stageObject;
 
-                this._objectDescriptionDeferred = Promise.defer();
-                // Fetch the description, but ignore whether we find it or not
-                if (stageObject.description) {
-                    stageObject.description.then(this._objectDescriptionDeferred.resolve, this._objectDescriptionDeferred.reject);
+                this._blueprintDeferred = Promise.defer();
+                // Fetch the blueprint, but ignore whether we find it or not
+                if (stageObject.blueprint) {
+                    stageObject.blueprint.then(this._blueprintDeferred.resolve, this._blueprintDeferred.reject);
                 } else {
-                    this._objectDescriptionDeferred.reject(null);
+                    this._blueprintDeferred.reject(null);
                 }
 
-                this._objectDescriptionDeferred.promise.then(function (description) {
-                    self.objectDescription = description;
+                this._blueprintDeferred.promise.then(function (blueprint) {
+                    self.blueprint = blueprint;
 
-                    // we could create a binding to the componentPropertyDescriptionGroups,
-                    // but at the moment I'm not expecting the component description
+                    // we could create a binding to the propertyBlueprintGroups,
+                    // but at the moment I'm not expecting the component blueprint
                     // to change at runtime
-                    self.propertyGroupsController.content = description.componentPropertyDescriptionGroups.map(function (groupName, index) {
+                    self.propertyGroupsController.content = blueprint.propertyBlueprintGroups.map(function (groupName, index) {
                         return {
                             name: groupName,
-                            properties: description.componentPropertyDescriptionGroupForName(groupName),
+                            properties: blueprint.propertyBlueprintGroupForName(groupName),
                             open: index === 0
                         };
                     });
@@ -98,7 +98,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     self.propertyGroupsController.content = [];
                 });
             } else {
-                this.objectDescription = null;
+                this.blueprint = null;
 
                 if (this.templateObjects) {
                     this.templateObjects.title.value = null;
@@ -128,19 +128,19 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
     },
 
     /**
-     * Used to prevent objectDescription being resolved if this.object changes
-     * while the description is being loaded.
+     * Used to prevent blueprint being resolved if this.object changes
+     * while the blueprint is being loaded.
      *
      * Takes advantage of the fact that a promise cannot be resolved after
      * being rejected and vice versa.
      * @type {Promise}
      * @private
      */
-    _objectDescriptionDeferred: {
+    _blueprintDeferred: {
         value: Promise.defer()
     },
 
-    objectDescription: {
+    blueprint: {
         serializable: false,
         value: null
     },

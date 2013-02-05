@@ -124,19 +124,19 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
         value: null
     },
 
-    _propertyDescription: {
+    _propertyBlueprint: {
         value: null
     },
-    propertyDescription: {
+    propertyBlueprint: {
         get: function() {
-            return this._propertyDescription;
+            return this._propertyBlueprint;
         },
         set: function(value) {
-            if (this._propertyDescription === value) {
+            if (this._propertyBlueprint === value) {
                 return;
             }
 
-            this._propertyDescription = value;
+            this._propertyBlueprint = value;
 
             if (this.propertyValueField) {
                 this.propertyValueField.removePropertyChangeListener("value", this, false);
@@ -146,13 +146,19 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 return;
             }
 
-            var componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
+            var componentDescriptor;
+            if (value.isToMany) {
+                // We need something better that this to create list of values. We should use the value type!
+                componentDescriptor = propertyTypeComponentMap["*"];
+            } else {
+                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
+            }
 
             this.propertyValueField = this._createFieldComponent(componentDescriptor);
             this._propertyValueFieldValueProperty = componentDescriptor.valueProperty;
 
             // set field value from object
-            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this.propertyDescription.name);
+            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this.propertyBlueprint.name);
 
             // watch field changes and update object value
             this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
@@ -163,7 +169,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
 
     /**
-     * The component used to edit the value of the propertyDescription
+     * The component used to edit the value of the propertyBlueprint
      * @type {Component}
      */
     propertyValueField: {
@@ -173,13 +179,13 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     handleChange: {
         value: function (notification) {
-            if (!(this.object && this.propertyDescription)) {
+            if (!(this.object && this.propertyBlueprint)) {
                 return;
             }
 
             //TODO also pass along the object? Technically we know what the object was higher up in the inspector...
             this.dispatchEventNamed("propertyInspectorChange", true, true, {
-                propertyName: this.propertyDescription.name,
+                propertyName: this.propertyBlueprint.name,
                 value: this.propertyValueField[this._propertyValueFieldValueProperty]
             });
         }
@@ -212,7 +218,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     draw: {
         value: function() {
-            this._element.title = this._propertyDescription.helpString;
+            this._element.title = this._propertyBlueprint.helpKey;
         }
     }
 });
