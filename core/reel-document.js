@@ -163,6 +163,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     object: proxy
                 });
 
+                if (self.selectObjectsOnAddition) {
+                    self.clearSelectedObjects();
+                    self.selectObject(proxy);
+                }
+
                 return proxy;
             });
         }
@@ -224,6 +229,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: proxy
                 });
+
+                if (self.selectObjectsOnAddition) {
+                    self.clearSelectedObjects();
+                    self.selectObject(proxy);
+                }
 
                 return proxy;
             });
@@ -380,6 +390,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             return proxy;
         }
+    },
+
+    selectObjectsOnAddition: {
+        value: true
     },
 
     selectedObjects: {
