@@ -5,6 +5,10 @@
     "dependencies": {
         "montage": "0.12.x"
     },
+    "devDependencies": {
+        "montage-testing": "~0.1.1",
+        "testacular": "~0.5.7"
+    },
     "scripts": {
         "install": "cd stage && npm install",
         "update": "cd stage && npm update"
