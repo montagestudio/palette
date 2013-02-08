@@ -65,8 +65,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this._deferredEditingInformation.reject();
             }
 
-            this.selectedObjects = null;
-
             this._stageUrl = null;
             this.needsDraw = true;
         }
