@@ -22,30 +22,15 @@ var Montage = require("montage").Montage,
 exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.reel".Workbench# */ {
 
     // Load the specified reel onto the workbench, optionally specifying the packageUrl
-    // Returns a promised editingDocument
+    // Returns a promised editingInfo {owner, template}
     load: {
         value: function (fileUrl, packageUrl) {
-            var self = this;
-
-            return this.editingFrame.load(fileUrl, packageUrl).then(function (editingDocument) {
-
-                self.dispatchPropertyChange("editingDocument", function () {
-                    self._editingDocument = editingDocument;
-                });
-
-                return editingDocument;
-            });
+            return this.editingFrame.load(fileUrl, packageUrl);
         }
     },
 
-    _editingDocument: {
+    selectedObjects: {
         value: null
-    },
-
-    editingDocument: {
-        get: function () {
-            return this._editingDocument;
-        }
     },
 
     _editingFrame: {
