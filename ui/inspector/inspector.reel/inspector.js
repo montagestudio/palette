@@ -6,7 +6,8 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController;
+    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
+    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
 
 /**
     Description TODO
@@ -56,7 +57,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             }
 
             if (this._blueprintDeferred && !this._blueprintDeferred.promise.isFulfilled()) {
-                this._blueprintDeferred.reject("object changed before blueprint was resolved");
+                this._blueprintDeferred.reject(new Error("Inspected Object changed before blueprint was resolved"));
             }
 
             this._object = value;
@@ -70,33 +71,29 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     this.templateObjects.title.value = this._object.getProperty("properties.identifier");
                 }
 
-                var self = this,
-                    stageObject = this._object.stageObject;
-
                 this._blueprintDeferred = Promise.defer();
-                // Fetch the blueprint, but ignore whether we find it or not
-                if (stageObject.blueprint) {
-                    stageObject.blueprint.then(this._blueprintDeferred.resolve, this._blueprintDeferred.reject);
-                } else {
-                    this._blueprintDeferred.reject(null);
-                }
 
-                this._blueprintDeferred.promise.then(function (blueprint) {
-                    self.blueprint = blueprint;
+                var self = this;
+                this._object.packageRequire.async(this._object.moduleId).get(this._object.exportName).get("blueprint")
+                    .then(function (blueprint) {
+                        self._blueprintDeferred.resolve(blueprint);
+                        self.blueprint = blueprint;
 
-                    // we could create a binding to the propertyBlueprintGroups,
-                    // but at the moment I'm not expecting the component blueprint
-                    // to change at runtime
-                    self.propertyGroupsController.content = blueprint.propertyBlueprintGroups.map(function (groupName, index) {
-                        return {
-                            name: groupName,
-                            properties: blueprint.propertyBlueprintGroupForName(groupName),
-                            open: index === 0
-                        };
-                    });
-                }, function () {
-                    self.propertyGroupsController.content = [];
-                });
+                        // we could create a binding to the propertyBlueprintGroups,
+                        // but at the moment I'm not expecting the component blueprint
+                        // to change at runtime
+                        self.propertyGroupsController.content = blueprint.propertyBlueprintGroups.map(function (groupName, index) {
+                            return {
+                                name: groupName,
+                                properties: blueprint.propertyBlueprintGroupForName(groupName),
+                                open: index === 0
+                            };
+                        });
+                    }, function () {
+                        self._blueprintDeferred.reject(null);
+                        self.propertyGroupsController.content = [];
+                    }).done();
+
             } else {
                 this.blueprint = null;
 

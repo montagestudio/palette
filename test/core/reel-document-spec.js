@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     ReelDocument = require("core/reel-document").ReelDocument,
-    Template = require("montage/ui/template").Template;
+    Template = require("montage/ui/template").Template,
     WAITSFOR_TIMEOUT = 2500;
 
 describe("core/reel-document-spec", function () {
@@ -11,12 +11,12 @@ describe("core/reel-document-spec", function () {
     describe("loading a data model given a locationId", function () {
 
         beforeEach(function () {
-            reelDocument = ReelDocument.load("test/mocks/ui/simple.reel", require);
+            reelDocument = ReelDocument.load("test/mocks/ui/simple.reel", require.location);
         });
 
         it("should return a promise for the populated document", function () {
             expect(Promise.isPromiseAlike(reelDocument)).toBeTruthy();
-            reelDocument.done();
+            reelDocument.timeout(WAITSFOR_TIMEOUT).done();
         });
 
         it("should resolve as a populated document", function () {
@@ -24,7 +24,7 @@ describe("core/reel-document-spec", function () {
                 expect(doc).toBeTruthy();
                 expect(doc.editingProxies).toBeTruthy();
                 expect(doc.editingProxies.length).toBe(1);
-            });
+            }).timeout(WAITSFOR_TIMEOUT);
         });
 
     });

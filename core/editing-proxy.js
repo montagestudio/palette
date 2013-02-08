@@ -1,11 +1,23 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
 
 exports.EditingProxy = Montage.create(Montage, {
 
-    initWithLabelAndSerialization: {
-        value: function (label, serialization) {
+    //TODO have specialized proxies for different types of actual objects componentProxy, ElementProxy, etc
+    init: {
+        //TODO should we just treat the proxies as the editing interface, instead of the editingDocument?
+        value: function (label, serialization, editingDocument) {
             this.label = label;
             this._serialization = serialization;
+
+            this._exportId = this._serialization.prototype;
+            if (this._exportId) {
+                var exportInfo = parseForModuleAndName(this._exportId);
+                this._moduleId = exportInfo.module;
+                this._exportName = exportInfo.name;
+            }
+
+            this._editingDocument = editingDocument;
             return this;
         }
     },
@@ -24,14 +36,54 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
+    _editingDocument: {
+        value: null
+    },
+
+    editingDocument: {
+        get: function () {
+            return this._editingDocument;
+        }
+    },
+
+    packageRequire: {
+        get: function () {
+            return this.editingDocument.packageRequire;
+        }
+    },
+
     //TODO when setting an object, apply edits that happened while we didn't have a stageObject
     stageObject: {
         value: null
     },
 
-    prototype: {
+    _exportId: {
+        value: null
+    },
+
+    exportId: {
         get: function () {
-            return this.serialization.prototype;
+            return this._exportId;
+        }
+    },
+
+    _moduleId: {
+        value: null
+    },
+
+    moduleId: {
+        get: function () {
+            return this._moduleId;
+        }
+    },
+
+    _exportName: {
+        value: null
+    },
+
+    exportName: {
+        get: function () {
+            return this._exportName;
         }
     },
 
