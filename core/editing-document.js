@@ -1,12 +1,33 @@
 var Montage = require("montage").Montage,
+    Promise = require("montage/core/promise").Promise,
     UndoManager = require("montage/core/undo-manager").UndoManager;
 
 exports.EditingDocument = Montage.create(Montage, {
 
+    load: {
+        value: function (fileUrl) {
+            var doc = this.create().init.apply(this, arguments);
+            return Promise.resolve(doc);
+        }
+    },
+
+    init: {
+        value: function (fileUrl) {
+            this.undoManager = UndoManager.create();
+
+            var self = this;
+            this.dispatchPropertyChange("fileUrl", function () {
+                self._fileUrl = fileUrl;
+            });
+
+            return this;
+        }
+    },
+
     title: {
-        dependencies: ["fileUrl"],
+        dependencies: ["title"],
         get: function () {
-            return this.fileUrl.substring(this.fileUrl.lastIndexOf("/") + 1);
+            return this._fileUrl.substring(this._fileUrl.lastIndexOf("/") + 1);
         }
     },
 
@@ -21,16 +42,6 @@ exports.EditingDocument = Montage.create(Montage, {
     fileUrl: {
         get: function () {
             return this._fileUrl;
-        }
-    },
-
-    init: {
-        value: function (fileUrl) {
-
-            this._fileUrl = fileUrl;
-            this.undoManager = UndoManager.create();
-
-            return this;
         }
     },
 

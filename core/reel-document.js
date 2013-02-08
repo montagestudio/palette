@@ -3,23 +3,158 @@ var Montage = require("montage").Montage,
     EditingController = require("core/controller/editing-controller").EditingController,
     Template = require("montage/ui/template").Template,
     Promise = require("montage/core/promise").Promise,
-    Deserializer = require("montage/core/deserializer").Deserializer,
+    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName,
     EditingProxy = require("core/editing-proxy").EditingProxy,
     SORTERS = require("core/sorters");
 
+// The ReelDocument is used for editing Montage Reels
 exports.ReelDocument = Montage.create(EditingDocument, {
 
-    _objectNameFromModuleId: {
-        value: function (moduleId) {
-            //TODO this utility should live somewhere else (/baz/foo-bar.reel to FooBar)
-            Deserializer._findObjectNameRegExp.test(moduleId);
-            return RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase);
+    load: {
+        value: function (fileUrl, loadingRequire) {
+            var deferredDoc = Promise.defer(),
+                self = this;
+
+            this.selectedObjects = [];
+
+            loadingRequire.async(fileUrl).get(parseForModuleAndName(fileUrl).name).then(function (componentPrototype) {
+                Template.templateWithModuleId(loadingRequire, componentPrototype.templateModuleId, function (template) {
+                    deferredDoc.resolve(self.create().init(fileUrl, template));
+                });
+            });
+
+            return deferredDoc.promise;
+        }
+    },
+
+    init: {
+        value: function (fileUrl, template) {
+            EditingDocument.init.call(this, fileUrl);
+
+            //TODO handle external serializations
+            var serialization = JSON.parse(template.getInlineSerialization(template._document));
+            this._createProxiesFromSerialization(serialization);
+
+            return this;
+        }
+    },
+
+    _createProxiesFromSerialization: {
+        value: function (serialization) {
+
+            var labels = Object.keys(serialization),
+                proxyMap = this._editingProxyMap = {};
+
+            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                labels.forEach(function (label) {
+                    proxyMap[label] = EditingProxy.create().initWithLabelAndSerialization(label, serialization[label]);
+                });
+            });
+        }
+    },
+
+    associateWithLiveRepresentations: {
+        value: function (owner, template, frame) {
+            var labels = Object.keys(owner.templateObjects),
+                self = this,
+                proxy;
+
+            var editController = this._editingController = EditingController.create();
+            editController.frame = frame;
+            editController.owner = owner;
+
+            labels.forEach(function (label) {
+                proxy = self.editingProxyMap[label];
+                proxy.stageObject = owner.templateObjects[label];
+            });
+        }
+    },
+
+    _editingController: {
+        value: null
+    },
+
+    editingController: {
+        get: function () {
+            return this._editingController;
+        }
+    },
+
+    _editingProxyMap: {
+        value: null
+    },
+
+    editingProxyMap: {
+        get: function () {
+            return this._editingProxyMap;
+        }
+    },
+
+    editingProxies: {
+        get: function () {
+            //TODO cache this
+            var proxyMap = this._editingProxyMap,
+                labels = Object.keys(proxyMap);
+
+            return labels.map(function (label) {
+                return proxyMap[label];
+            });
+        }
+    },
+
+    editingProxyForObject: {
+        value: function (object) {
+            var label = Montage.getInfoForObject(object).label,
+                proxy = this._editingProxyMap[label];
+
+            if (!proxy) {
+                throw new Error("No editing proxy found for object with label '" + label + "'");
+            }
+
+            return proxy;
+        }
+    },
+
+    selectObjectsOnAddition: {
+        value: true
+    },
+
+    selectedObjects: {
+        value: null
+    },
+
+    // Selects nothing
+    clearSelectedObjects: {
+        value: function () {
+            //TODO use clear() instead?
+            this.selectedObjects = [];
+        }
+    },
+
+    // Remove object from current set of selectedObjects
+    deselectObject: {
+        value: function (object) {
+            this.selectedObjects.splice(0, this.selectedObjects.length, object);
+        }
+    },
+
+    // Add object to current set of selectedObjects
+    selectObject: {
+        value: function (object) {
+            var selectedObjects = this.selectedObjects;
+
+            if (selectedObjects.indexOf(object) === -1) {
+                //TODO what is the order ofthe selectedObjects?
+                selectedObjects.push(object);
+            }
+            //TODO otherwise, do we remove it here?
+
         }
     },
 
     _generateLabel: {
         value: function (serialization) {
-            var name = this._objectNameFromModuleId(serialization.prototype),
+            var name = parseForModuleAndName(serialization.prototype).name,
                 label = name.substring(0, 1).toLowerCase() + name.substring(1),
                 labelRegex = new RegExp("^" + label + "(\\d+)$", "i"),
                 match,
@@ -51,78 +186,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    title: {
-        dependencies: ["fileUrl"],
-        get: function () {
-            return this.fileUrl.substring(this.fileUrl.lastIndexOf("/") + 1);
-        }
-    },
-
-    _editingController: {
-        value: null
-    },
-
-    editingController: {
-        get: function () {
-            return this._editingController;
-        }
-    },
-
-    _packageUrl: {
-        value: null
-    },
-
-    _ownerTemplate: {
-        value: null
-    },
-
-    packageUrl: {
-        get: function () {
-            return this._packageUrl;
-        }
-    },
-
-    init: {
-        value: function (fileUrl, packageUrl, editingFrame, owner, ownerTemplate) {
-
-            EditingDocument.init.call(this, fileUrl);
-
-            this._packageUrl = packageUrl;
-            this._ownerTemplate = ownerTemplate;
-            this.selectedObjects = [];
-
-            //TODO merge editingController and editingDocument, all of these are
-            var editController = this._editingController = EditingController.create();
-            editController.frame = editingFrame;
-            editController.owner = owner;
-
-            this._createProxiesFromSerialization(JSON.parse(ownerTemplate._ownerSerialization), owner);
-
-            return this;
-        }
-    },
-
-    _createProxiesFromSerialization: {
-        value: function (serialization, owner) {
-
-            var labels = Object.keys(serialization),
-                proxyMap = this._editingProxyMap = {},
-                stageObject;
-
-            labels.forEach(function (label) {
-                stageObject = owner.templateObjects[label];
-                proxyMap[label] = EditingProxy.create().initWithLabelAndSerializationAndStageObject(label, serialization[label], stageObject);
-            });
-        }
-    },
-
-    ownerRequire: {
-        get: function () {
-            return this.editingController.ownerRequire;
-        }
-    },
-
-    //TODO this is still somewhat mid-refactoring, probably could be cleaned up
     template: {
         get: function () {
             var template = this.editingController.template,
@@ -151,7 +214,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             self.undoManager.register("Add Object", deferredUndo.promise);
 
             return this.editingController.addObject(labelInOwner, serialization).then(function (result) {
-                proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.object);
+                proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
+                proxy.stageObject = result.object;
 
                 self.dispatchPropertyChange("editingProxyMap", function () {
                     self._editingProxyMap[labelInOwner] = proxy;
@@ -193,7 +257,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    // Editing Document APIs
     addComponent: {
         value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
             var self = this,
@@ -218,7 +281,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             self.undoManager.register("Add Component", deferredUndo.promise);
 
             return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
-                proxy = EditingProxy.create().initWithLabelAndSerializationAndStageObject(labelInOwner, result.serialization, result.component);
+                proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
+                proxy.stageObject = result.component;
                 self.dispatchPropertyChange("editingProxyMap", function () {
                     self._editingProxyMap[labelInOwner] = proxy;
                 });
@@ -353,79 +417,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 boundObject: boundObject,
                 boundObjectPropertyPath: boundObjectPropertyPath
             });
-        }
-    },
-
-    _editingProxyMap: {
-        value: null
-    },
-
-    editingProxyMap: {
-        get: function () {
-            return this._editingProxyMap;
-        }
-    },
-
-    editingProxies: {
-        dependencies: ["editingProxyMap"],
-        get: function () {
-            //TODO cache this
-            var proxyMap = this._editingProxyMap,
-                labels = Object.keys(proxyMap);
-
-            return labels.map(function (label) {
-                return proxyMap[label];
-            });
-        }
-    },
-
-    editingProxyForObject: {
-        value: function (object) {
-            var label = Montage.getInfoForObject(object).label,
-                proxy = this._editingProxyMap[label];
-
-            if (!proxy) {
-                throw new Error("No editing proxy found for object with label '" + label + "'");
-            }
-
-            return proxy;
-        }
-    },
-
-    selectObjectsOnAddition: {
-        value: true
-    },
-
-    selectedObjects: {
-        value: null
-    },
-
-    // Selects nothing
-    clearSelectedObjects: {
-        value: function () {
-            //TODO use clear() instead?
-            this.selectedObjects = [];
-        }
-    },
-
-    // Remove object from current set of selectedObjects
-    deselectObject: {
-        value: function (object) {
-            this.selectedObjects.splice(0, this.selectedObjects.length, object);
-        }
-    },
-
-    // Add object to current set of selectedObjects
-    selectObject: {
-        value: function (object) {
-            var selectedObjects = this.selectedObjects;
-
-            if (selectedObjects.indexOf(object) === -1) {
-                //TODO what is the order ofthe selectedObjects?
-                selectedObjects.push(object);
-            }
-            //TODO otherwise, do we remove it here?
-
         }
     }
 

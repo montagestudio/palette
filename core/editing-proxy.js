@@ -2,11 +2,10 @@ var Montage = require("montage").Montage;
 
 exports.EditingProxy = Montage.create(Montage, {
 
-    initWithLabelAndSerializationAndStageObject: {
-        value: function (label, serialization, stageObject) {
+    initWithLabelAndSerialization: {
+        value: function (label, serialization) {
             this.label = label;
             this._serialization = serialization;
-            this._stageObject = stageObject;
             return this;
         }
     },
@@ -25,14 +24,9 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
-    _stageObject: {
-        value: null
-    },
-
+    //TODO when setting an object, apply edits that happened while we didn't have a stageObject
     stageObject: {
-        get: function () {
-            return this._stageObject;
-        }
+        value: null
     },
 
     prototype: {
@@ -69,7 +63,9 @@ exports.EditingProxy = Montage.create(Montage, {
             }
 
             this.serialization.properties.setProperty(property, value);
-            this.stageObject.setProperty(property, value);
+            if (this.stageObject) {
+                this.stageObject.setProperty(property, value);
+            }
         }
     },
 
@@ -97,24 +93,26 @@ exports.EditingProxy = Montage.create(Montage, {
             bindingSerialization[(oneWay ? "<-" : "<->")] = "@" + boundObject.label + "." + boundObjectPropertyPath;
             this.serialization.bindings[sourceObjectPropertyPath] = bindingSerialization;
 
-            bindingDescriptor = {
-                boundObject: boundObject.stageObject,
-                boundObjectPropertyPath: boundObjectPropertyPath
-            };
+            if (this.stageObject) {
+                bindingDescriptor = {
+                    boundObject: boundObject.stageObject,
+                    boundObjectPropertyPath: boundObjectPropertyPath
+                };
 
-            if (oneWay) {
-                bindingDescriptor.oneWay = oneWay;
-            }
+                if (oneWay) {
+                    bindingDescriptor.oneWay = oneWay;
+                }
 
-            if (converter) {
-                bindingDescriptor.converter = converter;
-            }
+                if (converter) {
+                    bindingDescriptor.converter = converter;
+                }
 
-            //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
-            if (this.stageObject._bindingDescriptors) {
-                Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+                //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
+                if (this.stageObject._bindingDescriptors) {
+                    Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+                }
+                Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
             }
-            Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
         }
     },
 
@@ -122,7 +120,7 @@ exports.EditingProxy = Montage.create(Montage, {
         value: function (sourceObjectPropertyPath) {
             delete this.serialization.bindings[sourceObjectPropertyPath];
 
-            if (this.stageObject._bindingDescriptors) {
+            if (this.stageObject && this.stageObject._bindingDescriptors) {
                 Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
             }
         }
