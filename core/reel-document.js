@@ -236,7 +236,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxy = EditingProxy.create().init(labelInOwner, result.serialization, self);
                 proxy.stageObject = result.object;
 
-                self.dispatchPropertyChange("editingProxyMap", function () {
+                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     self._editingProxyMap[labelInOwner] = proxy;
                 });
 
@@ -268,7 +268,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
 
-                self.dispatchPropertyChange("editingProxyMap", function () {
+                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
                 });
 
@@ -289,12 +289,22 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             //Only set these if they were not explicitly falsy; assume that if they
             // were explicitly falsy the author is doing so on purpose
+            //TODO I don't like manipulating the serialization without knowing how the package's version of montage would do it
+            // we can work around that but we shouldn't rely on the live stage object/editingController to do the work for us
             if (typeof elementMontageId === "undefined") {
                 elementMontageId = labelInOwner; //TODO format more appropriately for use in DOM?
+                if (!serialization.properties) {
+                    serialization.properties = {};
+                }
+                serialization.properties.element = {"#": elementMontageId};
             }
 
             if (typeof identifier === "undefined") {
                 identifier = labelInOwner; //TODO lower case the identifier?
+                if (!serialization.properties) {
+                    serialization.properties = {};
+                }
+                serialization.properties.identifier = labelInOwner;
             }
 
             deferredUndo = Promise.defer();
@@ -302,11 +312,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
 
             proxy = EditingProxy.create().init(labelInOwner, serialization, this);
-
-            if (this.selectObjectsOnAddition) {
-                this.clearSelectedObjects();
-                this.selectObject(proxy);
-            }
 
             if (this._editingController) {
                 proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
@@ -324,13 +329,18 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             }
 
             proxyPromise.then(function (resolvedProxy) {
-                self.dispatchPropertyChange("editingProxyMap", function () {
+                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     self._editingProxyMap[labelInOwner] = resolvedProxy;
                 });
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: resolvedProxy
                 });
+
+                if (self.selectObjectsOnAddition) {
+                    self.clearSelectedObjects();
+                    self.selectObject(resolvedProxy);
+                }
             });
 
             return proxyPromise;
@@ -353,7 +363,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     proxy.label, proxy.serialization, element.outerHTML,
                     element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier")]);
 
-                self.dispatchPropertyChange("editingProxyMap", function () {
+                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
                 });
             });
