@@ -74,12 +74,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: null
     },
 
-    editingController: {
-        get: function () {
-            return this._editingController;
-        }
-    },
-
     _editingProxyMap: {
         value: null
     },
@@ -188,7 +182,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     template: {
         get: function () {
-            var template = this.editingController.template,
+            var template = this._editingController.template,
                 components = {};
 
             Object.keys(this._editingProxyMap).sort(SORTERS.labelComparator).forEach(function (label) {
@@ -213,7 +207,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             self.undoManager.register("Add Object", deferredUndo.promise);
 
-            return this.editingController.addObject(labelInOwner, serialization).then(function (result) {
+            return this._editingController.addObject(labelInOwner, serialization).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
                 proxy.stageObject = result.object;
 
@@ -245,7 +239,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this.undoManager.register("Remove Object", deferredUndo.promise);
 
-            return this.editingController.removeObject(proxy.stageObject).then(function (element) {
+            return this._editingController.removeObject(proxy.stageObject).then(function (element) {
 
                 deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
 
@@ -280,7 +274,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             deferredUndo = Promise.defer();
             self.undoManager.register("Add Component", deferredUndo.promise);
 
-            return this.editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
+            return this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
                 proxy = EditingProxy.create().initWithLabelAndSerialization(labelInOwner, result.serialization);
                 proxy.stageObject = result.component;
                 self.dispatchPropertyChange("editingProxyMap", function () {
@@ -312,7 +306,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this.undoManager.register("Remove Component", deferredUndo.promise);
 
-            return this.editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
+            return this._editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
 
                 //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
                 // its added to the undo stack, not the redo stack…
