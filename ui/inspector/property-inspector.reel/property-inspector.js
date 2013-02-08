@@ -11,7 +11,7 @@ var propertyTypeComponentMap = Object.create(null);
 var PropertyTypeComponentDescriptor = exports.PropertyTypeComponentDescriptor = Montage.create(Montage, {
 
     init: {
-        value: function(componentProto, tagName, valueProperty, elementAttributes) {
+        value: function(componentProto, tagName, valueProperty, elementAttributes, optionsProperty) {
             this.componentProto = componentProto;
             this.tagName = tagName;
             if (valueProperty) {
@@ -20,6 +20,9 @@ var PropertyTypeComponentDescriptor = exports.PropertyTypeComponentDescriptor = 
             if (elementAttributes) {
                 this.elementAttributes = elementAttributes;
             }
+            if (optionsProperty) {
+                 this.optionsProperty = optionsProperty;
+             }
 
             return this;
         }
@@ -50,6 +53,16 @@ var PropertyTypeComponentDescriptor = exports.PropertyTypeComponentDescriptor = 
      */
     valueProperty: {
         value: "value"
+    },
+
+    /**
+     * The property of the component that contains the option to use in the
+     * property
+     * @type {string}
+     * @default "value"
+     */
+    optionsProperty: {
+        value: "option"
     },
 
     /**
@@ -111,6 +124,21 @@ addPropertyTypeComponentDescriptor("boolean", PropertyTypeComponentDescriptor.cr
     {type: "checkbox"}
 ));
 
+addPropertyTypeComponentDescriptor("enum", PropertyTypeComponentDescriptor.create().init(
+    require("montage/ui/select.reel").Select,
+    "select",
+    "value",
+    {},
+    "content"
+));
+
+addPropertyTypeComponentDescriptor("url", PropertyTypeComponentDescriptor.create().init(
+    require("montage/ui/input-text.reel").InputText,
+    "input",
+    "value",
+    {type: "text"}
+));
+
 //"string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");
 
 /**
@@ -151,17 +179,21 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 // We need something better that this to create list of values. We should use the value type!
                 componentDescriptor = propertyTypeComponentMap["*"];
             } else {
-                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
+                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[this._propertyBlueprint.valueType] : propertyTypeComponentMap["*"];
             }
 
             this.propertyValueField = this._createFieldComponent(componentDescriptor);
             this._propertyValueFieldValueProperty = componentDescriptor.valueProperty;
+            this._propertyOptionsFieldValueProperty = componentDescriptor.optionsProperty;
 
             // set field value from object
-            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this.propertyBlueprint.name);
+            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this._propertyBlueprint.name);
 
             // watch field changes and update object value
             this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
+
+            // Set the list of options
+            this.propertyValueField[this._propertyOptionsFieldValueProperty] = this._propertyBlueprint.enumValues;
 
             this.needsDraw = true;
         }
@@ -198,6 +230,15 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
      */
     _propertyValueFieldValueProperty: {
         value: "value"
+    },
+
+    /**
+     * The property of the propertyOptionsField which contains the options for
+     * the object's property
+     * @type {string}
+     */
+    _propertyOptionsFieldValueProperty: {
+        value: "content"
     },
 
     _createFieldComponent: {
