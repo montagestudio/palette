@@ -77,6 +77,32 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
+    save: {
+        value: function (location, dataWriter) {
+            //TODO I think I've made this regex many times...and probably differently
+            var filenameMatch = location.match(/.+\/(.+)\.reel/),
+                path,
+                template = this._template,
+                doc = this._template._document,
+                serializationElement;
+
+            if (!(filenameMatch && filenameMatch[1])) {
+                throw new Error('Components can only be saved into ".reel" directories');
+            }
+
+            path = location + "/" + filenameMatch[1] + ".html";
+
+            //TODO remove this block of code once the template's exportToString no longer
+            //preserves the inline serialization element when exporting
+            if (template.getInlineSerialization(doc)) {
+                serializationElement = doc.querySelector("script[type='" + template._SCRIPT_TYPE + "']");
+                serializationElement.textContent = template._ownerSerialization;
+            }
+
+            return dataWriter(template.exportToString(), path);
+        }
+    },
+
     _packageRequire: {
         value: null
     },
