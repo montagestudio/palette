@@ -35,8 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Promise = require("montage/core/promise").Promise,
-    ReelDocument = require("core/reel-document").ReelDocument;
+    Promise = require("montage/core/promise").Promise;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
@@ -62,12 +61,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     reset: {
         value: function () {
 
-            if (this._deferredEditingDocument) {
-                this._deferredEditingDocument.reject();
+            if (this._deferredEditingInformation) {
+                this._deferredEditingInformation.reject();
             }
-
-            this.selectedObjects = null;
-            this.editingDocument = null;
 
             this._stageUrl = null;
             this.needsDraw = true;
@@ -82,11 +78,11 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
 
             // If already loading reject current loading request and load the new one
-            if (this._deferredEditingDocument) {
-                this._deferredEditingDocument.reject();
+            if (this._deferredEditingInformation) {
+                this._deferredEditingInformation.reject();
             }
 
-            this._deferredEditingDocument = Promise.defer();
+            this._deferredEditingInformation = Promise.defer();
 
             var encodedFileUrl = encodeURIComponent(fileUrl);
             this._stageUrl = require.location + "/stage/index.html?reel-location=" + encodedFileUrl;
@@ -100,7 +96,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             this.needsDraw = true;
 
-            return this._deferredEditingDocument.promise;
+            return this._deferredEditingInformation.promise;
         }
     },
 
@@ -138,9 +134,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this.element.addEventListener("load", this, false);
                 this.element.src = this._stageUrl;
             } else if (!this._stageUrl && this.element.src) {
-//                var frameDoc = this.element.contentWindow.document;
-
-//                frameDoc.removeChild(frameDoc.documentElement);
                 this.element.removeAttribute("src");
             }
 
@@ -160,11 +153,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         value: function (evt) {
 
             var iFrameWindow = this._element.contentWindow,
-                packageUrl,
-                fileUrl,
                 ownerComponent,
-                editingDocument,
-                self;
+                self = this;
 
             //TODO verify event.origin
 
@@ -175,14 +165,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this._replaceDraw(iFrameWindow);
                 this._addDragAndDropEvents(iFrameWindow);
 
-                packageUrl = iFrameWindow.stageData.packageUrl;
-                fileUrl = packageUrl + iFrameWindow.stageData.moduleId;
                 ownerComponent = iFrameWindow.stageData.ownerComponent;
-                self = this;
 
                 ownerComponent._loadTemplate(function (template) {
-                    editingDocument = self.editingDocument = ReelDocument.create().init(fileUrl, packageUrl, this, ownerComponent, template);
-                    self._deferredEditingDocument.resolve(editingDocument);
+                    self._deferredEditingInformation.resolve({owner: ownerComponent, template: template, frame: self});
                 });
 
             }
@@ -236,29 +222,17 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             if (evt.type === "mousedown" && 0 === evt.button) {
 
-                var editingDocument = this.editingDocument,
-                    selectionCandidate = evt.target.controller,
+                var selectionCandidate = evt.target,
                     isAddingToSelection = false,
                     isRemovingFromSelection = false;
 
-
-                if (selectionCandidate) {
-
-                    selectionCandidate = editingDocument.editingProxyForObject(selectionCandidate);
-
-                    //TODO if selectionCandidate is currently selected, drill down to find new one
-
-                    if (isAddingToSelection) {
-                        editingDocument.selectObject(selectionCandidate);
-                    } else if (isRemovingFromSelection) {
-                        editingDocument.deselectObject(selectionCandidate);
-                    } else {
-                        editingDocument.clearSelectedObjects();
-                        editingDocument.selectObject(selectionCandidate);
-                    }
-                } else {
-                    editingDocument.clearSelectedObjects();
-                }
+                this.dispatchEventNamed("select", true, true, {
+                    candidate: selectionCandidate,
+                    addToSelection: false,
+                    expandToSelection: false,
+                    removeFromSelection: false,
+                    retractFromSelection: false
+                });
             }
 
             if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
@@ -271,12 +245,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // EditingFrame Properties
 
-    // The deferred editing controller
-    _deferredEditingDocument: {
-        value: null
-    },
-
-    editingDocument: {
+    // The template we're in the process of loading
+    _deferredEditingInformation: {
         value: null
     },
 

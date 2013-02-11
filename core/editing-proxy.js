@@ -1,12 +1,23 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
 
 exports.EditingProxy = Montage.create(Montage, {
 
-    initWithLabelAndSerializationAndStageObject: {
-        value: function (label, serialization, stageObject) {
+    //TODO have specialized proxies for different types of actual objects componentProxy, ElementProxy, etc
+    init: {
+        //TODO should we just treat the proxies as the editing interface, instead of the editingDocument?
+        value: function (label, serialization, editingDocument) {
             this.label = label;
             this._serialization = serialization;
-            this._stageObject = stageObject;
+
+            this._exportId = this._serialization.prototype;
+            if (this._exportId) {
+                var exportInfo = parseForModuleAndName(this._exportId);
+                this._moduleId = exportInfo.module;
+                this._exportName = exportInfo.name;
+            }
+
+            this._editingDocument = editingDocument;
             return this;
         }
     },
@@ -25,19 +36,54 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
-    _stageObject: {
+    _editingDocument: {
         value: null
     },
 
-    stageObject: {
+    editingDocument: {
         get: function () {
-            return this._stageObject;
+            return this._editingDocument;
         }
     },
 
-    prototype: {
+    packageRequire: {
         get: function () {
-            return this.serialization.prototype;
+            return this.editingDocument.packageRequire;
+        }
+    },
+
+    //TODO when setting an object, apply edits that happened while we didn't have a stageObject
+    stageObject: {
+        value: null
+    },
+
+    _exportId: {
+        value: null
+    },
+
+    exportId: {
+        get: function () {
+            return this._exportId;
+        }
+    },
+
+    _moduleId: {
+        value: null
+    },
+
+    moduleId: {
+        get: function () {
+            return this._moduleId;
+        }
+    },
+
+    _exportName: {
+        value: null
+    },
+
+    exportName: {
+        get: function () {
+            return this._exportName;
         }
     },
 
@@ -59,6 +105,10 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
+    element: {
+        value: null
+    },
+
     setObjectProperty: {
         value: function (property, value) {
 
@@ -69,7 +119,9 @@ exports.EditingProxy = Montage.create(Montage, {
             }
 
             this.serialization.properties.setProperty(property, value);
-            this.stageObject.setProperty(property, value);
+            if (this.stageObject) {
+                this.stageObject.setProperty(property, value);
+            }
         }
     },
 
@@ -97,24 +149,26 @@ exports.EditingProxy = Montage.create(Montage, {
             bindingSerialization[(oneWay ? "<-" : "<->")] = "@" + boundObject.label + "." + boundObjectPropertyPath;
             this.serialization.bindings[sourceObjectPropertyPath] = bindingSerialization;
 
-            bindingDescriptor = {
-                boundObject: boundObject.stageObject,
-                boundObjectPropertyPath: boundObjectPropertyPath
-            };
+            if (this.stageObject) {
+                bindingDescriptor = {
+                    boundObject: boundObject.stageObject,
+                    boundObjectPropertyPath: boundObjectPropertyPath
+                };
 
-            if (oneWay) {
-                bindingDescriptor.oneWay = oneWay;
-            }
+                if (oneWay) {
+                    bindingDescriptor.oneWay = oneWay;
+                }
 
-            if (converter) {
-                bindingDescriptor.converter = converter;
-            }
+                if (converter) {
+                    bindingDescriptor.converter = converter;
+                }
 
-            //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
-            if (this.stageObject._bindingDescriptors) {
-                Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+                //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
+                if (this.stageObject._bindingDescriptors) {
+                    Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+                }
+                Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
             }
-            Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
         }
     },
 
@@ -122,7 +176,7 @@ exports.EditingProxy = Montage.create(Montage, {
         value: function (sourceObjectPropertyPath) {
             delete this.serialization.bindings[sourceObjectPropertyPath];
 
-            if (this.stageObject._bindingDescriptors) {
+            if (this.stageObject && this.stageObject._bindingDescriptors) {
                 Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
             }
         }
