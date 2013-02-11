@@ -105,6 +105,10 @@ exports.EditingProxy = Montage.create(Montage, {
         }
     },
 
+    element: {
+        value: null
+    },
+
     setObjectProperty: {
         value: function (property, value) {
 

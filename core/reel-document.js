@@ -77,6 +77,27 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
+    _ownerElement: {
+        get: function () {
+            var montageId = this._editingProxyMap.owner.properties.element["#"];
+            return this.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+        }
+    },
+
+    _createElementFromMarkup: {
+        value: function (markup, id) {
+            //TODO not create an element each time
+            var incubator = this.htmlDocument.createElement('div'),
+                result;
+
+            incubator.innerHTML = markup;
+            result = incubator.removeChild(incubator.firstElementChild);
+            result.setAttribute("data-montage-id", id);
+
+            return result;
+        }
+    },
+
     save: {
         value: function (location, dataWriter) {
             //TODO I think I've made this regex many times...and probably differently
@@ -135,16 +156,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _addProxies: {
         value: function (proxies) {
-            var proxyMap = this._editingProxyMap,
-                self = this;
+            var self = this;
 
             this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
-                        proxyMap[proxy.label] = proxy;
+                        self.__addProxy(proxy);
                     });
                 } else {
-                    proxyMap[proxies.label] = proxies;
+                    self.__addProxy(proxies);
                 }
 
                 self._buildSerialization();
@@ -152,22 +172,46 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
+    __addProxy: {
+        value: function (proxy) {
+            var proxyMap = this._editingProxyMap;
+            proxyMap[proxy.label] = proxy;
+            //TODO not blindly append to the end of the body
+            //TODO react to changing the element?
+            if (proxy.element) {
+                this._ownerElement.appendChild(proxy.element);
+            }
+        }
+    },
+
     _removeProxies: {
         value: function (proxies) {
-            var proxyMap = this._editingProxyMap,
-                self = this;
+            var self = this;
 
             this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
-                        delete proxyMap[proxy.label];
+                        self.__removeProxy(proxy);
                     });
                 } else {
-                    delete proxyMap[proxies.label];
+                    self.__removeProxy(proxies);
                 }
 
                 self._buildSerialization();
             });
+        }
+    },
+
+    __removeProxy: {
+        value: function (proxy) {
+            var proxyMap = this._editingProxyMap,
+                parentNode;
+
+            delete proxyMap[proxy.label];
+
+            if (proxy.element && (parentNode = proxy.element.parentNode)) {
+                parentNode.removeChild(proxy.element);
+            }
         }
     },
 
@@ -388,7 +432,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             deferredUndo = Promise.defer();
             self.undoManager.register("Add Component", deferredUndo.promise);
 
-
             proxy = EditingProxy.create().init(labelInOwner, serialization, this);
 
             if (this._editingController) {
@@ -407,6 +450,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             }
 
             proxyPromise.then(function (resolvedProxy) {
+                if (markup) {
+                    resolvedProxy.element = self._createElementFromMarkup(markup, elementMontageId);
+                }
                 self._addProxies(resolvedProxy);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
