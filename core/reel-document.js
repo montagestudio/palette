@@ -30,10 +30,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    _editingDocument: {
-        value: null
-    },
-
     init: {
         value: function (fileUrl, template, packageRequire) {
             EditingDocument.init.call(this, fileUrl);
@@ -42,10 +38,42 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             this._packageRequire = packageRequire;
 
             //TODO handle external serializations
-            var serialization = JSON.parse(template.getInlineSerialization(template._document));
-            this._createProxiesFromSerialization(serialization);
+            var serialization = template.getInlineSerialization(template._document);
+            this._editingProxyMap = {};
+            this._addProxies(this._proxiesFromSerialization(serialization));
 
             return this;
+        }
+    },
+
+    _template: {
+        value: null
+    },
+
+    _buildSerialization: {
+        value: function () {
+            var template = this._template,
+                templateObjects = {};
+
+            Object.keys(this._editingProxyMap).sort(SORTERS.labelComparator).forEach(function (label) {
+                templateObjects[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
+            }, this);
+
+            this.dispatchPropertyChange("serialization", function () {
+                template._ownerSerialization = JSON.stringify(templateObjects, null, 4);
+            });
+        }
+    },
+
+    serialization: {
+        get: function () {
+            return this._template._ownerSerialization;
+        }
+    },
+
+    htmlDocument: {
+        get: function () {
+            return this._template._document;
         }
     },
 
@@ -59,17 +87,60 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    _createProxiesFromSerialization: {
+    _editingController: {
+        value: null
+    },
+
+    // Editing Model
+
+    _proxiesFromSerialization: {
         value: function (serialization) {
 
+            serialization = JSON.parse(serialization);
+
             var labels = Object.keys(serialization),
-                proxyMap = this._editingProxyMap = {},
                 self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                labels.forEach(function (label) {
-                    proxyMap[label] = EditingProxy.create().init(label, serialization[label], self);
-                });
+            return labels.map(function (label) {
+                return EditingProxy.create().init(label, serialization[label], self);
+            });
+        }
+    },
+
+    _addProxies: {
+        value: function (proxies) {
+            var proxyMap = this._editingProxyMap,
+                self = this;
+
+            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+                if (Array.isArray(proxies)) {
+                    proxies.forEach(function (proxy) {
+                        proxyMap[proxy.label] = proxy;
+                    });
+                } else {
+                    proxyMap[proxies.label] = proxies;
+                }
+
+                self._buildSerialization();
+            });
+        }
+    },
+
+    _removeProxies: {
+        value: function (proxies) {
+            var proxyMap = this._editingProxyMap,
+                self = this;
+
+            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+                if (Array.isArray(proxies)) {
+                    proxies.forEach(function (proxy) {
+                        delete proxyMap[proxy.label];
+                    });
+                } else {
+                    delete proxyMap[proxies.label];
+                }
+
+                self._buildSerialization();
             });
         }
     },
@@ -89,10 +160,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxy.stageObject = owner.templateObjects[label];
             });
         }
-    },
-
-    _editingController: {
-        value: null
     },
 
     _editingProxyMap: {
@@ -129,6 +196,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             return proxy;
         }
     },
+
+    // Selection API
 
     selectObjectsOnAddition: {
         value: true
@@ -167,6 +236,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
+    // Editing API
+
     _generateLabel: {
         value: function (serialization) {
             var name = parseForModuleAndName(serialization.prototype).name,
@@ -179,44 +250,25 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 match = existingLabel.match(labelRegex);
                 return match && match[1] ? match[1] : null;
             }).reduce(function (lastFoundIndex, index) {
-                if (null == index) {
-                    return lastFoundIndex;
-                } else {
-                    index = parseInt(index, 10);
-
-                    if (null == lastFoundIndex) {
-                        return index;
-                        //TODO should we fill in gaps? or find the highest used index?
-                    } else if (index > lastFoundIndex) {
-                        return index;
-                    } else {
+                    if (null == index) {
                         return lastFoundIndex;
+                    } else {
+                        index = parseInt(index, 10);
+
+                        if (null == lastFoundIndex) {
+                            return index;
+                            //TODO should we fill in gaps? or find the highest used index?
+                        } else if (index > lastFoundIndex) {
+                            return index;
+                        } else {
+                            return lastFoundIndex;
+                        }
                     }
-                }
-            });
+                });
 
             lastUsedIndex = lastUsedIndex || 0;
 
             return label + (lastUsedIndex + 1);
-        }
-    },
-
-    _template: {
-        value: null
-    },
-
-    template: {
-        get: function () {
-            var template = this._template,
-                components = {};
-
-            Object.keys(this._editingProxyMap).sort(SORTERS.labelComparator).forEach(function (label) {
-                components[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
-            }, this);
-
-            template._ownerSerialization = JSON.stringify(components, null, 4);
-
-            return template;
         }
     },
 
@@ -329,9 +381,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             }
 
             proxyPromise.then(function (resolvedProxy) {
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                    self._editingProxyMap[labelInOwner] = resolvedProxy;
-                });
+                self._addProxies(resolvedProxy);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
                     component: resolvedProxy

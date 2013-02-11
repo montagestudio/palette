@@ -10,14 +10,14 @@ describe("core/reel-document-saving-spec", function () {
 
         it("should have all the expected labels", function () {
             reelDocument = mockReelDocument("foo/bar/mock.reel", {"owner": {}, "foo": {}});
-            var serialization = JSON.parse(reelDocument.template._ownerSerialization);
+            var serialization = JSON.parse(reelDocument.serialization);
             expect(serialization.owner).toBeTruthy();
             expect(serialization.foo).toBeTruthy();
         });
 
         it("must have the owner label before any other labels", function () {
             reelDocument = mockReelDocument("foo/bar/mock.reel", {"owner": {}, "alpha": {}});
-            var serialization = reelDocument.template._ownerSerialization,
+            var serialization = reelDocument.serialization,
                 ownerLabelIndex = serialization.indexOf('"owner":'),
                 alphaLabelIndex = serialization.indexOf('"alpha":');
 
@@ -26,7 +26,7 @@ describe("core/reel-document-saving-spec", function () {
 
         it("must have the owner label before any other labels", function () {
             reelDocument = mockReelDocument("foo/bar/mock.reel", {"owner": {}, "alpha": {}});
-            var serialization = reelDocument.template._ownerSerialization,
+            var serialization = reelDocument.serialization,
                 ownerLabelIndex = serialization.indexOf('"owner":'),
                 alphaLabelIndex = serialization.indexOf('"alpha":');
 
@@ -35,7 +35,7 @@ describe("core/reel-document-saving-spec", function () {
 
         it("should have labels in alphabetical order", function () {
             reelDocument = mockReelDocument("foo/bar/mock.reel", {"beta": {}, "owner": {}, "alpha": {}});
-            var serialization = reelDocument.template._ownerSerialization,
+            var serialization = reelDocument.serialization,
                 ownerLabelIndex = serialization.indexOf('"owner":'),
                 alphaLabelIndex = serialization.indexOf('"alpha":'),
                 betaLabelIndex = serialization.indexOf('"beta":');

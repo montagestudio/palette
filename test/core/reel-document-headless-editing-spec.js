@@ -34,6 +34,15 @@ describe("core/reel-document-stageless-editing-spec", function () {
                 expect(reelDocument.editingProxies.indexOf(proxy) >= 0).toBeTruthy();
             }).timeout(WAITSFOR_TIMEOUT);
         });
+
+        it("should add the component to the serialization of the editing document", function () {
+            var addedComponent = reelDocument.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier),
+                templateSerialization;
+            return addedComponent.then(function (proxy) {
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization[labelInOwner]).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
     });
 
     describe("adding a serialized editing payload", function () {
