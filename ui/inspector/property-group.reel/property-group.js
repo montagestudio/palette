@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController;
+    ContentController = require("montage/core/content-controller").ContentController;
 
 /**
     Description TODO
@@ -16,7 +16,7 @@ exports.PropertyGroup = Montage.create(Component, /** @lends module:"ui/ui/inspe
 
     didCreate: {
         value: function() {
-            this.propertiesController = ArrayController.create();
+            this.propertiesController = ContentController.create();
 
             Object.defineBinding(this, "propertiesController.content", {
                 boundObject: this,

@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
+    ContentController = require("montage/core/content-controller").ContentController,
     Selection = require('../selection.reel').Selection;
 
 /**
@@ -19,7 +19,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         value: function() {
             this.addOwnPropertyChangeListener("_selectedObjects", this, false);
 
-            this.selectedObjectsController = ArrayController.create();
+            this.selectedObjectsController = ContentController.create();
             Object.defineBinding(this.selectedObjectsController, "content", {
                 boundObject: this,
                 boundObjectPropertyPath: "_selectedObjects",

@@ -6,7 +6,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
+    ContentController = require("montage/core/content-controller").ContentController,
     parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName;
 
 /**
@@ -22,7 +22,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     didCreate: {
         value: function () {
-            this.propertyGroupsController = ArrayController.create();
+            this.propertyGroupsController = ContentController.create();
         }
     },
 
