@@ -1,4 +1,4 @@
-Deserializer = require("montage/core/serialization").Deserializer;
+var MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 //HACK!!! is need so that we can drop the flow synchronously on the stage
 require("montage/ui/dynamic-text.reel");
 require("montage/ui/image.reel");
@@ -7,8 +7,8 @@ var moduleId = window.stageData.moduleId,
     packageUrl = window.stageData.packageUrl;
 
 //TODO this is relying on some private methods, they should be available somewhere given their utility
-Deserializer._findObjectNameRegExp.test(moduleId);
-var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
+MontageReviver._findObjectNameRegExp.test(moduleId);
+var objectName = RegExp.$1.replace(MontageReviver._toCamelCaseRegExp, MontageReviver._replaceToCamelCase),
     ownerComponent;
 
 if (packageUrl && moduleId) {
