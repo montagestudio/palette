@@ -148,29 +148,31 @@ addPropertyTypeComponentDescriptor("url", PropertyTypeComponentDescriptor.create
 */
 exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/inspector/property-inspector.reel".PropertyInspector# */ {
 
+    didCreate: {
+        value: function () {
+            this.addPropertyChangeListener("object", this);
+            this.addPropertyChangeListener("propertyBlueprint", this);
+        }
+    },
+
     object: {
         value: null
     },
 
-    _propertyBlueprint: {
+    propertyBlueprint: {
         value: null
     },
-    propertyBlueprint: {
-        get: function() {
-            return this._propertyBlueprint;
-        },
-        set: function(value) {
-            if (this._propertyBlueprint === value) {
-                return;
-            }
 
-            this._propertyBlueprint = value;
+    _populateField: {
+        value: function () {
+
+            var value = this.propertyBlueprint;
 
             if (this.propertyValueField) {
                 this.propertyValueField.removePropertyChangeListener("value", this, false);
             }
 
-            if (!value) {
+            if (!(this.object && value)) {
                 return;
             }
 
@@ -187,18 +189,17 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             this._propertyOptionsFieldValueProperty = componentDescriptor.optionsProperty;
 
             // set field value from object
-            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this._propertyBlueprint.name);
+            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this.propertyBlueprint.name);
 
             // watch field changes and update object value
             this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
 
             // Set the list of options
-            this.propertyValueField[this._propertyOptionsFieldValueProperty] = this._propertyBlueprint.enumValues;
+            this.propertyValueField[this._propertyOptionsFieldValueProperty] = this.propertyBlueprint.enumValues;
 
             this.needsDraw = true;
         }
     },
-
 
     /**
      * The component used to edit the value of the propertyBlueprint
@@ -211,15 +212,15 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     handleChange: {
         value: function (notification) {
-            if (!(this.object && this.propertyBlueprint)) {
-                return;
+            if ("object" === notification.propertyPath || "propertyBlueprint" === notification.propertyPath) {
+                this._populateField();
+            } else if (this.object && this.propertyBlueprint) {
+                //TODO also pass along the object? Technically we know what the object was higher up in the inspector...
+                this.dispatchEventNamed("propertyInspectorChange", true, true, {
+                    propertyName: this.propertyBlueprint.name,
+                    value: this.propertyValueField[this._propertyValueFieldValueProperty]
+                });
             }
-
-            //TODO also pass along the object? Technically we know what the object was higher up in the inspector...
-            this.dispatchEventNamed("propertyInspectorChange", true, true, {
-                propertyName: this.propertyBlueprint.name,
-                value: this.propertyValueField[this._propertyValueFieldValueProperty]
-            });
         }
     },
 
