@@ -92,6 +92,38 @@ describe("core/reel-document-stageless-editing-spec", function () {
         });
     });
 
+    describe("adding an object", function () {
+
+        var labelInOwner = "myObject",
+            serialization = {prototype: "test/my-object"};
+
+        it("should return a promise for a proxy of the added object", function () {
+            var addedObject = reelDocument.addObject(labelInOwner, serialization);
+            expect(Promise.isPromiseAlike(addedObject)).toBeTruthy();
+            addedObject.timeout(WAITSFOR_TIMEOUT).done();
+        });
+
+        it("should add the proxy to the editing document", function () {
+            var addedObject = reelDocument.addObject(labelInOwner, serialization);
+            return addedObject.then(function (proxy) {
+                expect(proxy).toBeTruthy();
+                expect(reelDocument.editingProxyMap[labelInOwner]).toBe(proxy);
+                expect(reelDocument.editingProxies.indexOf(proxy) >= 0).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+        it("should add the component to the serialization of the editing document", function () {
+            var addedObject = reelDocument.addObject(labelInOwner, serialization),
+                templateSerialization;
+
+            return addedObject.then(function (proxy) {
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization[labelInOwner]).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+    });
+
     describe("adding a serialized editing payload", function () {
 
     });

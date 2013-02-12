@@ -67,7 +67,7 @@ exports.EditingController = Montage.create(Montage, {
             var deserializer = Deserializer.create(),
                 self = this,
                 serializationWithinOwner = {},
-                deferredComponent = Promise.defer(),
+                deferredObject = Promise.defer(),
                 ownerDocument = this.owner.element.ownerDocument,
                 newObject;
 
@@ -78,10 +78,10 @@ exports.EditingController = Montage.create(Montage, {
             deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
             deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
                 newObject = objects[labelInOwner];
-                deferredComponent.resolve({label: labelInOwner, serialization: serialization, object: newObject});
+                deferredObject.resolve(newObject);
             });
 
-            return deferredComponent.promise;
+            return deferredObject.promise;
         }
     },
 
@@ -129,7 +129,7 @@ exports.EditingController = Montage.create(Montage, {
                 var newComponent = objects[identifier];
                 newComponent.ownerComponent = self.owner;
                 newComponent.needsDraw = true;
-                deferredComponent.resolve({label: labelInOwner, serialization: serialization, component: newComponent});
+                deferredComponent.resolve(newComponent);
             });
 
             return deferredComponent.promise;
