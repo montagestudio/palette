@@ -209,7 +209,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
         value: null
     },
 
-    handleChange: {
+    handlePropertyChange: {
         value: function (notification) {
             if (!(this.object && this.propertyBlueprint)) {
                 return;

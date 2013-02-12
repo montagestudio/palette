@@ -5,7 +5,6 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Bindings = require("montage/core/bindings").Bindings,
     ContentController = require("montage/core/content-controller").ContentController,
     Selection = require('../selection.reel').Selection;
 
@@ -87,7 +86,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         value: null
     },
 
-    handleChange: {
+    handlePropertyChange: {
         value: function() {
             this.drawAll();
         }
