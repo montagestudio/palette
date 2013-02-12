@@ -11,6 +11,8 @@ exports.mockReelDocument = function (fileUrl, serialization, bodyMarkup) {
     serializationNode.innerHTML = JSON.stringify(serialization);
     mockDocument.getElementsByTagName("head")[0].appendChild(serializationNode);
 
+    mockDocument.getElementsByTagName("body")[0].innerHTML = bodyMarkup;
+
     //TODO insert bodyMarkup
 
     return ReelDocument.create().init(fileUrl, Template.initWithDocument(mockDocument), require);

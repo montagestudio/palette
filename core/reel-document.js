@@ -79,8 +79,20 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _ownerElement: {
         get: function () {
-            var montageId = this._editingProxyMap.owner.properties.element["#"];
-            return this.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+            var montageId = this.getProperty("_editingProxyMap.owner.properties.element.#"),
+                element;
+
+            if (!montageId) {
+                throw new Error("Owner component has no element specified");
+            }
+
+            element = this.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+
+            if (!element) {
+                throw new Error("Owner component element could not be found");
+            }
+
+            return element;
         }
     },
 

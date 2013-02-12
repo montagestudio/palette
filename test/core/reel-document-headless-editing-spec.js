@@ -9,7 +9,13 @@ describe("core/reel-document-stageless-editing-spec", function () {
     var reelDocument;
 
     beforeEach(function () {
-        reelDocument = mockReelDocument("foo/bar/mock.reel", {"owner": {}});
+        reelDocument = mockReelDocument("foo/bar/mock.reel", {
+            "owner": {
+                "properties": {
+                    "element": {"#": "ownerElement"}
+                }
+            }
+        }, '<div data-montage-id="ownerElement"></div>');
     });
 
     describe("adding a component", function () {
