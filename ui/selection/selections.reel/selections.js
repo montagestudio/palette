@@ -17,7 +17,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     didCreate: {
         value: function() {
-            this.addPropertyChangeListener("_selectedObjects", this, false);
+            this.addOwnPropertyChangeListener("_selectedObjects", this, false);
 
             this.selectedObjectsController = ArrayController.create();
             Object.defineBinding(this.selectedObjectsController, "content", {

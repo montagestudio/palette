@@ -40,7 +40,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     prepareForDraw: {
         value: function () {
-            this.templateObjects.title.addPropertyChangeListener("value", this);
+            this.templateObjects.title.addOwnPropertyChangeListener("value", this);
         }
     },
 
