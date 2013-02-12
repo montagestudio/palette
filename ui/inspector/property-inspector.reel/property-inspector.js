@@ -187,7 +187,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             this._propertyOptionsFieldValueProperty = componentDescriptor.optionsProperty;
 
             // set field value from object
-            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this._propertyBlueprint.name);
+            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getPath(this._propertyBlueprint.name);
 
             // watch field changes and update object value
             this.propertyValueField.addOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);

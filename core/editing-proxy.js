@@ -118,16 +118,16 @@ exports.EditingProxy = Montage.create(Montage, {
                 this.serialization.properties = {};
             }
 
-            this.serialization.properties.setProperty(property, value);
+            this.serialization.properties.setPath(property, value);
             if (this.stageObject) {
-                this.stageObject.setProperty(property, value);
+                this.stageObject.setPath(property, value);
             }
         }
     },
 
     getObjectProperty: {
         value: function (property) {
-            return this.getProperty("properties." + property);
+            return this.getPath("properties." + property);
         }
     },
 

@@ -483,7 +483,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 // its added to the undo stack, not the redo stack…
                 deferredUndo.resolve([self.addComponent, self,
                     proxy.label, proxy.serialization, element.outerHTML,
-                    element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier")]);
+                    element.getAttribute("data-montage-id"), proxy.getPath("properties.identifier")]);
 
                 self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];

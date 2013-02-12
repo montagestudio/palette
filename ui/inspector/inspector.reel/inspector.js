@@ -68,7 +68,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             if (this._object) {
 
                 if (this.templateObjects) {
-                    this.templateObjects.title.value = this._object.getProperty("properties.identifier");
+                    this.templateObjects.title.value = this._object.getPath("properties.identifier");
                 }
 
                 this._blueprintDeferred = Promise.defer();

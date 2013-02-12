@@ -154,7 +154,7 @@ exports.EditingController = Montage.create(Montage, {
     setComponentProperty: {
         value: function (component, property, value) {
             //ensure component is child of controlledComponent
-            // is this as simple as: component.setProperty(property, value);
+            // is this as simple as: component.setPath(property, value);
             // what about setting the X coordinate of a component, that should be within the controlledComponent's CSS
         }
     }
