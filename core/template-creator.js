@@ -37,7 +37,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage/core/core").Montage,
     Template = require("montage/ui/template").Template,
-    Serializer = require("montage/core/serializer").Serializer;
+    Serializer = require("montage/core/serialization").Serializer;
 
 /**
     @class module:montage/tools/template/template-creator.TemplateCreator

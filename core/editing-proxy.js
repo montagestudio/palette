@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
+    parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName;
 
 exports.EditingProxy = Montage.create(Montage, {
 

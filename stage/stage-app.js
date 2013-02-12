@@ -1,4 +1,4 @@
-Deserializer = require("montage/core/deserializer").Deserializer;
+Deserializer = require("montage/core/serialization").Deserializer;
 //HACK!!! is need so that we can drop the flow synchronously on the stage
 require("montage/ui/dynamic-text.reel");
 require("montage/ui/image.reel");

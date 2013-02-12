@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     Exporter = require("core/exporter").Exporter,
-    Deserializer = require("montage/core/deserializer").Deserializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
     Component = require("montage/ui/component").Component; //TODO this is only for debugging
 
 // The actual object responsible for add, removing, and altering components that belong to the owner it controls.

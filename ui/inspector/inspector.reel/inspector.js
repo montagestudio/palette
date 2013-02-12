@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
     ArrayController = require("montage/ui/controller/array-controller").ArrayController,
-    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
+    parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName;
 
 /**
     Description TODO

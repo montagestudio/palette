@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
     EditingController = require("core/controller/editing-controller").EditingController,
     Template = require("montage/ui/template").Template,
     Promise = require("montage/core/promise").Promise,
-    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName,
+    parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName,
     EditingProxy = require("core/editing-proxy").EditingProxy,
     SORTERS = require("core/sorters");
 
