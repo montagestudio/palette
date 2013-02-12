@@ -185,6 +185,28 @@ describe("core/reel-document-stageless-editing-spec", function () {
 
     });
 
+    describe("setting a property on an object", function () {
+
+        var labelInOwner = "bar",
+            proxyToEdit;
+
+        beforeEach(function () {
+            proxyToEdit = reelDocument.editingProxyMap[labelInOwner];
+        });
+
+        it("should set the property on the proxy to be the expected value", function () {
+            reelDocument.setOwnedObjectProperty(proxyToEdit, "prop", "myValue");
+            expect(proxyToEdit.properties.prop).toBe("myValue");
+        });
+
+        it("should set the property in the serialization to be the expected value", function () {
+            reelDocument.setOwnedObjectProperty(proxyToEdit, "prop", "myValue");
+            var templateSerialization = JSON.parse(reelDocument.serialization);
+            expect(templateSerialization[labelInOwner].properties.prop).toBe("myValue");
+        });
+
+    });
+
     describe("adding a serialized editing payload", function () {
 
     });

@@ -175,7 +175,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__addProxy(proxy);
@@ -205,7 +205,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__removeProxy(proxy);
@@ -548,21 +548,18 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     },
 
     setOwnedObjectProperty: {
-        //TODO accept the object itself as well (we should accept either objects or their proxies)
         value: function (proxy, property, value) {
-            //TODO add to undo manager
 
             var undoManager = this.undoManager,
                 undoneValue = proxy.getObjectProperty(property);
 
-            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
-
             //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
-            // throughout the editingEnfironment, I don't want to expose accessible editing APIs
+            // throughout the editingEnvironment, I don't want to expose accessible editing APIs
             // that do not go through the editingDocument...or do I?
 
-            // Might be nice to have an editing API that avoid undoability and event dispatching?
+            // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperty(property, value);
+            this._buildSerialization();
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
                 object: proxy,
@@ -571,6 +568,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 undone: undoManager.isUndoing,
                 redone: undoManager.isRedoing
             });
+
+            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
         }
     },
 
