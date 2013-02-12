@@ -19,7 +19,8 @@ describe("core/reel-document-stageless-editing-spec", function () {
                 "properties": {
                     "element": {"#": "foo"}
                 }
-            }
+            },
+            "bar": {}
         }, '<div data-montage-id="ownerElement"></div><div data-montage-id="foo"></div>');
     });
 
@@ -63,7 +64,7 @@ describe("core/reel-document-stageless-editing-spec", function () {
             proxyToRemove;
 
         beforeEach(function () {
-            proxyToRemove = reelDocument.editingProxyMap.foo;
+            proxyToRemove = reelDocument.editingProxyMap[labelInOwner];
         });
 
         it("should return a promise for a removed proxy", function () {
@@ -88,6 +89,18 @@ describe("core/reel-document-stageless-editing-spec", function () {
             return removalPromise.then(function () {
                 templateSerialization = JSON.parse(reelDocument.serialization);
                 expect(templateSerialization[labelInOwner]).toBeUndefined();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+        it("must not remove any other components from the serialization of the editing document", function () {
+            var removalPromise = reelDocument.removeObject(proxyToRemove),
+                templateSerialization;
+
+            return removalPromise.then(function () {
+                expect(reelDocument.editingProxies.length).toBe(2);
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization.owner).toBeTruthy();
+                expect(templateSerialization.bar).toBeTruthy();
             }).timeout(WAITSFOR_TIMEOUT);
         });
     });
@@ -119,6 +132,54 @@ describe("core/reel-document-stageless-editing-spec", function () {
             return addedObject.then(function (proxy) {
                 templateSerialization = JSON.parse(reelDocument.serialization);
                 expect(templateSerialization[labelInOwner]).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+    });
+
+    describe("removing an object", function () {
+
+        var labelInOwner = "bar",
+            proxyToRemove;
+
+        beforeEach(function () {
+            proxyToRemove = reelDocument.editingProxyMap[labelInOwner];
+        });
+
+        it("should return a promise for a removed proxy", function () {
+            var removalPromise = reelDocument.removeObject(proxyToRemove);
+            expect(Promise.isPromiseAlike(removalPromise)).toBeTruthy();
+            removalPromise.timeout(WAITSFOR_TIMEOUT).done();
+        });
+
+        it("should remove the proxy from the editing document", function () {
+            var removalPromise = reelDocument.removeObject(proxyToRemove);
+            return removalPromise.then(function (removedProxy) {
+                expect(removedProxy).toBeTruthy();
+                expect(reelDocument.editingProxyMap[labelInOwner]).toBeUndefined();
+                expect(reelDocument.editingProxies.indexOf(removedProxy) === -1).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+        it("should remove the object from the serialization of the editing document", function () {
+            var removalPromise = reelDocument.removeObject(proxyToRemove),
+                templateSerialization;
+
+            return removalPromise.then(function () {
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization[labelInOwner]).toBeUndefined();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+        it("must not remove any other objects from the serialization of the editing document", function () {
+            var removalPromise = reelDocument.removeObject(proxyToRemove),
+                templateSerialization;
+
+            return removalPromise.then(function () {
+                expect(reelDocument.editingProxies.length).toBe(2);
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization.owner).toBeTruthy();
+                expect(templateSerialization.foo).toBeTruthy();
             }).timeout(WAITSFOR_TIMEOUT);
         });
 
