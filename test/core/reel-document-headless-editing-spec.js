@@ -14,8 +14,13 @@ describe("core/reel-document-stageless-editing-spec", function () {
                 "properties": {
                     "element": {"#": "ownerElement"}
                 }
+            },
+            "foo": {
+                "properties": {
+                    "element": {"#": "foo"}
+                }
             }
-        }, '<div data-montage-id="ownerElement"></div>');
+        }, '<div data-montage-id="ownerElement"></div><div data-montage-id="foo"></div>');
     });
 
     describe("adding a component", function () {
@@ -44,9 +49,45 @@ describe("core/reel-document-stageless-editing-spec", function () {
         it("should add the component to the serialization of the editing document", function () {
             var addedComponent = reelDocument.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier),
                 templateSerialization;
+
             return addedComponent.then(function (proxy) {
                 templateSerialization = JSON.parse(reelDocument.serialization);
                 expect(templateSerialization[labelInOwner]).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+    });
+
+    describe("removing a component", function () {
+
+        var labelInOwner = "foo",
+            proxyToRemove;
+
+        beforeEach(function () {
+            proxyToRemove = reelDocument.editingProxyMap.foo;
+        });
+
+        it("should return a promise for a removed proxy", function () {
+            var removalPromise = reelDocument.removeComponent(proxyToRemove);
+            expect(Promise.isPromiseAlike(removalPromise)).toBeTruthy();
+            removalPromise.timeout(WAITSFOR_TIMEOUT).done();
+        });
+
+        it("should remove the proxy from the editing document", function () {
+            var removalPromise = reelDocument.removeComponent(proxyToRemove);
+            return removalPromise.then(function (removedProxy) {
+                expect(removedProxy).toBeTruthy();
+                expect(reelDocument.editingProxyMap[labelInOwner]).toBeUndefined();
+                expect(reelDocument.editingProxies.indexOf(removedProxy) === -1).toBeTruthy();
+            }).timeout(WAITSFOR_TIMEOUT);
+        });
+
+        it("should remove the component from the serialization of the editing document", function () {
+            var removalPromise = reelDocument.removeComponent(proxyToRemove),
+                templateSerialization;
+
+            return removalPromise.then(function () {
+                templateSerialization = JSON.parse(reelDocument.serialization);
+                expect(templateSerialization[labelInOwner]).toBeUndefined();
             }).timeout(WAITSFOR_TIMEOUT);
         });
     });

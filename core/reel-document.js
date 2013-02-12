@@ -158,10 +158,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             serialization = JSON.parse(serialization);
 
             var labels = Object.keys(serialization),
-                self = this;
+                self = this,
+                proxy,
+                montageId;
 
             return labels.map(function (label) {
-                return EditingProxy.create().init(label, serialization[label], self);
+                proxy = EditingProxy.create().init(label, serialization[label], self);
+                montageId = proxy.getProperty("properties.element.#");
+                proxy.element = self.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+                return proxy;
             });
         }
     },
@@ -190,7 +195,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             proxyMap[proxy.label] = proxy;
             //TODO not blindly append to the end of the body
             //TODO react to changing the element?
-            if (proxy.element) {
+            if (proxy.element && !proxy.element.parentNode) {
                 this._ownerElement.appendChild(proxy.element);
             }
         }
@@ -456,9 +461,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxyPromise = Promise.resolve(proxy);
             }
 
-            proxyPromise.then(function (resolvedProxy) {
+            return proxyPromise.then(function (resolvedProxy) {
 
-                deferredUndo.resolve([self.removeComponent, self, proxy, null]);
+                deferredUndo.resolve([self.removeComponent, self, proxy]);
 
                 if (markup) {
                     resolvedProxy.element = self._createElementFromMarkup(markup, elementMontageId);
@@ -474,31 +479,46 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self.clearSelectedObjects();
                     self.selectObject(resolvedProxy);
                 }
-            });
 
-            return proxyPromise;
+                return resolvedProxy;
+            });
         }
     },
 
     removeComponent: {
-        value: function (proxy, originalElement) {
+        value: function (proxy) {
 
             var self = this,
+                removalPromise,
                 deferredUndo = Promise.defer();
 
             this.undoManager.register("Remove Component", deferredUndo.promise);
 
-            return this._editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
+            if (this._editingController) {
+                removalPromise = this._editingController.removeComponent(proxy.stageObject);
+            } else {
+                removalPromise = Promise.resolve(proxy);
+            }
 
-                //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
-                // its added to the undo stack, not the redo stack…
-                deferredUndo.resolve([self.addComponent, self,
-                    proxy.label, proxy.serialization, element.outerHTML,
-                    element.getAttribute("data-montage-id"), proxy.getProperty("properties.identifier")]);
+            return removalPromise.then(function (removedProxy) {
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                    delete self.editingProxyMap[proxy.label];
+                deferredUndo.resolve([
+                    self.addComponent,
+                    self,
+                    removedProxy.label,
+                    removedProxy.serialization,
+                    removedProxy.element.outerHTML,
+                    removedProxy.element.getAttribute("data-montage-id"),
+                    removedProxy.getProperty("properties.identifier")]);
+
+
+                self._removeProxies(removedProxy);
+
+                self.dispatchEventNamed("didAddComponent", true, true, {
+                    component: removedProxy
                 });
+
+                return removedProxy;
             });
         }
     },
