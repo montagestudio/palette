@@ -26,12 +26,6 @@ exports.PropertyGroup = Montage.create(Component, /** @lends module:"ui/ui/inspe
         }
     },
 
-    handleChange: {
-        value: function(change) {
-            console.log("propertiesController.content", change, this.name);
-        }
-    },
-
     object: {
         value: null
     },
