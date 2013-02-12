@@ -1,4 +1,5 @@
 var Montage = require("montage").Montage,
+    Bindings = require("montage/core/bindings").Bindings,
     parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName;
 
 exports.EditingProxy = Montage.create(Montage, {
@@ -167,7 +168,7 @@ exports.EditingProxy = Montage.create(Montage, {
                 if (this.stageObject._bindingDescriptors) {
                     Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
                 }
-                Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
+                Bindings.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
             }
         }
     },

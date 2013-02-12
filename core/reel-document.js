@@ -1,4 +1,5 @@
 var Montage = require("montage").Montage,
+    Bindings = require("montage/core/bindings").Bindings,
     EditingDocument = require("core/editing-document").EditingDocument,
     EditingController = require("core/controller/editing-controller").EditingController,
     Template = require("montage/ui/template").Template,

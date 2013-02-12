@@ -104,7 +104,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
-    handleChange: {
+    handlePropertyChange: {
         value: function (notification) {
 
             if ("value" === notification.propertyPath && notification.target === this.templateObjects.title) {

@@ -18,11 +18,7 @@ exports.PropertyGroup = Montage.create(Component, /** @lends module:"ui/ui/inspe
         value: function() {
             this.propertiesController = ContentController.create();
 
-            Object.defineBinding(this, "propertiesController.content", {
-                boundObject: this,
-                boundObjectPropertyPath: "properties",
-                oneway: true
-            });
+            this.defineBinding("propertiesController.content", {"<-": "properties"});
         }
     },
 
