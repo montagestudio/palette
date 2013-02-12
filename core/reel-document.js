@@ -435,24 +435,23 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             proxy = EditingProxy.create().init(labelInOwner, serialization, this);
 
             if (this._editingController) {
-                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
-                    proxy.stageObject = result.component;
-
-                    //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                    deferredUndo.resolve([self.removeComponent, self, proxy, null]);
-
-                    return proxy;
-                });
+                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier)
+                    .then(function (result) {
+                        proxy.stageObject = result.component;
+                        return proxy;
+                    });
             } else {
                 proxyPromise = Promise.resolve(proxy);
-                //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                deferredUndo.resolve([self.removeComponent, self, proxy, null]);
             }
 
             proxyPromise.then(function (resolvedProxy) {
+
+                deferredUndo.resolve([self.removeComponent, self, proxy, null]);
+
                 if (markup) {
                     resolvedProxy.element = self._createElementFromMarkup(markup, elementMontageId);
                 }
+
                 self._addProxies(resolvedProxy);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
