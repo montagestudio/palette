@@ -12,21 +12,17 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     load: {
         value: function (fileUrl, packageUrl) {
-            var deferredDoc = Promise.defer(),
-                self = this;
+            var self = this;
 
             this.selectedObjects = [];
 
-            require.loadPackage(packageUrl)
-                .then(function (packageRequire) {
-                    packageRequire.async(fileUrl).get(parseObjectLocationId(fileUrl).name).then(function (componentPrototype) {
-                        Template.templateWithModuleId(packageRequire, componentPrototype.templateModuleId, function (template) {
-                            deferredDoc.resolve(self.create().init(fileUrl, template, packageRequire));
-                        });
-                    });
+            return require.loadPackage(packageUrl).then(function (packageRequire) {
+                return packageRequire.async(fileUrl).get(parseObjectLocationId(fileUrl).name).then(function (componentPrototype) {
+                    return Template.templateWithModuleId(packageRequire, componentPrototype.templateModuleId);
+                }).then(function (template) {
+                    return self.create().init(fileUrl, template, packageRequire);
                 });
-
-            return deferredDoc.promise;
+            });
         }
     },
 

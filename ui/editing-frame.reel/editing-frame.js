@@ -167,9 +167,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 ownerComponent = iFrameWindow.stageData.ownerComponent;
 
-                ownerComponent._loadTemplate(function (template) {
+                ownerComponent._loadTemplate().then(function (template) {
                     self._deferredEditingInformation.resolve({owner: ownerComponent, template: template, frame: self});
-                });
+                }).done();
 
             }
 
