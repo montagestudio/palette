@@ -16,7 +16,7 @@ exports.EditingDocument = Montage.create(Montage, {
             this.undoManager = UndoManager.create();
 
             var self = this;
-            this.dispatchPropertyChange("fileUrl", function () {
+            this.dispatchOwnPropertyChange("fileUrl", function () {
                 self._fileUrl = fileUrl;
             });
 

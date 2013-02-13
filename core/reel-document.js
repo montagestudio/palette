@@ -55,7 +55,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 templateObjects[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
             }, this);
 
-            this.dispatchPropertyChange("serialization", function () {
+            this.dispatchOwnPropertyChange("serialization", function () {
                 template._ownerSerialization = JSON.stringify(templateObjects, null, 4);
             });
         }
@@ -154,7 +154,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchOwnPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__addProxy(proxy);
@@ -184,7 +184,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchOwnPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__removeProxy(proxy);
@@ -354,7 +354,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxy = EditingProxy.create().init(labelInOwner, result.serialization, self);
                 proxy.stageObject = result.object;
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                self.dispatchOwnPropertyChange("editingProxyMap", "editingProxies", function () {
                     self._editingProxyMap[labelInOwner] = proxy;
                 });
 
@@ -386,7 +386,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                self.dispatchOwnPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
                 });
 
@@ -481,7 +481,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     proxy.label, proxy.serialization, element.outerHTML,
                     element.getAttribute("data-montage-id"), proxy.getPath("properties.identifier")]);
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                self.dispatchOwnPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
                 });
             });
