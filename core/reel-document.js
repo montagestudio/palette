@@ -12,13 +12,14 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     load: {
         value: function (fileUrl, packageUrl) {
-            var self = this;
+            var self = this,
+                objectName = MontageReviver.parseObjectLocationId(fileUrl).objectName;
 
             this.selectedObjects = [];
 
             return require.loadPackage(packageUrl).then(function (packageRequire) {
-                return packageRequire.async(fileUrl).get(MontageReviver.parseObjectLocationId(fileUrl).name).then(function (componentPrototype) {
-                    return Template.templateWithModuleId(packageRequire, componentPrototype.templateModuleId);
+                return packageRequire.async(fileUrl).get(objectName).then(function (componentPrototype) {
+                    return Template.getTemplateWithModuleId(componentPrototype.templateModuleId, packageRequire);
                 }).then(function (template) {
                     return self.create().init(fileUrl, template, packageRequire);
                 });
