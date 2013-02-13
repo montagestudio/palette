@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
     EditingController = require("core/controller/editing-controller").EditingController,
     Template = require("montage/ui/template").Template,
     Promise = require("montage/core/promise").Promise,
-    parseForModuleAndName = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseForModuleAndName,
+    parseObjectLocationId = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseObjectLocationId,
     EditingProxy = require("core/editing-proxy").EditingProxy,
     SORTERS = require("core/sorters");
 
@@ -19,7 +19,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             require.loadPackage(packageUrl)
                 .then(function (packageRequire) {
-                    packageRequire.async(fileUrl).get(parseForModuleAndName(fileUrl).name).then(function (componentPrototype) {
+                    packageRequire.async(fileUrl).get(parseObjectLocationId(fileUrl).name).then(function (componentPrototype) {
                         Template.templateWithModuleId(packageRequire, componentPrototype.templateModuleId, function (template) {
                             deferredDoc.resolve(self.create().init(fileUrl, template, packageRequire));
                         });
@@ -310,7 +310,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _generateLabel: {
         value: function (serialization) {
-            var name = parseForModuleAndName(serialization.prototype).name,
+            var name = parseObjectLocationId(serialization.prototype).name,
                 label = name.substring(0, 1).toLowerCase() + name.substring(1),
                 labelRegex = new RegExp("^" + label + "(\\d+)$", "i"),
                 match,
