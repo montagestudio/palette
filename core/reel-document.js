@@ -56,9 +56,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 templateObjects[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
             }, this);
 
-            this.dispatchPropertyChange("serialization", function () {
+            this.dispatchBeforeOwnPropertyChange("serialization", template._ownerSerialization);
+            // this.dispatchPropertyChange("serialization", function () {
                 template._ownerSerialization = JSON.stringify(templateObjects, null, 4);
-            });
+            // });
+            this.dispatchOwnPropertyChange("serialization", template._ownerSerialization);
         }
     },
 
@@ -155,7 +157,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
+            this.dispatchBeforeOwnPropertyChange("serialization", this.serialization);
+            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__addProxy(proxy);
@@ -165,7 +170,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 }
 
                 self._buildSerialization();
-            });
+            // });
+            this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+            this.dispatchOwnPropertyChange("serialization", this.serialization);
         }
     },
 
@@ -185,7 +193,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
+            this.dispatchBeforeOwnPropertyChange("serialization", this.serialization);
+            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__removeProxy(proxy);
@@ -195,7 +206,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 }
 
                 self._buildSerialization();
-            });
+            // });
+            this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+            this.dispatchOwnPropertyChange("serialization", this.serialization);
         }
     },
 
@@ -355,9 +369,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxy = EditingProxy.create().init(labelInOwner, result.serialization, self);
                 proxy.stageObject = result.object;
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     self._editingProxyMap[labelInOwner] = proxy;
-                });
+                // });
+                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
 
                 deferredUndo.resolve([self.removeObject, self, proxy, null]);
 
@@ -387,9 +403,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
-                });
+                // });
+                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
 
             });
         }
@@ -482,9 +500,11 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     proxy.label, proxy.serialization, element.outerHTML,
                     element.getAttribute("data-montage-id"), proxy.getPath("properties.identifier")]);
 
-                self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
+                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                     delete self.editingProxyMap[proxy.label];
-                });
+                // });
+                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
             });
         }
     },
