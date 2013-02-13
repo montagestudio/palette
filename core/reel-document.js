@@ -35,7 +35,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             this._packageRequire = packageRequire;
 
             //TODO handle external serializations
-            var serialization = template.getInlineObjectsString(template._document);
+            var serialization = template.getInlineObjectsString(template.document);
             this._editingProxyMap = {};
             this._addProxies(this._proxiesFromSerialization(serialization));
 
@@ -70,7 +70,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     htmlDocument: {
         get: function () {
-            return this._template._document;
+            return this._template.document;
         }
     },
 
@@ -101,7 +101,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var filenameMatch = location.match(/.+\/(.+)\.reel/),
                 path,
                 template = this._template,
-                doc = this._template._document,
+                doc = this._template.document,
                 serializationElement;
 
             if (!(filenameMatch && filenameMatch[1])) {
