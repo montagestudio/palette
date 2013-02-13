@@ -35,7 +35,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             this._packageRequire = packageRequire;
 
             //TODO handle external serializations
-            var serialization = template.getInlineSerialization(template._document);
+            var serialization = template.getInlineObjectsString(template._document);
             this._editingProxyMap = {};
             this._addProxies(this._proxiesFromSerialization(serialization));
 
@@ -112,7 +112,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             //TODO remove this block of code once the template's exportToString no longer
             //preserves the inline serialization element when exporting
-            if (template.getInlineSerialization(doc)) {
+            if (template.getInlineObjectsString(doc)) {
                 serializationElement = doc.querySelector("script[type='" + template._SCRIPT_TYPE + "']");
                 serializationElement.textContent = template._ownerSerialization;
             }
