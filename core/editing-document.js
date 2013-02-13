@@ -5,20 +5,26 @@ var Montage = require("montage").Montage,
 exports.EditingDocument = Montage.create(Montage, {
 
     load: {
-        value: function (fileUrl) {
-            var doc = this.create().init.apply(this, arguments);
-            return Promise.resolve(doc);
+        value: function (fileUrl, packageUrl) {
+            var deferredDoc = Promise.defer();
+
+            require.loadPackage(packageUrl).then(function (packageRequire) {
+                deferredDoc.resolve(EditingDocument.create().init(fileUrl, packageRequire));
+            });
+            return deferredDoc.promise;
         }
     },
 
     init: {
-        value: function (fileUrl) {
-            this.undoManager = UndoManager.create();
+        value: function (fileUrl, packageRequire) {
+            this._undoManager = UndoManager.create();
 
             var self = this;
             this.dispatchPropertyChange("fileUrl", function () {
                 self._fileUrl = fileUrl;
             });
+
+            this._packageRequire = packageRequire;
 
             return this;
         }
@@ -31,8 +37,14 @@ exports.EditingDocument = Montage.create(Montage, {
         }
     },
 
-    undoManager: {
+    _undoManager: {
         value: null
+    },
+
+    undoManager: {
+       get: function() {
+           return this._undoManager;
+       }
     },
 
     _fileUrl: {
@@ -42,6 +54,16 @@ exports.EditingDocument = Montage.create(Montage, {
     fileUrl: {
         get: function () {
             return this._fileUrl;
+        }
+    },
+
+    _packageRequire:{
+        value:null
+    },
+
+    packageRequire:{
+        get:function () {
+            return this._packageRequire;
         }
     },
 
@@ -55,6 +77,32 @@ exports.EditingDocument = Montage.create(Montage, {
         value: function () {
             this.undoManager.redo();
         }
+    },
+
+    setOwnedObjectProperty: {
+        value: function (proxy, property, value) {
+
+            var undoManager = this.undoManager,
+                undoneValue = proxy.getObjectProperty(property);
+
+            //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
+            // throughout the editingEnvironment, I don't want to expose accessible editing APIs
+            // that do not go through the editingDocument...or do I?
+
+            // Might be nice to have an editing API that avoids undoability and event dispatching?
+            proxy.setObjectProperty(property, value);
+
+            this.dispatchEventNamed("didSetObjectProperty", true, true, {
+                object: proxy,
+                property: property,
+                value: value,
+                undone: undoManager.isUndoing,
+                redone: undoManager.isRedoing
+            });
+
+            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
+        }
     }
+
 
 });
