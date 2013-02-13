@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
     ContentController = require("montage/core/content-controller").ContentController,
-    parseObjectLocationId = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseObjectLocationId;
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 /**
     Description TODO

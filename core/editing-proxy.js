@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings,
-    parseObjectLocationId = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver.parseObjectLocationId;
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 exports.EditingProxy = Montage.create(Montage, {
 
@@ -13,7 +13,7 @@ exports.EditingProxy = Montage.create(Montage, {
 
             this._exportId = this._serialization.prototype;
             if (this._exportId) {
-                var exportInfo = parseObjectLocationId(this._exportId);
+                var exportInfo = MontageReviver.parseObjectLocationId(this._exportId);
                 this._moduleId = exportInfo.module;
                 this._exportName = exportInfo.name;
             }
