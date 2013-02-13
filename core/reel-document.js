@@ -321,7 +321,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _generateLabel: {
         value: function (serialization) {
-            var name = MontageReviver.parseObjectLocationId(serialization.prototype).name,
+            var name = MontageReviver.parseObjectLocationId(serialization.prototype).objectName,
                 label = name.substring(0, 1).toLowerCase() + name.substring(1),
                 labelRegex = new RegExp("^" + label + "(\\d+)$", "i"),
                 match,

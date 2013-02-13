@@ -14,8 +14,8 @@ exports.EditingProxy = Montage.create(Montage, {
             this._exportId = this._serialization.prototype;
             if (this._exportId) {
                 var exportInfo = MontageReviver.parseObjectLocationId(this._exportId);
-                this._moduleId = exportInfo.module;
-                this._exportName = exportInfo.name;
+                this._moduleId = exportInfo.moduleId;
+                this._exportName = exportInfo.objectName;
             }
 
             this._editingDocument = editingDocument;
