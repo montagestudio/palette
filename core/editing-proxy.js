@@ -119,7 +119,7 @@ exports.EditingProxy = Montage.create(Montage, {
                 this.serialization.properties = {};
             }
 
-            this.serialization.properties.setPath(property, value);
+            Montage.setPath.call(this.serialization.properties, property, value);
             if (this.stageObject) {
                 this.stageObject.setPath(property, value);
             }
