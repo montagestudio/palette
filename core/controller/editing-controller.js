@@ -67,21 +67,17 @@ exports.EditingController = Montage.create(Montage, {
             var deserializer = Deserializer.create(),
                 self = this,
                 serializationWithinOwner = {},
-                deferredComponent = Promise.defer(),
-                ownerDocument = this.owner.element.ownerDocument,
                 newObject;
 
             serialization = Object.clone(serialization);
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
-            deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
+            deserializer.initWithSerializationStringAndRequire(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserializeWithElement(null, this.owner.element).then(function (objects) {
                 newObject = objects[labelInOwner];
-                deferredComponent.resolve({label: labelInOwner, serialization: serialization, object: newObject});
+                return {label: labelInOwner, serialization: serialization, object: newObject};
             });
-
-            return deferredComponent.promise;
         }
     },
 
@@ -96,7 +92,6 @@ exports.EditingController = Montage.create(Montage, {
                 deserializer = Deserializer.create(),
                 self = this,
                 serializationWithinOwner = {},
-                deferredComponent = Promise.defer(),
                 ownerDocument = this.owner.element.ownerDocument;
 
             serialization = Object.clone(serialization);
@@ -124,15 +119,13 @@ exports.EditingController = Montage.create(Montage, {
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
-            deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
+            deserializer.initWithSerializationStringAndRequire(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserializeWithElement(null, element.parentElement).then(function (objects) {
                 var newComponent = objects[identifier];
                 newComponent.ownerComponent = self.owner;
                 newComponent.needsDraw = true;
-                deferredComponent.resolve({label: labelInOwner, serialization: serialization, component: newComponent});
+                return {label: labelInOwner, serialization: serialization, component: newComponent};
             });
-
-            return deferredComponent.promise;
         }
     },
 
