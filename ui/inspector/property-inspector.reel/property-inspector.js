@@ -194,7 +194,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             this.propertyValueField[this._propertyValueFieldValueProperty] = Montage.getPath.call(this.object.properties, this.propertyBlueprint.name);
 
             // watch field changes and update object value
-            this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
+            this.propertyValueField.addOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
 
             // Set the list of options
             this.propertyValueField[this._propertyOptionsFieldValueProperty] = this.propertyBlueprint.enumValues;
@@ -213,8 +213,8 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
     },
 
     handlePropertyChange: {
-        value: function (value) {
-            if ("object" === notification.propertyPath || "propertyBlueprint" === notification.propertyPath) {
+        value: function (value, key) {
+            if ("object" === key || "propertyBlueprint" === key) {
                 this._populateField();
             } else if (this.object && this.propertyBlueprint) {
                 //TODO also pass along the object? Technically we know what the object was higher up in the inspector...
