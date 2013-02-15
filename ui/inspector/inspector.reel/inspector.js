@@ -104,18 +104,13 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
-    handlePropertyChange: {
-        value: function (notification) {
-
-            if ("value" === notification.propertyPath && notification.target === this.templateObjects.title) {
-
-                if (!this._hasAcceptedIdentifier) {
-                    this._hasAcceptedIdentifier = true;
-                } else {
-                    this.editingDocument.setOwnedObjectProperty(this.object, "identifier", notification.plus);
-                }
+    handleValueChange: {
+        value: function (value) {
+            if (!this._hasAcceptedIdentifier) {
+                this._hasAcceptedIdentifier = true;
+            } else {
+                this.editingDocument.setOwnedObjectProperty(this.object, "identifier", value);
             }
-
         }
     },
 
