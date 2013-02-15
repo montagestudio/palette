@@ -190,6 +190,8 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             this.propertyValueField[this._propertyValueFieldValueProperty] = Montage.getPath.call(this.object.properties, this._propertyBlueprint.name);
 
             // watch field changes and update object value
+            // TODO replace with addRangeAtPathChangeListener/something that can handle
+            // both rangey objects and not (e.g. strings)
             this.propertyValueField.addOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
 
             // Set the list of options
@@ -210,7 +212,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
     },
 
     handlePropertyChange: {
-        value: function (notification) {
+        value: function (value) {
             if (!(this.object && this.propertyBlueprint)) {
                 return;
             }
