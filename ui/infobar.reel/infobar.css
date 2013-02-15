@@ -1,44 +1,43 @@
 .Infobar {
     position: relative;
-
-    width: 100%;
     height: 0;
-    background: rgb(253, 235, 163);
+    line-height: 32px;
+    font-size: 15px;
     overflow: hidden;
-
-    -webkit-transition: height 200ms ease-in-out;
+    color: hsla(0,0%,100%,.8);
+    background: hsl(0,0%,30%);
+    -webkit-transition: height 200ms cubic-bezier(.37, .05, .22, .95);
 }
 
 .Infobar--open {
-    height: 30px;
- }
+    height: 32px;
+}
 
 .Infobar-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    position: relative;
+    margin-right: 32px; /* Size of X button */
 }
 
 .Infobar-close {
     position: absolute;
-    right: 5px;
-    top: 5px;
-
-    height: 20px;
-    width: 20px;
+    right: 0;
+    top: 0;
     padding: 0;
     margin: 0;
-
+    height: 32px;
+    width: 32px;
+    line-height: 32px;
+    color: hsla(0,0%,100%,.8);
+    font-size: 20px;
     border: none;
-    border-radius: 20px;
-
-    background: rgba(192, 192, 192, 0.8);
-    text-shadow: rgba(255, 255, 255, 0.8) 1px 1px 0;
+    background-color: hsla(0,0%,100%,.1);
+    cursor: pointer;
 }
 
 .Infobar-close:hover {
-    background: rgba(200, 200, 200, 0.8);
-    cursor: pointer;
+    background-color: hsla(0,0%,100%,.15);
+}
+
+.Infobar-close.active {
+    background-color: hsla(0,0%,0%,.3);
 }

@@ -78,8 +78,20 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _ownerElement: {
         get: function () {
-            var montageId = this._editingProxyMap.owner.properties.element["#"];
-            return this.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+            var montageId = this.getPath("_editingProxyMap.owner.properties.element.property('#')"),
+                element;
+
+            if (!montageId) {
+                throw new Error("Owner component has no element specified");
+            }
+
+            element = this.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+
+            if (!element) {
+                throw new Error("Owner component element could not be found");
+            }
+
+            return element;
         }
     },
 
@@ -145,10 +157,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             serialization = JSON.parse(serialization);
 
             var labels = Object.keys(serialization),
-                self = this;
+                self = this,
+                proxy,
+                montageId;
 
             return labels.map(function (label) {
-                return EditingProxy.create().init(label, serialization[label], self);
+                proxy = EditingProxy.create().init(label, serialization[label], self);
+                montageId = proxy.getPath("properties.element.property('#')");
+                proxy.element = self.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
+                return proxy;
             });
         }
     },
@@ -159,8 +176,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
             this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
-            this.dispatchBeforeOwnPropertyChange("serialization", this.serialization);
-            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__addProxy(proxy);
@@ -183,7 +199,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             proxyMap[proxy.label] = proxy;
             //TODO not blindly append to the end of the body
             //TODO react to changing the element?
-            if (proxy.element) {
+            if (proxy.element && !proxy.element.parentNode) {
                 this._ownerElement.appendChild(proxy.element);
             }
         }
@@ -195,8 +211,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
             this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
-            this.dispatchBeforeOwnPropertyChange("serialization", this.serialization);
-            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", "serialization", function () {
+            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
                 if (Array.isArray(proxies)) {
                     proxies.forEach(function (proxy) {
                         self.__removeProxy(proxy);
@@ -354,39 +369,56 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     },
 
     addObject: {
-        value: function (labelInOwner, serialization) {
+        value: function (labelInOwner, serialization, identifier) {
             var self = this,
                 deferredUndo = Promise.defer(),
-                proxy;
+                proxy,
+                proxyPromise;
+
+            serialization = Object.clone(serialization);
 
             if (!labelInOwner) {
                 labelInOwner = this._generateLabel(serialization);
             }
 
+            if (typeof identifier === "undefined") {
+                identifier = labelInOwner; //TODO lower case the identifier?
+                if (!serialization.properties) {
+                    serialization.properties = {};
+                }
+                serialization.properties.identifier = identifier;
+            }
+
             self.undoManager.register("Add Object", deferredUndo.promise);
 
-            return this._editingController.addObject(labelInOwner, serialization).then(function (result) {
-                proxy = EditingProxy.create().init(labelInOwner, result.serialization, self);
-                proxy.stageObject = result.object;
+            proxy = EditingProxy.create().init(labelInOwner, serialization, self);
 
-                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
-                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                    self._editingProxyMap[labelInOwner] = proxy;
-                // });
-                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            if (this._editingController) {
+                proxyPromise = this._editingController.addObject(labelInOwner, serialization)
+                    .then(function (newObject) {
+                        proxy.stageObject = newObject;
+                        return proxy;
+                    });
+            } else {
+                proxyPromise = Promise.resolve(proxy);
+            }
 
-                deferredUndo.resolve([self.removeObject, self, proxy, null]);
+            return proxyPromise.then(function (addedProxy) {
+
+                self._addProxies(addedProxy);
 
                 self.dispatchEventNamed("didAddObject", true, true, {
-                    object: proxy
+                    object: addedProxy
                 });
 
                 if (self.selectObjectsOnAddition) {
                     self.clearSelectedObjects();
-                    self.selectObject(proxy);
+                    self.selectObject(addedProxy);
                 }
 
-                return proxy;
+                deferredUndo.resolve([self.removeObject, self, addedProxy]);
+
+                return addedProxy;
             });
         }
     },
@@ -395,20 +427,21 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxy) {
 
             var self = this,
-                deferredUndo = Promise.defer();
+                deferredUndo = Promise.defer(),
+                removalPromise;
 
             this.undoManager.register("Remove Object", deferredUndo.promise);
 
-            return this._editingController.removeObject(proxy.stageObject).then(function (element) {
+            if (this._editingController) {
+                removalPromise = this._editingController.removeObject(proxy.stageObject);
+            } else {
+                removalPromise = Promise.resolve(proxy);
+            }
 
-                deferredUndo.resolve([self.addObject, self, proxy.label, proxy.serialization]);
-
-                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
-                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                    delete self.editingProxyMap[proxy.label];
-                // });
-                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
-
+            return removalPromise.then(function (removedProxy) {
+                self._removeProxies(removedProxy);
+                deferredUndo.resolve([self.addObject, self, removedProxy.label, removedProxy.serialization]);
+                return removedProxy;
             });
         }
     },
@@ -420,6 +453,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 proxy,
                 proxyPromise;
 
+            serialization = Object.clone(serialization);
+
             if (!labelInOwner) {
                 labelInOwner = this._generateLabel(serialization);
             }
@@ -428,6 +463,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             // were explicitly falsy the author is doing so on purpose
             //TODO I don't like manipulating the serialization without knowing how the package's version of montage would do it
             // we can work around that but we shouldn't rely on the live stage object/editingController to do the work for us
+            //TODO pull more out of the EditingController
             if (typeof elementMontageId === "undefined") {
                 elementMontageId = labelInOwner; //TODO format more appropriately for use in DOM?
                 if (!serialization.properties) {
@@ -441,7 +477,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 if (!serialization.properties) {
                     serialization.properties = {};
                 }
-                serialization.properties.identifier = labelInOwner;
+                serialization.properties.identifier = identifier;
             }
 
             deferredUndo = Promise.defer();
@@ -450,24 +486,21 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             proxy = EditingProxy.create().init(labelInOwner, serialization, this);
 
             if (this._editingController) {
-                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier).then(function (result) {
-                    proxy.stageObject = result.component;
-
-                    //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                    deferredUndo.resolve([self.removeComponent, self, proxy, null]);
-
-                    return proxy;
-                });
+                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier)
+                    .then(function (newComponent) {
+                        proxy.stageObject = newComponent;
+                        return proxy;
+                    });
             } else {
                 proxyPromise = Promise.resolve(proxy);
-                //TODO guess we should have cloned the element we found and kept that around so we can restore it on undo
-                deferredUndo.resolve([self.removeComponent, self, proxy, null]);
             }
 
-            proxyPromise.then(function (resolvedProxy) {
+            return proxyPromise.then(function (resolvedProxy) {
+
                 if (markup) {
                     resolvedProxy.element = self._createElementFromMarkup(markup, elementMontageId);
                 }
+
                 self._addProxies(resolvedProxy);
 
                 self.dispatchEventNamed("didAddComponent", true, true, {
@@ -478,53 +511,63 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self.clearSelectedObjects();
                     self.selectObject(resolvedProxy);
                 }
-            });
 
-            return proxyPromise;
+                deferredUndo.resolve([self.removeComponent, self, proxy]);
+
+                return resolvedProxy;
+            });
         }
     },
 
     removeComponent: {
-        value: function (proxy, originalElement) {
+        value: function (proxy) {
 
             var self = this,
+                removalPromise,
                 deferredUndo = Promise.defer();
 
             this.undoManager.register("Remove Component", deferredUndo.promise);
 
-            return this._editingController.removeComponent(proxy.stageObject, originalElement).then(function (element) {
+            if (this._editingController) {
+                removalPromise = this._editingController.removeComponent(proxy.stageObject);
+            } else {
+                removalPromise = Promise.resolve(proxy);
+            }
 
-                //TODO well, UM is certainly synchronous, it adds this, but since undoing ended before promise resolution,
-                // its added to the undo stack, not the redo stack…
-                deferredUndo.resolve([self.addComponent, self,
-                    proxy.label, proxy.serialization, element.outerHTML,
-                    element.getAttribute("data-montage-id"), proxy.getPath("properties.identifier")]);
+            return removalPromise.then(function (removedProxy) {
+                self._removeProxies(removedProxy);
 
-                this.dispatchBeforeOwnPropertyChange("editingProxyMap", this._editingProxyMap);
-                // self.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                    delete self.editingProxyMap[proxy.label];
-                // });
-                this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+                self.dispatchEventNamed("didAddComponent", true, true, {
+                    component: removedProxy
+                });
+
+                deferredUndo.resolve([
+                    self.addComponent,
+                    self,
+                    removedProxy.label,
+                    removedProxy.serialization,
+                    removedProxy.element.outerHTML,
+                    removedProxy.element.getAttribute("data-montage-id"),
+                    removedProxy.getPath("properties.identifier")]);
+
+                return removedProxy;
             });
         }
     },
 
     setOwnedObjectProperty: {
-        //TODO accept the object itself as well (we should accept either objects or their proxies)
         value: function (proxy, property, value) {
-            //TODO add to undo manager
 
             var undoManager = this.undoManager,
                 undoneValue = proxy.getObjectProperty(property);
 
-            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
-
             //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
-            // throughout the editingEnfironment, I don't want to expose accessible editing APIs
+            // throughout the editingEnvironment, I don't want to expose accessible editing APIs
             // that do not go through the editingDocument...or do I?
 
-            // Might be nice to have an editing API that avoid undoability and event dispatching?
+            // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperty(property, value);
+            this._buildSerialization();
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
                 object: proxy,
@@ -533,6 +576,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 undone: undoManager.isUndoing,
                 redone: undoManager.isRedoing
             });
+
+            undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
         }
     },
 

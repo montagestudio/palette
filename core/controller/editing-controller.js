@@ -76,7 +76,7 @@ exports.EditingController = Montage.create(Montage, {
             deserializer.initWithSerializationStringAndRequire(JSON.stringify(serializationWithinOwner), this.ownerRequire);
             return deserializer.deserializeWithElement(null, this.owner.element).then(function (objects) {
                 newObject = objects[labelInOwner];
-                return {label: labelInOwner, serialization: serialization, object: newObject};
+                return newObject;
             });
         }
     },
@@ -124,7 +124,7 @@ exports.EditingController = Montage.create(Montage, {
                 var newComponent = objects[identifier];
                 newComponent.ownerComponent = self.owner;
                 newComponent.needsDraw = true;
-                return {label: labelInOwner, serialization: serialization, component: newComponent};
+                return newComponent;
             });
         }
     },
