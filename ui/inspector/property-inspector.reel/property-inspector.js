@@ -183,7 +183,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 // We need something better that this to create list of values. We should use the value type!
                 componentDescriptor = propertyTypeComponentMap["*"];
             } else {
-                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[this._propertyBlueprint.valueType] : propertyTypeComponentMap["*"];
+                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
             }
 
             this.propertyValueField = this._createFieldComponent(componentDescriptor);
@@ -262,7 +262,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     draw: {
         value: function() {
-            this._element.title = this._propertyBlueprint.helpKey;
+            this._element.title = this.propertyBlueprint.helpKey;
         }
     }
 });
