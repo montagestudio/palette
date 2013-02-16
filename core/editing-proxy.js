@@ -32,6 +32,11 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
         }
     },
 
+    //TODO when setting an object, apply edits that happened while we didn't have a stageObject
+    stageObject:{
+        value:null
+    },
+
     packageRequire:{
         get:function () {
             return this.editingDocument.packageRequire;
@@ -44,6 +49,9 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     exportId:{
         get:function () {
+            if (!this._exportId) {
+                this._moduleId = this.moduleId;
+            }
             return this._exportId;
         }
     },
@@ -54,6 +62,9 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     moduleId:{
         get:function () {
+            if (!this._moduleId && this.editingDocument.fileUrl && this.editingDocument.packageRequire) {
+                this._moduleId = this.editingDocument.fileUrl.substring(this.editingDocument.packageRequire.location.length);
+            }
             return this._moduleId;
         }
     },
@@ -64,6 +75,9 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     exportName:{
         get:function () {
+            if (!this._exportName && this.stageObject) {
+                this._exportName = Montage.getInfoForObject(this.stageObject).objectName;
+            }
             return this._exportName;
         }
     },

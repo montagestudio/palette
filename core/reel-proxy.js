@@ -31,11 +31,6 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
         }
     },
 
-    //TODO when setting an object, apply edits that happened while we didn't have a stageObject
-    stageObject: {
-        value: null
-    },
-
     properties: {
         get: function () {
             return this.serialization.properties;

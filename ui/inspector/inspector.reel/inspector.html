@@ -48,6 +48,17 @@
             ]
         },
 
+        "propertyGroupsCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyGroupsCondition"},
+                "removalStrategy": "hide"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.blueprint"}
+            }
+        },
+
         "propertyGroups": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
@@ -83,8 +94,10 @@
             </div>
         </header>
 
-        <div data-montage-id="propertyGroups">
-            <div data-montage-id="propertyGroup"></div>
+        <div data-montage-id="propertyGroupsCondition">
+            <div data-montage-id="propertyGroups">
+                <div data-montage-id="propertyGroup"></div>
+            </div>
         </div>
     </section>
 </body>

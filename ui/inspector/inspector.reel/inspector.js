@@ -65,7 +65,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
             this.needsDraw = true;
 
-            if (this._object) {
+            if (this._object && this._object.moduleId && (this._object.moduleId != "") && this._object.exportName && (this._object.exportName != "")) {
 
                 if (this.templateObjects) {
                     this.templateObjects.title.value = this._object.getProperty("properties.identifier");
