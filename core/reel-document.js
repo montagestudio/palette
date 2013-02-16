@@ -56,17 +56,17 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 templateObjects[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
             }, this);
 
-            this.dispatchBeforeOwnPropertyChange("serialization", template._ownerSerialization);
+            this.dispatchBeforeOwnPropertyChange("serialization", template.objectsString);
             // this.dispatchPropertyChange("serialization", function () {
-                template._ownerSerialization = JSON.stringify(templateObjects, null, 4);
+                template.objectsString = JSON.stringify(templateObjects, null, 4);
             // });
-            this.dispatchOwnPropertyChange("serialization", template._ownerSerialization);
+            this.dispatchOwnPropertyChange("serialization", template.objectsString);
         }
     },
 
     serialization: {
         get: function () {
-            return this._template._ownerSerialization;
+            return this._template.objectsString;
         }
     },
 
@@ -124,14 +124,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             path = location + "/" + filenameMatch[1] + ".html";
 
-            //TODO remove this block of code once the template's exportToString no longer
-            //preserves the inline serialization element when exporting
-            if (template.getInlineObjectsString(doc)) {
-                serializationElement = doc.querySelector("script[type='" + template._SCRIPT_TYPE + "']");
-                serializationElement.textContent = template._ownerSerialization;
-            }
-
-            return dataWriter(template.exportToString(), path);
+            return dataWriter(template.html, path);
         }
     },
 
