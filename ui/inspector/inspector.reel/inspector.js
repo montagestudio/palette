@@ -163,7 +163,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 self.dispatchEventNamed("enterModalEditor", true, true, {
                     modalEditor: editor
                 });
-            });
+            }).done();
         }
     },
 
