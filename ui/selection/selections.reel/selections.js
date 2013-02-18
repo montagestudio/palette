@@ -17,12 +17,10 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     didCreate: {
         value: function() {
-            this.addOwnPropertyChangeListener("_selectedObjects", this, false);
-
             this.selectedObjectsController = ContentController.create();
             this.selectedObjectsController.defineBinding("content", {
-                source: this,
-                "<-": "_selectedObjects"
+                "<-": "_selectedObjects",
+                source: this
             });
         }
     },
@@ -76,7 +74,12 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         },
         set: function(value) {
             if (value != this._selectedObjects) {
+                if (this._selectedObjects) {
+                  this._selectedObjects.removeRangeChangeListener(this, "selectedObjects");
+                }
                 this._selectedObjects = value;
+                this._selectedObjects.addRangeChangeListener(this, "selectedObjects");
+
                 this.needsDraw = true;
             }
         }
@@ -86,7 +89,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         value: null
     },
 
-    handlePropertyChange: {
+    handleSelectedObjectsRangeChange: {
         value: function() {
             this.drawAll();
         }

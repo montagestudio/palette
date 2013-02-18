@@ -299,8 +299,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     // Selects nothing
     clearSelectedObjects: {
         value: function () {
-            //TODO use clear() instead?
-            this.selectedObjects = [];
+            this.selectedObjects.clear();
         }
     },
 
