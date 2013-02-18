@@ -278,7 +278,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var label = Montage.getInfoForObject(object).label,
                 proxy = this._editingProxyMap[label];
 
-            if (!proxy) {
+            // label is undefined for the owner component
+            if (label && !proxy) {
                 throw new Error("No editing proxy found for object with label '" + label + "'");
             }
 
