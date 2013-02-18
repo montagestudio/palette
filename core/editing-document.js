@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     UndoManager = require("montage/core/undo-manager").UndoManager;
 
-exports.EditingDocument = Montage.create(Montage, {
+var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     load: {
         value: function (fileUrl, packageUrl) {
