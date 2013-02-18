@@ -170,12 +170,12 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
             var value = this.propertyBlueprint;
 
-            if (this.propertyValueField) {
-                this.propertyValueField.removeOwnPropertyChangeListener("value", this, false);
-            }
-
             if (!(this.object && value)) {
                 return;
+            }
+
+            if (this.propertyValueField) {
+                this.propertyValueField.removeOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
             }
 
             var componentDescriptor;
