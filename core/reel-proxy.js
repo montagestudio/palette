@@ -73,41 +73,36 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
 
     defineBinding: {
         value: function (sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
-
             //TODO handle converter
 
             if (!this.serialization.bindings) {
                 this.serialization.bindings = {};
             }
 
-            var bindingSerialization = {},
+            var arrow = (oneWay ? "<-" : "<->"),
+                bindingSerialization = {},
                 bindingDescriptor;
 
             //TODO what happenes when the labels change, we should either update or indicate they're broken...
             //TODO what happens if the serialization format changes, we shouldn't be doing this ourselves
             // we should rely on the serializer of the package's version of montage
-            bindingSerialization[(oneWay ? "<-" : "<->")] = "@" + boundObject.label + "." + boundObjectPropertyPath;
+
+            bindingSerialization[arrow] = "@" + boundObject.label + "." + boundObjectPropertyPath;
             this.serialization.bindings[sourceObjectPropertyPath] = bindingSerialization;
 
             if (this.stageObject) {
-                bindingDescriptor = {
-                    boundObject: boundObject.stageObject,
-                    boundObjectPropertyPath: boundObjectPropertyPath
-                };
-
-                if (oneWay) {
-                    bindingDescriptor.oneWay = oneWay;
-                }
+                bindingDescriptor = {};
+                bindingDescriptor[arrow] = boundObjectPropertyPath;
+                bindingDescriptor.source = boundObject.stageObject;
 
                 if (converter) {
                     bindingDescriptor.converter = converter;
                 }
 
-                //TODO this is a bit of a hack to workaround the fact that there is an error deleting when there are no defined bindings
-                if (this.stageObject._bindingDescriptors) {
-                    Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+                if (this.stageObject.getBinding(sourceObjectPropertyPath)) {
+                    this.stageObject.cancelBinding(sourceObjectPropertyPath);
                 }
-                Object.defineBinding(this.stageObject, sourceObjectPropertyPath, bindingDescriptor);
+                this.stageObject.defineBinding(sourceObjectPropertyPath, bindingDescriptor);
             }
         }
     },
@@ -116,8 +111,8 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
         value: function (sourceObjectPropertyPath) {
             delete this.serialization.bindings[sourceObjectPropertyPath];
 
-            if (this.stageObject && this.stageObject._bindingDescriptors) {
-                Object.deleteBinding(this.stageObject, sourceObjectPropertyPath);
+            if (this.stageObject) {
+                this.stageObject.cancelBinding(sourceObjectPropertyPath);
             }
         }
     }
