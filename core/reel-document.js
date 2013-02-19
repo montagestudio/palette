@@ -563,13 +563,13 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    defineBinding: {
+    defineObjectBinding: {
         value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
 
             this.undoManager.register("Define Binding", Promise.resolve([this.deleteBinding, this, sourceObject, sourceObjectPropertyPath]));
 
             //Similar concerns above, where does this API belong?
-            sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+            sourceObject.defineObjectBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
 
             this.dispatchEventNamed("didDefineBinding", true, true, {
                 sourceObject: sourceObject,
@@ -583,7 +583,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    deleteBinding: {
+    cancelObjectBinding: {
         value: function (sourceObject, sourceObjectPropertyPath) {
             var binding = sourceObject.bindings ? sourceObject.bindings[sourceObjectPropertyPath] : null,
                 bindingString,
@@ -618,7 +618,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this.undoManager.register("Delete Binding", Promise.resolve([this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter]));
 
-            sourceObject.deleteBinding(sourceObjectPropertyPath);
+            sourceObject.cancelObjectBinding(sourceObjectPropertyPath);
 
             this.dispatchEventNamed("didDeleteBinding", true, true, {
                 sourceObject: sourceObject,

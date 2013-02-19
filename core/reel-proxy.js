@@ -71,7 +71,7 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
         }
     },
 
-    defineBinding: {
+    defineObjectBinding: {
         value: function (sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
             //TODO handle converter
 
@@ -107,7 +107,7 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
         }
     },
 
-    deleteBinding: {
+    cancelObjectBinding: {
         value: function (sourceObjectPropertyPath) {
             delete this.serialization.bindings[sourceObjectPropertyPath];
 
