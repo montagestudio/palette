@@ -88,14 +88,14 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     setObjectProperty:{
         value:function (property, value) {
-            this.setProperty("properties." + property, value);
+            this.setPath("properties." + property, value);
             //TODO why don't we set the property on the stage object here
         }
     },
 
     getObjectProperty:{
         value:function (property) {
-            return this.getProperty("properties." + property);
+            return this.getPath("properties." + property);
         }
     }
 
