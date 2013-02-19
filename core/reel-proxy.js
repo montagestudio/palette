@@ -64,7 +64,8 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
                 this.serialization.properties = {};
             }
 
-            this.serialization.properties.setPath(property, value);
+            // Object doesn't inherit from Montage
+            Montage.setPath.call(this.serialization.properties, property, value);
             if (this.stageObject) {
                 this.stageObject.setPath(property, value);
             }
