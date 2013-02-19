@@ -15,8 +15,6 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var self = this,
                 objectName = MontageReviver.parseObjectLocationId(fileUrl).objectName;
 
-            this.selectedObjects = [];
-
             return require.loadPackage(packageUrl).then(function (packageRequire) {
                 return packageRequire.async(fileUrl).get(objectName).then(function (componentPrototype) {
                     return Template.getTemplateWithModuleId(componentPrototype.templateModuleId, packageRequire);
@@ -32,6 +30,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var self = EditingDocument.init.call(this, fileUrl, packageRequire);
 
             self._template = template;
+            self.selectedObjects = [];
 
             //TODO handle external serializations
             var serialization = template.getInlineObjectsString(template.document);
