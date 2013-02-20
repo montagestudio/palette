@@ -1,4 +1,5 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 /**
  @class module:palette/coreediting-proxy.EditingProxy
@@ -73,8 +74,13 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     exportName:{
         get:function () {
-            if (!this._exportName && this.stageObject) {
-                this._exportName = Montage.getInfoForObject(this.stageObject).objectName;
+            if (!this._exportName) {
+                if (this.stageObject) {
+                    this._exportName = Montage.getInfoForObject(this.stageObject).objectName;
+                } else if (this.moduleId) {
+                    var desc = MontageReviver.parseObjectLocationId(this.moduleId);
+                    this._exportName = desc.objectName;
+                }
             }
             return this._exportName;
         }

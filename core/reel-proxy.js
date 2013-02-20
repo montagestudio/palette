@@ -14,8 +14,8 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
             self._serialization = serialization;
 
             self._exportId = self._serialization.prototype;
-            if (this._exportId) {
-                var exportInfo = MontageReviver.parseObjectLocationId(this._exportId);
+            if (self._exportId) {
+                var exportInfo = MontageReviver.parseObjectLocationId(self._exportId);
                 self._moduleId = exportInfo.moduleId;
                 self._exportName = exportInfo.objectName;
             }
