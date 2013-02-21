@@ -567,11 +567,13 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     defineObjectBinding: {
         value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
-
+            // TODO locaize
             this.undoManager.register("Define Binding", Promise.resolve([this.deleteBinding, this, sourceObject, sourceObjectPropertyPath]));
 
             //Similar concerns above, where does this API belong?
             sourceObject.defineObjectBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+
+            this._buildSerialization();
 
             this.dispatchEventNamed("didDefineBinding", true, true, {
                 sourceObject: sourceObject,
@@ -618,9 +620,12 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 converter = this.editingProxyMap[converterEntry["@"]];
             }
 
+            // TODO localize
             this.undoManager.register("Delete Binding", Promise.resolve([this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter]));
 
             sourceObject.cancelObjectBinding(sourceObjectPropertyPath);
+
+            this._buildSerialization();
 
             this.dispatchEventNamed("didDeleteBinding", true, true, {
                 sourceObject: sourceObject,
