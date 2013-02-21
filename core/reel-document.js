@@ -45,7 +45,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: null
     },
 
-    _beautifySerialization: {
+    _buildSerialization: {
         value: function () {
             var template = this._template,
                 templateObjects = {};
@@ -55,9 +55,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             }, this);
 
             this.dispatchBeforeOwnPropertyChange("serialization", template.objectsString);
-            // this.dispatchPropertyChange("serialization", function () {
-                template.objectsString = JSON.stringify(templateObjects, null, 4);
-            // });
+
+            template.objectsString = JSON.stringify(templateObjects, null, 4);
+
             this.dispatchOwnPropertyChange("serialization", template.objectsString);
         }
     },
@@ -122,7 +122,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             path = location + "/" + filenameMatch[1] + ".html";
 
-            this._beautifySerialization();
+            this._buildSerialization();
 
             return dataWriter(template.html, path);
         }
@@ -157,26 +157,30 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
-            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                if (Array.isArray(proxies)) {
-                    proxies.forEach(function (proxy) {
-                        self.__addProxy(proxy);
-                    });
-                } else {
-                    self.__addProxy(proxies);
-                }
 
-            // });
-            // this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__addProxy(proxy);
+                });
+            } else {
+                self.__addProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            self._buildSerialization();
         }
     },
 
     __addProxy: {
         value: function (proxy) {
             var proxyMap = this._editingProxyMap;
+
             proxyMap[proxy.label] = proxy;
+
             //TODO not blindly append to the end of the body
             //TODO react to changing the element?
             if (proxy.element && !proxy.element.parentNode) {
@@ -189,19 +193,21 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
-            // this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                if (Array.isArray(proxies)) {
-                    proxies.forEach(function (proxy) {
-                        self.__removeProxy(proxy);
-                    });
-                } else {
-                    self.__removeProxy(proxies);
-                }
 
-            // });
-            // this.dispatchOwnPropertyChange("editingProxyMap", this._editingProxyMap);
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__removeProxy(proxy);
+                });
+            } else {
+                self.__removeProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            self._buildSerialization();
         }
     },
 
@@ -544,6 +550,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperty(property, value);
+
+            this._buildSerialization();
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
                 object: proxy,
