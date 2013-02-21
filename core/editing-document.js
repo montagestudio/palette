@@ -17,18 +17,18 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     init: {
         value: function (fileUrl, packageRequire) {
-            this._undoManager = UndoManager.create();
-
             var self = this;
-            this.dispatchBeforeOwnPropertyChange("fileUrl", this._fileUrl);
+            self._undoManager = UndoManager.create();
+
+            self.dispatchBeforeOwnPropertyChange("fileUrl", self._fileUrl);
             // this.dispatchPropertyChange("fileUrl", function () {
                 self._fileUrl = fileUrl;
             // });
-            this.dispatchOwnPropertyChange("fileUrl", fileUrl);
+            self.dispatchOwnPropertyChange("fileUrl", fileUrl);
 
-            this._packageRequire = packageRequire;
+            self._packageRequire = packageRequire;
 
-            return this;
+            return self;
         }
     },
 

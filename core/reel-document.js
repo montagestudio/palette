@@ -145,7 +145,17 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 montageId;
 
             return labels.map(function (label) {
-                proxy = ReelProxy.create().init(label, serialization[label], self);
+
+                var exportId;
+                if (serialization[label].prototype) {
+                    exportId = serialization[label].prototype;
+                } else {
+                    if (self.fileUrl && self.packageRequire) {
+                        exportId = self.fileUrl.substring(self.packageRequire.location.length);
+                    }
+                }
+
+                proxy = ReelProxy.create().init(label, serialization[label], self, exportId);
                 montageId = proxy.getPath("properties.element.property('#')");
                 proxy.element = self.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
                 return proxy;

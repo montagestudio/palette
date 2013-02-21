@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="property-editor.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "property-editor"}
+            }
+        },
+
+        "property": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "property"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isAssociationBlueprint", "converter": {"@": "invertConverter"}}
+            }
+        },
+
+        "association": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "association"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isAssociationBlueprint"}
+            }
+        },
+
+        "propertyValueToOne": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyValueToOne"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isToMany", "converter": {"@": "invertConverter"}}
+            }
+        },
+
+        "propertyValueToMany": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyValueToMany"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isToMany"}
+            }
+        },
+
+        "invertConverter": {
+            "prototype": "montage/core/converter/invert-converter"
+        },
+
+        "toOnePropertyInspectorSelection": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "toOnePropertyInspectorSelection"},
+                "switchComponents": {
+                        "boolean": {"@": "booleanPropertyInspector"},
+                        "date": {"@": "datePropertyInspector"},
+                        "enum": {"@": "enumPropertyInspector"},
+                        "number": {"@": "numberPropertyInspector"},
+                        "object": {"@": "objectPropertyInspector"},
+                        "string": {"@": "stringPropertyInspector"},
+                        "url": {"@": "urlPropertyInspector"}
+                }
+            },
+            "bindings": {
+                "switchValue": {"<-": "@owner.propertyBlueprint.valueType"}
+            }
+        },
+
+        "toManyPropertyInspectorSelection": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "toManyPropertyInspectorSelection"},
+                "switchComponents": {
+                    "list": {"@": "listPropertyInspector"},
+                    "set": {"@": "setPropertyInspector"},
+                    "map": {"@": "mapPropertyInspector"}
+                }
+            },
+            "bindings": {
+                "switchValue": {"<-": "@owner.propertyBlueprint.collectionValueType"}
+            }
+        },
+
+        "booleanPropertyInspector": {
+            "prototype": "../property-value-type/boolean-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "datePropertyInspector": {
+            "prototype": "../property-value-type/date-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "enumPropertyInspector": {
+            "prototype": "../property-value-type/enum-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "listPropertyInspector": {
+            "prototype": "../property-value-type/list-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "mapPropertyInspector": {
+            "prototype": "../property-value-type/map-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "numberPropertyInspector": {
+            "prototype": "../property-value-type/number-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "objectPropertyInspector": {
+            "prototype": "../property-value-type/object-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "setPropertyInspector": {
+            "prototype": "../property-value-type/set-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "stringPropertyInspector": {
+            "prototype": "../property-value-type/string-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        },
+
+        "urlPropertyInspector": {
+            "prototype": "../property-value-type/url-property-inspector.reel",
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <label data-montage-id="property-editor" class="PropertyEditor" title="">
+        <div data-montage-id="association">
+            ASSOCIATION
+        </div>
+        <div data-montage-id="property">
+            <div data-montage-id="propertyValueToOne">
+                <div data-montage-id="toOnePropertyInspectorSelection"></div>
+            </div>
+            <div data-montage-id="propertyValueToMany">
+                <div data-montage-id="toManyPropertyInspectorSelection"></div>
+            </div>
+        </div>
+    </label>
+</body>
+</html>

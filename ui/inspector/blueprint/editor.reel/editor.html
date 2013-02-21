@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="editor.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "editor"}
+            }
+        },
+
+        "title": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "title"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.title"}
+            }
+        },
+
+        "propertyGroupsCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyGroupsCondition"},
+                "removalStrategy": "hide"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.blueprint"}
+            }
+        },
+
+        "propertyGroups": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "propertyGroups"}
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner.propertyGroupsController"}
+            }
+        },
+
+        "propertyGroup": {
+            "prototype": "../property-group-editor.reel",
+            "properties": {
+                "element": {"#": "propertyGroup"}
+            },
+            "bindings": {
+                "object": {"<-": "@owner.object"},
+                "name": {"<-": "@propertyGroups.objectAtCurrentIteration.name"},
+                "properties": {"<-": "@propertyGroups.objectAtCurrentIteration.properties"},
+                "open": {"<-": "@propertyGroups.objectAtCurrentIteration.open"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <section data-montage-id="editor" class="Editor">
+
+        <header class="Editor-header">
+            <div data-montage-id="title" class="Editor-header-title" type="text" />
+        </header>
+
+        <div data-montage-id="propertyGroupsCondition">
+            <div data-montage-id="propertyGroups">
+                <div data-montage-id="propertyGroup"></div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

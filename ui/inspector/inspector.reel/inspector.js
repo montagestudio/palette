@@ -32,7 +32,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     templateDidLoad: {
         value: function () {
-            if (this._object) {
+            if (this._object && this.templateObjects && this.templateObjects.title) {
                 this.templateObjects.title.value = this._object.properties.identifier;
             }
         }
@@ -40,7 +40,9 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     prepareForDraw: {
         value: function () {
-            this.templateObjects.title.addOwnPropertyChangeListener("value", this);
+            if (this.templateObjects && this.templateObjects.title) {
+                 this.templateObjects.title.addOwnPropertyChangeListener("value", this);
+            }
         }
     },
 
@@ -95,6 +97,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     }).done();
 
             } else {
+                this._blueprintDeferred = null;
                 this.blueprint = null;
 
                 if (this.templateObjects) {
