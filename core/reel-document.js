@@ -124,6 +124,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             path = location + "/" + filenameMatch[1] + ".html";
 
+            this._buildSerialization();
+
             //TODO remove this block of code once the template's exportToString no longer
             //preserves the inline serialization element when exporting
             if (template.getInlineSerialization(doc)) {
