@@ -75,7 +75,7 @@ var ValueTypeAssociationInspector = exports.ValueTypeAssociationInspector = Mont
     _getObjectValue:{
         value:function () {
             if (this.object && this.propertyBlueprint) {
-                var value = Montage.getPath.call(this.object.properties, this.propertyBlueprint.name);
+                var value = this.object.editingDocument.getOwnedObjectProperty(this.object, this.propertyBlueprint.name);
                 if (this._objectValue != value) {
                     this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                     this._objectValue = value;
@@ -88,11 +88,7 @@ var ValueTypeAssociationInspector = exports.ValueTypeAssociationInspector = Mont
     _setObjectValue:{
         value:function () {
             if (this.object && this.propertyBlueprint) {
-                var previousValue = Montage.getPath.call(this.object.properties, this.propertyBlueprint.name);
-                if (this._objectValue != previousValue) {
-                    // TODO We need to make this undoable
-                    Montage.setPath.call(this.object.properties, this.propertyBlueprint.name, this._objectValue);
-                }
+                this.object.editingDocument.setOwnedObjectProperty(this.object, this.propertyBlueprint.name, this._objectValue);
             }
         }
     }
