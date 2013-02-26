@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ContentController = require("montage/core/content-controller").ContentController,
+    RangeController = require("montage/core/range-controller").RangeController,
     Selection = require('../selection.reel').Selection;
 
 /**
@@ -17,7 +17,7 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     didCreate: {
         value: function() {
-            this.selectedObjectsController = ContentController.create();
+            this.selectedObjectsController = RangeController.create();
             this.selectedObjectsController.defineBinding("content", {
                 "<-": "_selectedObjects",
                 source: this

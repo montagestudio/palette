@@ -6,7 +6,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ContentController = require("montage/core/content-controller").ContentController,
+    RangeController = require("montage/core/range-controller").RangeController,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 /**
@@ -22,7 +22,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     didCreate: {
         value: function () {
-            this.propertyGroupsController = ContentController.create();
+            this.propertyGroupsController = RangeController.create();
         }
     },
 

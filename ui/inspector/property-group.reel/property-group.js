@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ContentController = require("montage/core/content-controller").ContentController;
+    RangeController = require("montage/core/range-controller").RangeController;
 
 /**
     Description TODO
@@ -16,7 +16,7 @@ exports.PropertyGroup = Montage.create(Component, /** @lends module:"ui/ui/inspe
 
     didCreate: {
         value: function() {
-            this.propertiesController = ContentController.create();
+            this.propertiesController = RangeController.create();
 
             this.defineBinding("propertiesController.content", {"<-": "properties"});
         }
