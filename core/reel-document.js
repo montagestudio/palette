@@ -226,6 +226,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var proxyMap = this._editingProxyMap,
                 parentNode;
 
+            if (!proxyMap.hasOwnProperty(proxy.label)) {
+                throw new Error("Could not find proxy to remove with label '" + proxy.label + "'");
+            }
             delete proxyMap[proxy.label];
 
             if (proxy.element && (parentNode = proxy.element.parentNode)) {
@@ -477,6 +480,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             self.undoManager.register("Add Component", deferredUndo.promise);
 
             proxy = ReelProxy.create().init(labelInOwner, serialization, this);
+            proxy.markup = markup; //TODO formalize this, ComponentProxy subclass?
+            proxy.elementMontageId = elementMontageId; //TODO same here
 
             if (this._editingController) {
                 proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier)
@@ -505,7 +510,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self.selectObject(resolvedProxy);
                 }
 
-                deferredUndo.resolve([self.removeComponent, self, proxy]);
+                deferredUndo.resolve([self.removeComponent, self, resolvedProxy]);
 
                 return resolvedProxy;
             });
@@ -522,7 +527,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             this.undoManager.register("Remove Component", deferredUndo.promise);
 
             if (this._editingController) {
-                removalPromise = this._editingController.removeComponent(proxy.stageObject);
+                removalPromise = this._editingController.removeComponent(proxy.stageObject)
+                    .then(function () {
+                        return proxy;
+                    });
             } else {
                 removalPromise = Promise.resolve(proxy);
             }
@@ -530,7 +538,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             return removalPromise.then(function (removedProxy) {
                 self._removeProxies(removedProxy);
 
-                self.dispatchEventNamed("didAddComponent", true, true, {
+                self.dispatchEventNamed("didRemoveComponent", true, true, {
                     component: removedProxy
                 });
 
@@ -539,8 +547,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self,
                     removedProxy.label,
                     removedProxy.serialization,
-                    removedProxy.element.outerHTML,
-                    removedProxy.element.getAttribute("data-montage-id"),
+                    removedProxy.markup,
+                    removedProxy.elementMontageId,
                     removedProxy.getPath("properties.identifier")]);
 
                 return removedProxy;
