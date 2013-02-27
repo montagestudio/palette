@@ -157,7 +157,7 @@ exports.ReelProxy = Montage.create(EditingProxy,  {
 
             var self = EditingProxy.init.call(this, label, editingDocument);
             self._serialization = serialization;
-            self._exportId = exportId;
+            self._exportId = exportId || serialization.prototype;
             return self;
         }
     },

@@ -32,6 +32,11 @@ describe("core/editing-proxy-spec", function () {
             expect(proxy.exportId).toBe("specified/export-id");
         });
 
+        it("should have the specified exportId if the serialization did specifed one", function () {
+            proxy = ReelProxy.create().init(label, {prototype: "specified/export-id", properties: {label: "foo"}}, doc);
+            expect(proxy.exportId).toBe("specified/export-id");
+        });
+
         it("should have the expected label", function () {
             expect(proxy.label).toBe(label);
         });
