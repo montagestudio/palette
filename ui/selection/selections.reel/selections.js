@@ -91,25 +91,25 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     handleSelectedObjectsRangeChange: {
         value: function() {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureUpdate: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureResize: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureWebkitTransitionEnd: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
@@ -120,10 +120,18 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
             // CSS animations can change the size of elements, causing
             // selections to be shifted
             window.addEventListener("webkitTransitionEnd", this, true);
+            // In fact, any draw can cause the selections to be shifted!
+            var self = this;
+            var root = require("montage/ui/component").__root__;
+            var originalDrawIfNeeded = root.drawIfNeeded;
+            root.drawIfNeeded = function() {
+                self.allNeedDraw();
+                originalDrawIfNeeded.call(root);
+            };
         }
     },
 
-    drawAll: {
+    allNeedDraw: {
         value: function() {
             if (!this._selectedObjects || !this._selectedObjects.length) {
                 return;
