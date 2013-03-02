@@ -1,16 +1,16 @@
 /**
     @module "./set-association-inspector.reel"
     @requires montage
-    @requires ../value-type-association-inspector
+ @requires "../../value-type-inspector.reel"
 */
 var Montage = require("montage").Montage,
-    ValueTypeAssociationInspector = require("../value-type-association-inspector").ValueTypeAssociationInspector;
+    ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
     Description TODO
     @class module:"./set-association-inspector.reel".SetAssociationInspector
-    @extends module:../value-type-association-inspector.ValueTypeAssociationInspector
+ @extends module:"../../value-type-inspector.reel".ValueTypeInspector
 */
-exports.SetAssociationInspector = Montage.create(ValueTypeAssociationInspector, /** @lends module:"./set-association-inspector.reel".SetAssociationInspector# */ {
+exports.SetAssociationInspector = Montage.create(ValueTypeInspector, /** @lends module:"./set-association-inspector.reel".SetAssociationInspector# */ {
 
 });

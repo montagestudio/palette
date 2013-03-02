@@ -1,16 +1,16 @@
 /**
  @module "./boolean-property-inspector.reel"
  @requires montage
- @requires "../value-type-property-inspector"
+ @requires "../../value-type-inspector.reel"
  */
 var Montage = require("montage").Montage,
-    ValueTypePropertyInspector = require("../value-type-property-inspector").ValueTypePropertyInspector;
+    ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
  Description TODO
  @class module:"./boolean-property-inspector.reel".BooleanPropertyInspector
- @extends module:"../value-type-property-inspector".ValueTypePropertyInspector
+ @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.BooleanPropertyInspector = Montage.create(ValueTypePropertyInspector, /** @lends module:"./boolean-property-inspector.reel".BooleanPropertyInspector# */ {
+exports.BooleanPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./boolean-property-inspector.reel".BooleanPropertyInspector# */ {
 
 });

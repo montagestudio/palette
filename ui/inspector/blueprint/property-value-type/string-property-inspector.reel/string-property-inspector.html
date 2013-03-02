@@ -25,7 +25,7 @@
             "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "propertyReadOnlyCondition"},
-                "removalStrategy": "hide"
+                "removalStrategy": "remove"
             },
             "bindings": {
                 "condition": {"<-": "@owner.propertyBlueprint.isReadOnly"}
@@ -36,7 +36,7 @@
             "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "propertyWritableCondition"},
-                "removalStrategy": "hide"
+                "removalStrategy": "remove"
             },
             "bindings": {
                 "condition": {"<-": "@owner.propertyBlueprint.isReadOnly", "converter": {"@": "invertConverter"}}
@@ -72,13 +72,13 @@
 </head>
 <body>
     <div data-montage-id="string-property-inspector" class="StringPropertyInspector">
-        <span data-montage-id="property-name" class="label"></span>
-        <div data-montage-id="propertyReadOnlyCondition">
-            <div data-montage-id="propertyValueReadOnly"></div>
-        </div>
-        <div data-montage-id="propertyWritableCondition">
+        <span data-montage-id="property-name" class="label" ></span>
+        <span data-montage-id="propertyReadOnlyCondition" class="field">
+            <span data-montage-id="propertyValueReadOnly"s></span>
+        </span>
+        <span data-montage-id="propertyWritableCondition" class="field">
             <input data-montage-id="propertyValue" />
-        </div>
+        </span>
     </div>
 </body>
 </html>

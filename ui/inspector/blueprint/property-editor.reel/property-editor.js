@@ -27,6 +27,7 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         set:function (value) {
             if (this._object != value) {
                 this._object = value;
+                this._getObjectValue();
             }
         }
     },
@@ -45,6 +46,49 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         set:function (value) {
             if (this._propertyBlueprint != value) {
                 this._propertyBlueprint = value;
+                this._getObjectValue();
+            }
+        }
+    },
+
+    _objectValue:{
+        value:null
+    },
+
+    /*
+     * Target value in the object
+     */
+    objectValue:{
+        dependencies:["object", "propertyBlueprint"],
+        get:function () {
+            if (!this._objectValue) {
+                this._getObjectValue();
+            }
+            return this._objectValue;
+        },
+        set:function (value) {
+            this._objectValue = value;
+            this._setObjectValue();
+        }
+    },
+
+    _getObjectValue:{
+        value:function () {
+            if (this.object && this.propertyBlueprint) {
+                var value = this.object.editingDocument.getOwnedObjectProperty(this.object, this.propertyBlueprint.name);
+                if (this._objectValue != value) {
+                    this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
+                    this._objectValue = value;
+                    this.dispatchOwnPropertyChange("objectValue", value);
+                }
+            }
+        }
+    },
+
+    _setObjectValue:{
+        value:function () {
+            if (this.object && this.propertyBlueprint) {
+                this.object.editingDocument.setOwnedObjectProperty(this.object, this.propertyBlueprint.name, this._objectValue);
             }
         }
     }

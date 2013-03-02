@@ -1,16 +1,16 @@
 /**
  @module "./url-property-inspector.reel"
  @requires montage
- @requires "../value-type-property-inspector"
+ @requires "../../value-type-inspector.reel"
  */
 var Montage = require("montage").Montage,
-    ValueTypePropertyInspector = require("../value-type-property-inspector").ValueTypePropertyInspector;
+    ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
  Description TODO
  @class module:"./url-property-inspector.reel".UrlPropertyInspector
- @extends module:"../value-type-property-inspector".ValueTypePropertyInspector
+ @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.UrlPropertyInspector = Montage.create(ValueTypePropertyInspector, /** @lends module:"./url-property-inspector.reel".UrlPropertyInspector# */ {
+exports.UrlPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./url-property-inspector.reel".UrlPropertyInspector# */ {
 
 });

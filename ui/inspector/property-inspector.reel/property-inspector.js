@@ -136,7 +136,7 @@ addPropertyTypeComponentDescriptor("url", PropertyTypeComponentDescriptor.create
     require("matte/ui/input-text.reel").InputText,
     "input",
     "value",
-    {type: "text"}
+    {type: "url"}
 ));
 
 //"string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");

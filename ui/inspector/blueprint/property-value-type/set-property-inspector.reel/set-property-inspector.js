@@ -1,16 +1,16 @@
 /**
     @module "./set-property-inspector.reel"
     @requires montage
-    @requires montage/ui/component
+ @requires "../../value-type-inspector.reel"
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
     Description TODO
     @class module:"./set-property-inspector.reel".SetPropertyInspector
-    @extends module:montage/ui/component.Component
+ @extends module:"../../value-type-inspector.reel".ValueTypeInspector
 */
-exports.SetPropertyInspector = Montage.create(Component, /** @lends module:"./set-property-inspector.reel".SetPropertyInspector# */ {
+exports.SetPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./set-property-inspector.reel".SetPropertyInspector# */ {
 
 });

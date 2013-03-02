@@ -9,13 +9,46 @@
             "properties": {
                 "element": {"#": "list-property-inspector"}
             }
+        },
+
+        "valueListController": {
+            "prototype": "montage/core/range-controller",
+            "bindings": {
+                "content": {"<-": "@owner.listObject"}
+            }
+        },
+
+        "propertyList": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "propertyList"}
+             },
+            "bindings": {
+                "contentController": {"<-": "@valueListController"}
+            }
+        },
+
+        "propertyEditor": {
+            "prototype": "../../property-editor.reel",
+            "properties": {
+                "element": {"#": "propertyEditor"},
+                "label": "",
+                "readOnlyLabel": true
+            },
+            "bindings": {
+                "object": {"<->": "@valueListController.objectAtCurrentIteration"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+             }
         }
+
     }
     </script>
 </head>
 <body>
     <div data-montage-id="list-property-inspector" class="ListPropertyInspector">
-        LIST
+        <div data-montage-id="propertyList">
+            <div data-montage-id="propertyEditor"></div>
+        </div>
     </div>
 </body>
 </html>

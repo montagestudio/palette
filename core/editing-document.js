@@ -81,6 +81,12 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
         }
     },
 
+    getOwnedObjectProperty: {
+        value: function (proxy, property) {
+            return proxy.getObjectProperty(property);
+        }
+    },
+
     setOwnedObjectProperty: {
         value: function (proxy, property, value) {
 

@@ -9,13 +9,75 @@
             "properties": {
                 "element": {"#": "url-property-inspector"}
             }
+        },
+
+        "propertyName": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "property-name"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.propertyBlueprint.name"}
+            }
+        },
+
+        "propertyReadOnlyCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyReadOnlyCondition"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isReadOnly"}
+            }
+        },
+
+        "propertyWritableCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "propertyWritableCondition"},
+                "removalStrategy": "remove"
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.propertyBlueprint.isReadOnly", "converter": {"@": "invertConverter"}}
+            }
+        },
+
+        "invertConverter": {
+            "prototype": "montage/core/converter/invert-converter"
+        },
+
+        "propertyValueReadOnly": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "propertyValueReadOnly"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.objectValue"}
+            }
+        },
+
+        "propertyValue": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "propertyValue"}
+            },
+            "bindings": {
+                "value": {"<->": "@owner.objectValue"}
+            }
         }
     }
     </script>
 </head>
 <body>
     <div data-montage-id="url-property-inspector" class="UrlPropertyInspector">
-        URL
+        <span data-montage-id="property-name" class="label"></span>
+        <span data-montage-id="propertyReadOnlyCondition" class="field">
+            <span data-montage-id="propertyValueReadOnly"></span>
+        </span>
+        <span data-montage-id="propertyWritableCondition" class="field">
+            <input data-montage-id="propertyValue" type="url" />
+        </span>
     </div>
 </body>
 </html>
