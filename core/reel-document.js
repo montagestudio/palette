@@ -300,6 +300,36 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: null
     },
 
+    updateSelectionCandidate: {
+        value: function (currentElement) {
+            if (!currentElement) {
+                return;
+            }
+
+            var selectedObjects = this.selectedObjects;
+            var selectionCandidate = currentElement.controller;
+
+            var ownerElement = this.editingProxyMap.owner.stageObject.element;
+            var selectedElements = selectedObjects.map(function (object) {
+                return object.getPath("stageObject.element");
+            });
+
+            // Select the highest component inside the current selection
+            while (
+                currentElement !== ownerElement &&
+                selectedElements.indexOf(currentElement) === -1  &&
+                currentElement != null
+            ) {
+                if (currentElement.controller) {
+                    selectionCandidate = currentElement.controller;
+                }
+                currentElement = currentElement.parentElement;
+            }
+
+            return selectionCandidate ? this.editingProxyForObject(selectionCandidate) : void 0;
+        }
+    },
+
     // Selects nothing
     clearSelectedObjects: {
         value: function () {
