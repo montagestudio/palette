@@ -73,8 +73,8 @@ exports.EditingController = Montage.create(Montage, {
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithSerializationStringAndRequire(JSON.stringify(serializationWithinOwner), this.ownerRequire);
-            return deserializer.deserializeWithElement(null, this.owner.element).then(function (objects) {
+            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserialize(null, this.owner.element).then(function (objects) {
                 newObject = objects[labelInOwner];
                 return newObject;
             });
@@ -119,8 +119,8 @@ exports.EditingController = Montage.create(Montage, {
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithSerializationStringAndRequire(JSON.stringify(serializationWithinOwner), this.ownerRequire);
-            return deserializer.deserializeWithElement(null, element.parentElement).then(function (objects) {
+            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserialize(null, element.parentElement).then(function (objects) {
                 var newComponent = objects[identifier];
                 newComponent.ownerComponent = self.owner;
                 newComponent.needsDraw = true;
