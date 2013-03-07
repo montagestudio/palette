@@ -17,26 +17,6 @@
             "properties": {
                 "element": {"#": "editingFrame"}
             }
-        },
-
-        "contextualInspectors": {
-            "prototype": "montage/ui/repetition.reel",
-            "properties": {
-                "element": {"#": "contextualInspectors"}
-            },
-            "bindings": {
-                "content": {"<-": "@owner.contextualInspectors"}
-            }
-        },
-
-        "inspectorSlot": {
-            "prototype": "montage/ui/slot.reel",
-            "properties": {
-                "element": {"#": "inspectorSlot"}
-            },
-            "bindings": {
-                "content": {"<-": "@contextualInspectors.objectAtCurrentIteration"}
-            }
         }
     }
     </script>
@@ -45,9 +25,6 @@
     <div data-montage-id="workbench" class="Workbench">
         <div data-montage-id="editingFrame"></div>
         <div data-param="overlay"></div>
-        <div data-montage-id="contextualInspectors">
-            <div data-montage-id="inspectorSlot"></div>
-        </div>
     </div>
 </body>
 </html>
