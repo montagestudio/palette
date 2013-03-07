@@ -29,10 +29,9 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
          value: null
      },
      /**
-      * The Montage component that contains the selected objects. This used to
-      * offset the selection borders so that they appear in the correct place.
-      * It should also fire an "update" event when the content is updated or
-      * redrawn so that the selections can be updated to match.
+      * The Montage component that contains the selected objects. It should
+      * fire an "update" event when the content is updated or redrawn so that
+      * the selections can be updated to match.
       * @type {Component}
       */
      contentComponent: {
@@ -53,12 +52,6 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
              this.needsDraw = true;
          }
      },
-    _offsetLeft: {
-        value: null
-    },
-    _offsetTop: {
-        value: null
-    },
 
     _selectedObjects: {
         value: null
@@ -144,13 +137,6 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
             for (var i = 0, len = kids.length; i < len; i++) {
                 kids[i].needsDraw = true;
             }
-        }
-    },
-
-    willDraw: {
-        value: function() {
-            this._offsetLeft = this.contentComponent.element.offsetLeft;
-            this._offsetTop = this.contentComponent.element.offsetTop;
         }
     }
 

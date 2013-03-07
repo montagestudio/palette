@@ -37,52 +37,6 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
         }
     },
 
-    _offsetTop: {
-        value: null
-    },
-    /**
-     * Offset from the top in pixels.
-     *
-     * Needed if the location of the stage is not at 0, 0 of the parent element
-     * of this component.
-     * @type {number}
-     */
-    offsetTop: {
-        get: function() {
-            return this._offsetTop;
-        },
-        set: function(value) {
-            if (this._offsetTop === value) {
-                return;
-            }
-            this._offsetTop = value;
-            this.needsDraw = true;
-        }
-    },
-
-    _offsetLeft: {
-        value: null
-    },
-    /**
-     * Offset from the left in pixels.
-     *
-     * Needed if the location of the stage is not at 0, 0 of the parent element
-     * of this component.
-     * @type {number}
-     */
-    offsetLeft: {
-        get: function() {
-            return this._offsetLeft;
-        },
-        set: function(value) {
-            if (this._offsetLeft === value) {
-                return;
-            }
-            this._offsetLeft = value;
-            this.needsDraw = true;
-        }
-    },
-
     _top: {
         value: null
     },
@@ -197,8 +151,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
 
             var rect = this._getBounds(el);
 
-            this._top = this.offsetTop + rect.top;
-            this._left = this.offsetLeft + rect.left;
+            this._top = rect.top;
+            this._left = rect.left;
             this._height = rect.bottom - rect.top;
             this._width = rect.right - rect.left;
         }
