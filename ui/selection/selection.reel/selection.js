@@ -38,7 +38,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _top: {
-        value: null
+        value: 0
     },
     /**
      * Distance from top in pixels.
@@ -58,7 +58,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _left: {
-        value: null
+        value: 0
     },
     /**
      * Distance from left in pixels.
@@ -78,7 +78,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _height: {
-        value: null
+        value: 0
     },
     /**
      * Height of the selection in pixels.
@@ -98,7 +98,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _width: {
-        value: null
+        value: 0
     },
     /**
      * Width of the seclection in pixels.
