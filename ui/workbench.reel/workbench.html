@@ -19,17 +19,6 @@
             }
         },
 
-        "selections": {
-            "prototype": "ui/selection/selections.reel",
-            "properties": {
-                "element": {"#": "selections"},
-                "contentComponent": {"@": "editingFrame"}
-            },
-            "bindings": {
-                "selectedObjects": {"<-": "@owner.selectedObjects"}
-            }
-        },
-
         "contextualInspectors": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
@@ -55,7 +44,7 @@
 <body>
     <div data-montage-id="workbench" class="Workbench">
         <div data-montage-id="editingFrame"></div>
-        <div data-montage-id="selections"></div>
+        <div data-param="overlay"></div>
         <div data-montage-id="contextualInspectors">
             <div data-montage-id="inspectorSlot"></div>
         </div>
