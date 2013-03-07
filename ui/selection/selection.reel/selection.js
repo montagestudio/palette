@@ -16,7 +16,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     /**
      * Init
      * @function
-     * @param  {Component} component The component this selection is for.
+     * @param  {Component|HTMLElement} object The component or element this
+     * selection is for.
      * @param  {number} top       Distance from top in pixels.
      * @param  {number} left      Distance from left in pixels.
      * @param  {height} height    Height of the selection in pixels.
@@ -24,8 +25,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
      * @return {Selection}        this
      */
     init: {
-        value: function(component, top, left, height, width) {
-            this.component = component;
+        value: function(object, top, left, height, width) {
+            this.object = object;
 
             if (top) this.top = top;
             if (left) this.left = left;
