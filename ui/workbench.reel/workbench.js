@@ -29,9 +29,6 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
-    selectedObjects: {
-        value: null
-    },
 
     _editingFrame: {
         value: null
@@ -46,13 +43,17 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
                 return;
             }
 
-            if (this._editingFrame && this === this._editingFrame.delegate) {
-                this._editingFrame.delegate = null;
+            if (this._editingFrame) {
+                this._editingFrame.removeEventListener("update", this, true);
+                if (this === this._editingFrame.delegate) {
+                    this._editingFrame.delegate = null;
+                }
             }
 
             this._editingFrame = value;
 
             if (this._editingFrame) {
+                this._editingFrame.addEventListener("update", this, true);
                 this._editingFrame.delegate = this;
             }
         }
@@ -69,6 +70,42 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
                     event.propagationStopped = false;
                     this.dispatchEvent(event);
             }
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // changing the size of the window causes overlays to be shifted
+            window.addEventListener("resize", this, true);
+            // CSS animations can change the size of elements, causing
+            // overlays to be shifted
+            window.addEventListener("webkitTransitionEnd", this, true);
+            // In fact, any draw can cause the overlays to be shifted!
+            var self = this;
+            var root = require("montage/ui/component").__root__;
+            var originalDrawIfNeeded = root.drawIfNeeded;
+            root.drawIfNeeded = function() {
+                self.dispatchEventNamed("update");
+                originalDrawIfNeeded.call(root);
+            };
+        }
+    },
+
+    captureUpdate: {
+        value: function(event) {
+            this.dispatchEventNamed("update");
+        }
+    },
+
+    captureResize: {
+        value: function(event) {
+            this.dispatchEventNamed("update");
+        }
+    },
+
+    captureWebkitTransitionEnd: {
+        value: function(event) {
+            this.dispatchEventNamed("update");
         }
     }
 

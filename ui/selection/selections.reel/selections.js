@@ -25,34 +25,6 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
-     _contentComponent: {
-         value: null
-     },
-     /**
-      * The Montage component that contains the selected objects. It should
-      * fire an "update" event when the content is updated or redrawn so that
-      * the selections can be updated to match.
-      * @type {Component}
-      */
-     contentComponent: {
-         get: function() {
-             return this._contentComponent;
-         },
-         set: function(value) {
-             if (this._contentComponent === value) {
-                 return;
-             }
-
-             if (this._contentComponent) {
-                this._contentComponent.removeEventListener("update", this, true);
-             }
-
-             this._contentComponent = value;
-             this._contentComponent.addEventListener("update", this, true);
-             this.needsDraw = true;
-         }
-     },
-
     _selectedObjects: {
         value: null
     },
@@ -88,39 +60,9 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
-    captureUpdate: {
-        value: function(event) {
+    handleUpdate: {
+        value: function (event) {
             this.allNeedDraw();
-        }
-    },
-
-    captureResize: {
-        value: function(event) {
-            this.allNeedDraw();
-        }
-    },
-
-    captureWebkitTransitionEnd: {
-        value: function(event) {
-            this.allNeedDraw();
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            // changing the size of the window causes selections to be shifted
-            window.addEventListener("resize", this, true);
-            // CSS animations can change the size of elements, causing
-            // selections to be shifted
-            window.addEventListener("webkitTransitionEnd", this, true);
-            // In fact, any draw can cause the selections to be shifted!
-            var self = this;
-            var root = require("montage/ui/component").__root__;
-            var originalDrawIfNeeded = root.drawIfNeeded;
-            root.drawIfNeeded = function() {
-                self.allNeedDraw();
-                originalDrawIfNeeded.call(root);
-            };
         }
     },
 
