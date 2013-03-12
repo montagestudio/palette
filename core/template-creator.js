@@ -83,7 +83,7 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                     childNode,
                     targetChildNode,
                     label,
-                    component = isRootNode ? null : sourceNode.controller,
+                    component = isRootNode ? null : sourceNode.component,
                     i;
 
                 if (component) {
@@ -153,7 +153,7 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                 if (!this._document.body.contains(externalElement)) {
                     // Try to find where the element fits if it's not even accessed in the original document (assume its a template)
                     if (!body.contains(externalElement)) {
-                        externalElementComponent = externalElement.controller;
+                        externalElementComponent = externalElement.component;
                         while (externalElementComponent = externalElementComponent.parentComponent) {
                             var componentLabel = labelLookup[externalElementComponent.uuid];
                             if (componentLabel in components) {
@@ -167,7 +167,7 @@ var TemplateCreator = exports.TemplateCreator = Montage.create(Template, /** @le
                         this._document.body.appendChild(externalElement.cloneNode(false));
                     }
                 } else {
-                    //console.log("outside original document: " ,  externalElement, externalElement.uuid, externalElement.controller);
+                    //console.log("outside original document: " ,  externalElement, externalElement.uuid, externalElement.component);
                 }
             }
 

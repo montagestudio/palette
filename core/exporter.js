@@ -47,7 +47,7 @@ exports.Exporter = Montage.create(Montage, {
 
             //TODO pass along ignored?allowed?forbidden? whitelist/blacklist of attributes
             // when sanitizing
-            if (originalNode.controller) {
+            if (originalNode.component) {
                 this._sanitizeAttributes(node);
             } else {
                //TODO if no component should we choke if they have a data-montage-id?

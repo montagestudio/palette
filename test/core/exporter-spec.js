@@ -5,7 +5,7 @@ var mockElement = function (tagName) {
 
     var element = document.createElement(tagName);
 
-    // Montage element.controller is get-only
+    // Montage element.component is get-only
     Montage.defineProperties(element, {
         "_controller": {
             value: null
@@ -98,7 +98,7 @@ describe("core/exporter", function () {
                 componentNode = mockElement("button");
                 componentNode.setAttribute("data-montage-id", "button1");
                 componentNode.setAttribute("class", "montage-button");
-                componentNode.controller = mockController;
+                componentNode.component = mockController;
             });
 
             it("should strip all extraneous attributes", function () {

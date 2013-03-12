@@ -307,7 +307,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             }
 
             var selectedObjects = this.selectedObjects;
-            var selectionCandidate = currentElement.controller;
+            var selectionCandidate = currentElement.component;
 
             var ownerElement = this.editingProxyMap.owner.stageObject.element;
             var selectedElements = selectedObjects.map(function (object) {
@@ -320,8 +320,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 selectedElements.indexOf(currentElement) === -1  &&
                 currentElement != null
             ) {
-                if (currentElement.controller) {
-                    selectionCandidate = currentElement.controller;
+                if (currentElement.component) {
+                    selectionCandidate = currentElement.component;
                 }
                 currentElement = currentElement.parentElement;
             }
