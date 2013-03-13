@@ -1,8 +1,22 @@
 //TODO not create so many globals
 var REEL_LOCATION_KEY = "reel-location",
-    PACKAGE_LOCATION_KEY = "package-location";
+    PACKAGE_LOCATION_KEY = "package-location",
+    REMOTE_TRIGGER_KEY = "data-remote-trigger",
+    DATA_MODULE_KEY = "data-module";
 
 window.addEventListener("message", function (event) {
+
+    // Recognize when bootstrapping montage has come along far enough
+    // along to wait for any instructions it was told to expect when we
+    // provided the remote-trigger attribute to the bootstrapping script
+    if (event.data.type === "montageReady") {
+
+        loadReel(loadParams[REEL_LOCATION_KEY], loadParams[PACKAGE_LOCATION_KEY]);
+
+    }
+}, true);
+
+function getParams() {
 
     var search,
         userInput,
@@ -13,45 +27,44 @@ window.addEventListener("message", function (event) {
         reelLocation,
         packageLocation;
 
-    // Recognize when bootstrapping montage has come along far enough
-    // along to wait for any instructions it was told to expect when we
-    // provided the remote-trigger attribute to the bootstrapping script
-    if (event.data.type === "montageReady") {
+    search = window.location.search;
 
-        search = window.location.search;
+    if (search) {
 
-        if (search) {
+        search = search.replace(/^\?/, "");
+        search = search.replace(/=/g, "&");
+        keyValues = search.split("&");
+        keyValuesCount = keyValues.length;
 
-            search = search.replace(/^\?/, "");
-            search = search.replace(/=/g, "&");
-            keyValues = search.split("&");
-            keyValuesCount = keyValues.length;
-
-            params = {};
-
-            for (i = 0; i < keyValuesCount; i += 2) {
-                value = keyValues[i + 1];
-                params[keyValues[i]] = value ? decodeURIComponent(value) : null;
-            }
-
-            reelLocation = params[REEL_LOCATION_KEY];
-            packageLocation = params[PACKAGE_LOCATION_KEY];
-        } else {
-            userInput = requestParams();
-            reelLocation = userInput[REEL_LOCATION_KEY];
-            packageLocation = userInput[PACKAGE_LOCATION_KEY];
+        params = {};
+        for (i = 0; i < keyValuesCount; i += 2) {
+            value = keyValues[i + 1];
+            params[keyValues[i]] = value ? decodeURIComponent(value) : null;
         }
 
-        if (reelLocation) {
-
-            if (packageLocation) {
-                packageLocation = packageLocation.replace("package.json", "");
-            }
-
-            loadReel(reelLocation, packageLocation);
-        }
+        reelLocation = params[REEL_LOCATION_KEY];
+        packageLocation = params[PACKAGE_LOCATION_KEY];
+    } else {
+        userInput = requestParams();
+        reelLocation = userInput[REEL_LOCATION_KEY];
+        packageLocation = userInput[PACKAGE_LOCATION_KEY];
     }
-}, true);
+
+    if (reelLocation) {
+
+        if (packageLocation) {
+            packageLocation = packageLocation.replace("package.json", "");
+        }
+
+    }
+
+    params = {};
+    params[REEL_LOCATION_KEY] = reelLocation;
+    params[PACKAGE_LOCATION_KEY] = packageLocation;
+    params[REMOTE_TRIGGER_KEY] = window.location.origin;
+    params[DATA_MODULE_KEY] = "__stage/stage-app";
+    return params;
+}
 
 function requestParams () {
     var params = {},
@@ -125,3 +138,27 @@ function injectPackageInformation (packageLocation, moduleId) {
         location: packageLocation + "/package.json"
     }, "*");
 }
+
+function injectMontageBootstrap(old) {
+    var montageLocation = loadParams[PACKAGE_LOCATION_KEY] + "/node_modules/montage/montage.js";
+    var headID = document.getElementsByTagName("head")[0];
+    var newScript = document.createElement('script');
+    newScript.setAttribute("type", "application/javascript");
+    if (old) {
+        // This loads the copy of Montage in the stage
+        newScript.setAttribute("src", "bootstrap.js");
+        newScript.setAttribute(PACKAGE_LOCATION_KEY, "node_modules/montage/");
+        newScript.setAttribute(REMOTE_TRIGGER_KEY, loadParams[REMOTE_TRIGGER_KEY]);
+        newScript.setAttribute(DATA_MODULE_KEY, loadParams[DATA_MODULE_KEY]);
+    } else {
+        // This loads the copy of Montage in the target package
+        newScript.setAttribute("src", montageLocation);
+        newScript.setAttribute(PACKAGE_LOCATION_KEY, loadParams[PACKAGE_LOCATION_KEY]);
+        newScript.setAttribute(REMOTE_TRIGGER_KEY, loadParams[REMOTE_TRIGGER_KEY]);
+        newScript.setAttribute(DATA_MODULE_KEY, loadParams[DATA_MODULE_KEY]);
+    }
+    headID.appendChild(newScript);
+}
+
+var loadParams = getParams();
+injectMontageBootstrap();
