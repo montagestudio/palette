@@ -5,65 +5,70 @@
     <link rel="stylesheet" type="text/css" href="date-property-inspector.css">
     <script type="text/montage-serialization">
     {
-        "owner": {
-            "properties": {
-                "element": {"#": "date-property-inspector"}
+        "owner":{
+            "properties":{
+                "element":{
+                    "#":"date-property-inspector"
+                }
             }
         },
 
-        "propertyName": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "property-name"}
+        "propertyName":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{
+                    "#":"property-name"
+                }
             },
-            "bindings": {
-                "value": {"<-": "@owner.propertyBlueprint.name"}
+            "bindings":{
+                "value":{
+                    "<->":"@owner.label"
+                },
+                "disabled":{
+                    "<-":"@owner.readOnlyLabel"
+                }
             }
         },
 
-        "propertyReadOnlyCondition": {
-            "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "propertyReadOnlyCondition"},
-                "removalStrategy": "remove"
+        "readWritePropertySubstitution":{
+            "prototype":"montage/ui/substitution.reel",
+            "properties":{
+                "element":{
+                    "#":"readWritePropertySubstitution"
+                }
             },
-            "bindings": {
-                "condition": {"<-": "@owner.propertyBlueprint.isReadOnly"}
+            "bindings":{
+                "switchValue":{
+                    "<-":"@owner.propertyBlueprint.readOnly ? 'readOnly' : 'readWrite'"
+                }
             }
         },
 
-        "propertyWritableCondition": {
-            "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "propertyWritableCondition"},
-                "removalStrategy": "remove"
+        "propertyValueReadOnly":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{
+                    "#":"propertyValueReadOnly"
+                }
             },
-            "bindings": {
-                "condition": {"<-": "@owner.propertyBlueprint.isReadOnly", "converter": {"@": "invertConverter"}}
+            "bindings":{
+                "value":{
+                    "<-":"@owner.objectValue"
+                }
             }
         },
 
-        "invertConverter": {
-            "prototype": "montage/core/converter/invert-converter"
-        },
-
-        "propertyValueReadOnly": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "propertyValueReadOnly"}
+        "propertyValue":{
+            "prototype":"matte/ui/input-date.reel",
+            "properties":{
+                "element":{
+                    "#":"propertyValue"
+                }
             },
-            "bindings": {
-                "value": {"<-": "@owner.objectValue"}
-            }
-        },
-
-        "propertyValue": {
-            "prototype": "montage/ui/input-date.reel",
-            "properties": {
-                "element": {"#": "propertyValue"}
-            },
-            "bindings": {
-                "value": {"<->": "@owner.objectValue"}
+            "bindings":{
+                "value":{
+                    "<->":"@owner.objectValue"
+                }
             }
         }
 
@@ -73,11 +78,9 @@
 <body>
     <div data-montage-id="date-property-inspector" class="DatePropertyInspector">
         <span data-montage-id="property-name" class="label"></span>
-        <span data-montage-id="propertyReadOnlyCondition" class="field">
-            <span data-montage-id="propertyValueReadOnly"></span>
-        </span>
-        <span data-montage-id="propertyWritableCondition" class="field">
-            <input data-montage-id="propertyValue" />
+        <span data-montage-id="readWritePropertySubstitution" class="field">
+            <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
+            <input data-arg="readWrite" data-montage-id="propertyValue" type="date"/>
         </span>
     </div>
 </body>
