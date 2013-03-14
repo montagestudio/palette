@@ -98,34 +98,34 @@ var addPropertyTypeComponentDescriptor = exports.addPropertyTypeComponentDescrip
 };
 
 addPropertyTypeComponentDescriptor("*", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/dynamic-text.reel").DynamicText,
+    require("montage/ui/text.reel").DynamicText,
     "span",
     "value"
 ));
 
 addPropertyTypeComponentDescriptor("string", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-text.reel").InputText,
+    require("matte/ui/input-text.reel").InputText,
     "input",
     "value",
     {type: "text"}
 ));
 
 addPropertyTypeComponentDescriptor("number", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-number.reel").InputNumber,
+    require("matte/ui/input-number.reel").InputNumber,
     "input",
     "value",
     {type: "number"}
 ));
 
 addPropertyTypeComponentDescriptor("boolean", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-checkbox.reel").InputCheckbox,
+    require("matte/ui/input-checkbox.reel").InputCheckbox,
     "input",
     "checked",
     {type: "checkbox"}
 ));
 
 addPropertyTypeComponentDescriptor("enum", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/select.reel").Select,
+    require("matte/ui/select.reel").Select,
     "select",
     "value",
     {},
@@ -133,7 +133,7 @@ addPropertyTypeComponentDescriptor("enum", PropertyTypeComponentDescriptor.creat
 ));
 
 addPropertyTypeComponentDescriptor("url", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-text.reel").InputText,
+    require("matte/ui/input-text.reel").InputText,
     "input",
     "value",
     {type: "text"}

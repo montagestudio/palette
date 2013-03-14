@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     TemplateCreator = require("core/template-creator").TemplateCreator,
-    Template = require("montage/ui/template").Template;
+    Template = require("montage/core/template").Template;
 
 // This object exports a live DOM into a clean template object for eventual serialization into
 // whatever format.

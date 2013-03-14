@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage/core/core").Montage,
-    Template = require("montage/ui/template").Template,
+    Template = require("montage/core/template").Template,
     Serializer = require("montage/core/serialization").Serializer;
 
 /**

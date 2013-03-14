@@ -1,7 +1,7 @@
 var MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 //HACK!!! is need so that we can drop the flow synchronously on the stage
-require("montage/ui/dynamic-text.reel");
-require("montage/ui/image.reel");
+require("montage/ui/text.reel");
+require("matte/ui/image.reel");
 
 var moduleId = window.stageData.moduleId,
     packageUrl = window.stageData.packageUrl;

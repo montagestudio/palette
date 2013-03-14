@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     EditingDocument = require("core/editing-document").EditingDocument,
     EditingController = require("core/controller/editing-controller").EditingController,
-    Template = require("montage/ui/template").Template,
+    Template = require("montage/core/template").Template,
     Promise = require("montage/core/promise").Promise,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     ReelProxy = require("core/reel-proxy").ReelProxy,
