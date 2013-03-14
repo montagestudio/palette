@@ -309,7 +309,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var selectedObjects = this.selectedObjects;
             var selectionCandidate = currentElement.component;
 
-            var ownerElement = this.editingProxyMap.owner.stageObject.element;
+            var ownerComponent = this.editingProxyMap.owner.stageObject;
+            var ownerElement = ownerComponent.element;
             var selectedElements = selectedObjects.map(function (object) {
                 return object.getPath("stageObject.element");
             });
@@ -320,8 +321,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 selectedElements.indexOf(currentElement) === -1  &&
                 currentElement != null
             ) {
-                if (currentElement.component) {
-                    selectionCandidate = currentElement.component;
+                var component = currentElement.component;
+                if (component) {
+                    if (component.ownerComponent !== ownerComponent) {
+                        // We've hit a component that isn't in the edited reel,
+                        // so stop going up and use the last selection
+                        // candidate.
+                        break;
+                    }
+                    selectionCandidate = component;
                 }
                 currentElement = currentElement.parentElement;
             }
