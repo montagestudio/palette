@@ -1,9 +1,9 @@
 var Montage = require("montage").Montage,
     EditingDocument = require("core/editing-document").EditingDocument,
     EditingController = require("core/controller/editing-controller").EditingController,
-    Template = require("montage/ui/template").Template,
+    Template = require("montage/core/template").Template,
     Promise = require("montage/core/promise").Promise,
-    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     ReelProxy = require("core/reel-proxy").ReelProxy,
     SORTERS = require("core/sorters");
 
@@ -12,21 +12,16 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     load: {
         value: function (fileUrl, packageUrl) {
-            var deferredDoc = Promise.defer(),
-                self = this;
+            var self = this,
+                objectName = MontageReviver.parseObjectLocationId(fileUrl).objectName;
 
-            this.selectedObjects = [];
-
-            require.loadPackage(packageUrl)
-                .then(function (packageRequire) {
-                    packageRequire.async(fileUrl).get(parseForModuleAndName(fileUrl).name).then(function (componentPrototype) {
-                        Template.templateWithModuleId(packageRequire, componentPrototype.templateModuleId, function (template) {
-                            deferredDoc.resolve(self.create().init(fileUrl, template, packageRequire));
-                        });
-                    });
+            return require.loadPackage(packageUrl).then(function (packageRequire) {
+                return packageRequire.async(fileUrl).get(objectName).then(function (componentPrototype) {
+                    return Template.getTemplateWithModuleId(componentPrototype.templateModuleId, packageRequire);
+                }).then(function (template) {
+                    return self.create().init(fileUrl, template, packageRequire);
                 });
-
-            return deferredDoc.promise;
+            });
         }
     },
 
@@ -35,9 +30,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var self = EditingDocument.init.call(this, fileUrl, packageRequire);
 
             self._template = template;
+            self.selectedObjects = [];
 
             //TODO handle external serializations
-            var serialization = template.getInlineSerialization(template._document);
+            var serialization = template.getInlineObjectsString(template.document);
             self._editingProxyMap = {};
             self._addProxies(self._proxiesFromSerialization(serialization));
 
@@ -58,27 +54,29 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 templateObjects[label] = SORTERS.unitSorter(this._editingProxyMap[label].serialization);
             }, this);
 
-            this.dispatchPropertyChange("serialization", function () {
-                template._ownerSerialization = JSON.stringify(templateObjects, null, 4);
-            });
+            this.dispatchBeforeOwnPropertyChange("serialization", template.objectsString);
+
+            template.objectsString = JSON.stringify(templateObjects, null, 4);
+
+            this.dispatchOwnPropertyChange("serialization", template.objectsString);
         }
     },
 
     serialization: {
         get: function () {
-            return this._template._ownerSerialization;
+            return this._template.objectsString;
         }
     },
 
     htmlDocument: {
         get: function () {
-            return this._template._document;
+            return this._template.document;
         }
     },
 
     _ownerElement: {
         get: function () {
-            var montageId = this.getProperty("_editingProxyMap.owner.properties.element.#"),
+            var montageId = this.getPath("_editingProxyMap.owner.properties.element.property('#')"),
                 element;
 
             if (!montageId) {
@@ -115,7 +113,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var filenameMatch = location.match(/.+\/(.+)\.reel/),
                 path,
                 template = this._template,
-                doc = this._template._document,
+                doc = this._template.document,
                 serializationElement;
 
             if (!(filenameMatch && filenameMatch[1])) {
@@ -126,14 +124,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this._buildSerialization();
 
-            //TODO remove this block of code once the template's exportToString no longer
-            //preserves the inline serialization element when exporting
-            if (template.getInlineSerialization(doc)) {
-                serializationElement = doc.querySelector("script[type='" + template._SCRIPT_TYPE + "']");
-                serializationElement.textContent = template._ownerSerialization;
-            }
-
-            return dataWriter(template.exportToString(), path);
+            return dataWriter(template.html, path);
         }
     },
 
@@ -154,8 +145,18 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 montageId;
 
             return labels.map(function (label) {
-                proxy = ReelProxy.create().init(label, serialization[label], self);
-                montageId = proxy.getProperty("properties.element.#");
+
+                var exportId;
+                if (serialization[label].prototype) {
+                    exportId = serialization[label].prototype;
+                } else {
+                    if (self.fileUrl && self.packageRequire) {
+                        exportId = self.fileUrl.substring(self.packageRequire.location.length);
+                    }
+                }
+
+                proxy = ReelProxy.create().init(label, serialization[label], self, exportId);
+                montageId = proxy.getPath("properties.element.property('#')");
                 proxy.element = self.htmlDocument.querySelector("[data-montage-id='" + montageId + "']");
                 return proxy;
             });
@@ -166,24 +167,30 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                if (Array.isArray(proxies)) {
-                    proxies.forEach(function (proxy) {
-                        self.__addProxy(proxy);
-                    });
-                } else {
-                    self.__addProxy(proxies);
-                }
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
 
-                self._buildSerialization();
-            });
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__addProxy(proxy);
+                });
+            } else {
+                self.__addProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            self._buildSerialization();
         }
     },
 
     __addProxy: {
         value: function (proxy) {
             var proxyMap = this._editingProxyMap;
+
             proxyMap[proxy.label] = proxy;
+
             //TODO not blindly append to the end of the body
             //TODO react to changing the element?
             if (proxy.element && !proxy.element.parentNode) {
@@ -196,17 +203,21 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (proxies) {
             var self = this;
 
-            this.dispatchPropertyChange("editingProxyMap", "editingProxies", function () {
-                if (Array.isArray(proxies)) {
-                    proxies.forEach(function (proxy) {
-                        self.__removeProxy(proxy);
-                    });
-                } else {
-                    self.__removeProxy(proxies);
-                }
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
 
-                self._buildSerialization();
-            });
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__removeProxy(proxy);
+                });
+            } else {
+                self.__removeProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            self._buildSerialization();
         }
     },
 
@@ -215,6 +226,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var proxyMap = this._editingProxyMap,
                 parentNode;
 
+            if (!proxyMap.hasOwnProperty(proxy.label)) {
+                throw new Error("Could not find proxy to remove with label '" + proxy.label + "'");
+            }
             delete proxyMap[proxy.label];
 
             if (proxy.element && (parentNode = proxy.element.parentNode)) {
@@ -267,7 +281,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             var label = Montage.getInfoForObject(object).label,
                 proxy = this._editingProxyMap[label];
 
-            if (!proxy) {
+            // label is undefined for the owner component
+            if (label && !proxy) {
                 throw new Error("No editing proxy found for object with label '" + label + "'");
             }
 
@@ -285,11 +300,40 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: null
     },
 
+    updateSelectionCandidate: {
+        value: function (currentElement) {
+            if (!currentElement) {
+                return;
+            }
+
+            var selectedObjects = this.selectedObjects;
+            var selectionCandidate = currentElement.component;
+
+            var ownerElement = this.editingProxyMap.owner.stageObject.element;
+            var selectedElements = selectedObjects.map(function (object) {
+                return object.getPath("stageObject.element");
+            });
+
+            // Select the highest component inside the current selection
+            while (
+                currentElement !== ownerElement &&
+                selectedElements.indexOf(currentElement) === -1  &&
+                currentElement != null
+            ) {
+                if (currentElement.component) {
+                    selectionCandidate = currentElement.component;
+                }
+                currentElement = currentElement.parentElement;
+            }
+
+            return selectionCandidate ? this.editingProxyForObject(selectionCandidate) : void 0;
+        }
+    },
+
     // Selects nothing
     clearSelectedObjects: {
         value: function () {
-            //TODO use clear() instead?
-            this.selectedObjects = [];
+            this.selectedObjects.clear();
         }
     },
 
@@ -318,7 +362,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
     _generateLabel: {
         value: function (serialization) {
-            var name = parseForModuleAndName(serialization.prototype).name,
+            var name = MontageReviver.parseObjectLocationId(serialization.prototype).objectName,
                 label = name.substring(0, 1).toLowerCase() + name.substring(1),
                 labelRegex = new RegExp("^" + label + "(\\d+)$", "i"),
                 match,
@@ -466,6 +510,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             self.undoManager.register("Add Component", deferredUndo.promise);
 
             proxy = ReelProxy.create().init(labelInOwner, serialization, this);
+            proxy.markup = markup; //TODO formalize this, ComponentProxy subclass?
+            proxy.elementMontageId = elementMontageId; //TODO same here
 
             if (this._editingController) {
                 proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier)
@@ -494,7 +540,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self.selectObject(resolvedProxy);
                 }
 
-                deferredUndo.resolve([self.removeComponent, self, proxy]);
+                deferredUndo.resolve([self.removeComponent, self, resolvedProxy]);
 
                 return resolvedProxy;
             });
@@ -511,16 +557,18 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             this.undoManager.register("Remove Component", deferredUndo.promise);
 
             if (this._editingController) {
-                removalPromise = this._editingController.removeComponent(proxy.stageObject);
+                removalPromise = this._editingController.removeComponent(proxy.stageObject)
+                    .then(function () {
+                        return proxy;
+                    });
             } else {
                 removalPromise = Promise.resolve(proxy);
             }
 
             return removalPromise.then(function (removedProxy) {
-
                 self._removeProxies(removedProxy);
 
-                self.dispatchEventNamed("didAddComponent", true, true, {
+                self.dispatchEventNamed("didRemoveComponent", true, true, {
                     component: removedProxy
                 });
 
@@ -529,9 +577,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     self,
                     removedProxy.label,
                     removedProxy.serialization,
-                    removedProxy.element.outerHTML,
-                    removedProxy.element.getAttribute("data-montage-id"),
-                    removedProxy.getProperty("properties.identifier")]);
+                    removedProxy.markup,
+                    removedProxy.elementMontageId,
+                    removedProxy.getPath("properties.identifier")]);
 
                 return removedProxy;
             });
@@ -550,6 +598,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperty(property, value);
+
             this._buildSerialization();
 
             this.dispatchEventNamed("didSetObjectProperty", true, true, {
@@ -564,13 +613,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    defineBinding: {
+    defineObjectBinding: {
         value: function (sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter) {
-
+            // TODO locaize
             this.undoManager.register("Define Binding", Promise.resolve([this.deleteBinding, this, sourceObject, sourceObjectPropertyPath]));
 
             //Similar concerns above, where does this API belong?
-            sourceObject.defineBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+            sourceObject.defineObjectBinding(sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter);
+
+            this._buildSerialization();
 
             this.dispatchEventNamed("didDefineBinding", true, true, {
                 sourceObject: sourceObject,
@@ -584,7 +635,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         }
     },
 
-    deleteBinding: {
+    cancelObjectBinding: {
         value: function (sourceObject, sourceObjectPropertyPath) {
             var binding = sourceObject.bindings ? sourceObject.bindings[sourceObjectPropertyPath] : null,
                 bindingString,
@@ -617,9 +668,12 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                 converter = this.editingProxyMap[converterEntry["@"]];
             }
 
+            // TODO localize
             this.undoManager.register("Delete Binding", Promise.resolve([this.defineBinding, this, sourceObject, sourceObjectPropertyPath, boundObject, boundObjectPropertyPath, oneWay, converter]));
 
-            sourceObject.deleteBinding(sourceObjectPropertyPath);
+            sourceObject.cancelObjectBinding(sourceObjectPropertyPath);
+
+            this._buildSerialization();
 
             this.dispatchEventNamed("didDeleteBinding", true, true, {
                 sourceObject: sourceObject,

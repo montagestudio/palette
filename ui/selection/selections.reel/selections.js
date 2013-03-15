@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
+    RangeController = require("montage/core/range-controller").RangeController,
     Selection = require('../selection.reel').Selection;
 
 /**
@@ -17,13 +17,10 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
 
     didCreate: {
         value: function() {
-            this.addPropertyChangeListener("_selectedObjects", this, false);
-
-            this.selectedObjectsController = ArrayController.create();
-            Object.defineBinding(this.selectedObjectsController, "content", {
-                boundObject: this,
-                boundObjectPropertyPath: "_selectedObjects",
-                oneway: true
+            this.selectedObjectsController = RangeController.create();
+            this.selectedObjectsController.defineBinding("content", {
+                "<-": "_selectedObjects",
+                source: this
             });
         }
     },
@@ -77,7 +74,12 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         },
         set: function(value) {
             if (value != this._selectedObjects) {
+                if (this._selectedObjects) {
+                  this._selectedObjects.removeRangeChangeListener(this, "selectedObjects");
+                }
                 this._selectedObjects = value;
+                this._selectedObjects.addRangeChangeListener(this, "selectedObjects");
+
                 this.needsDraw = true;
             }
         }
@@ -87,27 +89,27 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         value: null
     },
 
-    handleChange: {
+    handleSelectedObjectsRangeChange: {
         value: function() {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureUpdate: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureResize: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
     captureWebkitTransitionEnd: {
         value: function(event) {
-            this.drawAll();
+            this.allNeedDraw();
         }
     },
 
@@ -118,10 +120,18 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
             // CSS animations can change the size of elements, causing
             // selections to be shifted
             window.addEventListener("webkitTransitionEnd", this, true);
+            // In fact, any draw can cause the selections to be shifted!
+            var self = this;
+            var root = require("montage/ui/component").__root__;
+            var originalDrawIfNeeded = root.drawIfNeeded;
+            root.drawIfNeeded = function() {
+                self.allNeedDraw();
+                originalDrawIfNeeded.call(root);
+            };
         }
     },
 
-    drawAll: {
+    allNeedDraw: {
         value: function() {
             if (!this._selectedObjects || !this._selectedObjects.length) {
                 return;

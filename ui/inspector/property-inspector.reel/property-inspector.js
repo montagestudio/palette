@@ -98,34 +98,34 @@ var addPropertyTypeComponentDescriptor = exports.addPropertyTypeComponentDescrip
 };
 
 addPropertyTypeComponentDescriptor("*", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/dynamic-text.reel").DynamicText,
+    require("montage/ui/text.reel").DynamicText,
     "span",
     "value"
 ));
 
 addPropertyTypeComponentDescriptor("string", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-text.reel").InputText,
+    require("matte/ui/input-text.reel").InputText,
     "input",
     "value",
     {type: "text"}
 ));
 
 addPropertyTypeComponentDescriptor("number", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-number.reel").InputNumber,
+    require("matte/ui/input-number.reel").InputNumber,
     "input",
     "value",
     {type: "number"}
 ));
 
 addPropertyTypeComponentDescriptor("boolean", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-checkbox.reel").InputCheckbox,
+    require("matte/ui/input-checkbox.reel").InputCheckbox,
     "input",
     "checked",
     {type: "checkbox"}
 ));
 
 addPropertyTypeComponentDescriptor("enum", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/select.reel").Select,
+    require("matte/ui/select.reel").Select,
     "select",
     "value",
     {},
@@ -133,10 +133,10 @@ addPropertyTypeComponentDescriptor("enum", PropertyTypeComponentDescriptor.creat
 ));
 
 addPropertyTypeComponentDescriptor("url", PropertyTypeComponentDescriptor.create().init(
-    require("montage/ui/input-text.reel").InputText,
+    require("matte/ui/input-text.reel").InputText,
     "input",
     "value",
-    {type: "text"}
+    {type: "url"}
 ));
 
 //"string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");
@@ -150,8 +150,10 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     didCreate: {
         value: function () {
-            this.addPropertyChangeListener("object", this);
-            this.addPropertyChangeListener("propertyBlueprint", this);
+            // TODO replace with addRangeAtPathChangeListener/something that can handle
+            // both rangey objects and not (e.g. strings)
+            this.addOwnPropertyChangeListener("object", this);
+            this.addOwnPropertyChangeListener("propertyBlueprint", this);
         }
     },
 
@@ -168,12 +170,12 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
             var value = this.propertyBlueprint;
 
-            if (this.propertyValueField) {
-                this.propertyValueField.removePropertyChangeListener("value", this, false);
-            }
-
             if (!(this.object && value)) {
                 return;
+            }
+
+            if (this.propertyValueField) {
+                this.propertyValueField.removeOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
             }
 
             var componentDescriptor;
@@ -181,7 +183,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
                 // We need something better that this to create list of values. We should use the value type!
                 componentDescriptor = propertyTypeComponentMap["*"];
             } else {
-                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[this._propertyBlueprint.valueType] : propertyTypeComponentMap["*"];
+                componentDescriptor = value.valueType in propertyTypeComponentMap ? propertyTypeComponentMap[value.valueType] : propertyTypeComponentMap["*"];
             }
 
             this.propertyValueField = this._createFieldComponent(componentDescriptor);
@@ -189,10 +191,10 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
             this._propertyOptionsFieldValueProperty = componentDescriptor.optionsProperty;
 
             // set field value from object
-            this.propertyValueField[this._propertyValueFieldValueProperty] = this.object.properties.getProperty(this.propertyBlueprint.name);
+            this.propertyValueField[this._propertyValueFieldValueProperty] = Montage.getPath.call(this.object.properties, this.propertyBlueprint.name);
 
             // watch field changes and update object value
-            this.propertyValueField.addPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
+            this.propertyValueField.addOwnPropertyChangeListener(this._propertyValueFieldValueProperty, this, false);
 
             // Set the list of options
             this.propertyValueField[this._propertyOptionsFieldValueProperty] = this.propertyBlueprint.enumValues;
@@ -210,9 +212,9 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
         value: null
     },
 
-    handleChange: {
-        value: function (notification) {
-            if ("object" === notification.propertyPath || "propertyBlueprint" === notification.propertyPath) {
+    handlePropertyChange: {
+        value: function (value, key) {
+            if ("object" === key || "propertyBlueprint" === key) {
                 this._populateField();
             } else if (this.object && this.propertyBlueprint) {
                 //TODO also pass along the object? Technically we know what the object was higher up in the inspector...
@@ -260,7 +262,7 @@ exports.PropertyInspector = Montage.create(Component, /** @lends module:"ui/insp
 
     draw: {
         value: function() {
-            this._element.title = this._propertyBlueprint.helpKey;
+            this._element.title = this.propertyBlueprint.helpKey;
         }
     }
 });

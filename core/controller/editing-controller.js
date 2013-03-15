@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     Exporter = require("core/exporter").Exporter,
-    Deserializer = require("montage/core/deserializer").Deserializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
     Component = require("montage/ui/component").Component; //TODO this is only for debugging
 
 // The actual object responsible for add, removing, and altering components that belong to the owner it controls.
@@ -67,21 +67,17 @@ exports.EditingController = Montage.create(Montage, {
             var deserializer = Deserializer.create(),
                 self = this,
                 serializationWithinOwner = {},
-                deferredObject = Promise.defer(),
-                ownerDocument = this.owner.element.ownerDocument,
                 newObject;
 
             serialization = Object.clone(serialization);
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
-            deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
+            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserialize(null, this.owner.element).then(function (objects) {
                 newObject = objects[labelInOwner];
-                deferredObject.resolve(newObject);
+                return newObject;
             });
-
-            return deferredObject.promise;
         }
     },
 
@@ -96,7 +92,6 @@ exports.EditingController = Montage.create(Montage, {
                 deserializer = Deserializer.create(),
                 self = this,
                 serializationWithinOwner = {},
-                deferredComponent = Promise.defer(),
                 ownerDocument = this.owner.element.ownerDocument;
 
             serialization = Object.clone(serialization);
@@ -124,15 +119,13 @@ exports.EditingController = Montage.create(Montage, {
 
             serializationWithinOwner[labelInOwner] = serialization;
 
-            deserializer.initWithObjectAndRequire(serializationWithinOwner, this.ownerRequire);
-            deserializer.deserializeWithInstancesAndDocument(null, ownerDocument, function (objects) {
+            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
+            return deserializer.deserialize(null, element.parentElement).then(function (objects) {
                 var newComponent = objects[identifier];
                 newComponent.ownerComponent = self.owner;
                 newComponent.needsDraw = true;
-                deferredComponent.resolve(newComponent);
+                return newComponent;
             });
-
-            return deferredComponent.promise;
         }
     },
 
@@ -154,7 +147,7 @@ exports.EditingController = Montage.create(Montage, {
     setComponentProperty: {
         value: function (component, property, value) {
             //ensure component is child of controlledComponent
-            // is this as simple as: component.setProperty(property, value);
+            // is this as simple as: component.setPath(property, value);
             // what about setting the X coordinate of a component, that should be within the controlledComponent's CSS
         }
     }

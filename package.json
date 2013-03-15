@@ -1,13 +1,14 @@
 {
     "name": "palette",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "private": true,
     "dependencies": {
-        "montage": "~0.12.4"
+        "montage": "0.13.0-alpha",
+        "matte": "0.1.1-alpha"
     },
     "devDependencies": {
-        "montage-testing": "~0.1.1",
-        "testacular": "~0.5.7"
+        "montage-testing": "0.1.1",
+        "testacular": "0.5.7"
     },
     "scripts": {
         "install": "cd stage && npm install",

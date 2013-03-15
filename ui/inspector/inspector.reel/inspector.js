@@ -6,8 +6,8 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
-    parseForModuleAndName = require("montage/core/deserializer").Deserializer.parseForModuleAndName;
+    RangeController = require("montage/core/range-controller").RangeController,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 /**
     Description TODO
@@ -22,7 +22,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     didCreate: {
         value: function () {
-            this.propertyGroupsController = ArrayController.create();
+            this.propertyGroupsController = RangeController.create();
         }
     },
 
@@ -32,7 +32,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     templateDidLoad: {
         value: function () {
-            if (this._object) {
+            if (this._object && this.templateObjects && this.templateObjects.title) {
                 this.templateObjects.title.value = this._object.properties.identifier;
             }
         }
@@ -40,7 +40,9 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
     prepareForDraw: {
         value: function () {
-            this.templateObjects.title.addPropertyChangeListener("value", this);
+            if (this.templateObjects && this.templateObjects.title) {
+                 this.templateObjects.title.addOwnPropertyChangeListener("value", this);
+            }
         }
     },
 
@@ -68,7 +70,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             if (this._object && this._object.moduleId && (this._object.moduleId != "") && this._object.exportName && (this._object.exportName != "")) {
 
                 if (this.templateObjects) {
-                    this.templateObjects.title.value = this._object.getProperty("properties.identifier");
+                    this.templateObjects.title.value = this._object.getPath("properties.identifier");
                 }
 
                 this._blueprintDeferred = Promise.defer();
@@ -95,6 +97,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     }).done();
 
             } else {
+                this._blueprintDeferred = null;
                 this.blueprint = null;
 
                 if (this.templateObjects) {
@@ -104,18 +107,13 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
-    handleChange: {
-        value: function (notification) {
-
-            if ("value" === notification.propertyPath && notification.target === this.templateObjects.title) {
-
-                if (!this._hasAcceptedIdentifier) {
-                    this._hasAcceptedIdentifier = true;
-                } else {
-                    this.editingDocument.setOwnedObjectProperty(this.object, "identifier", notification.plus);
-                }
+    handleValueChange: {
+        value: function (value) {
+            if (!this._hasAcceptedIdentifier) {
+                this._hasAcceptedIdentifier = true;
+            } else {
+                this.editingDocument.setOwnedObjectProperty(this.object, "identifier", value);
             }
-
         }
     },
 

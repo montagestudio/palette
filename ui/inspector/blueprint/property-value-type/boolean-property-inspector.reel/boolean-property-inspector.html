@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="boolean-property-inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner":{
+            "properties":{
+                "element":{
+                    "#":"boolean-property-inspector"
+                }
+            }
+        },
+
+        "propertyName":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{
+                    "#":"property-name"
+                }
+            },
+            "bindings":{
+                "value":{
+                    "<->":"@owner.label"
+                },
+                "disabled":{
+                    "<-":"@owner.readOnlyLabel"
+                }
+            }
+        },
+
+        "readWritePropertySubstitution":{
+            "prototype":"montage/ui/substitution.reel",
+            "properties":{
+                "element":{
+                    "#":"readWritePropertySubstitution"
+                }
+            },
+            "bindings":{
+                "switchValue":{
+                    "<-":"@owner.propertyBlueprint.readOnly ? 'readOnly' : 'readWrite'"
+                }
+            }
+        },
+
+        "propertyValueReadOnly":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{
+                    "#":"propertyValueReadOnly"
+                }
+            },
+            "bindings":{
+                "value":{
+                    "<-":"@owner.objectValue"
+                }
+            }
+        },
+
+        "propertyValue":{
+            "prototype":"matte/ui/input-checkbox.reel",
+            "properties":{
+                "element":{
+                    "#":"propertyValue"
+                }
+            },
+            "bindings":{
+                "value":{
+                    "<->":"@owner.objectValue"
+                }
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="boolean-property-inspector" class="BooleanPropertyInspector">
+        <span data-montage-id="property-name" class="label"></span>
+        <span data-montage-id="readWritePropertySubstitution" class="field">
+            <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
+            <input data-arg="readWrite" data-montage-id="propertyValue" type="checkbox"/>
+        </span>
+    </div>
+</body>
+</html>

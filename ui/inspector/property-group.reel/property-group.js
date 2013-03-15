@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    ArrayController = require("montage/ui/controller/array-controller").ArrayController;
+    RangeController = require("montage/core/range-controller").RangeController;
 
 /**
     Description TODO
@@ -16,13 +16,9 @@ exports.PropertyGroup = Montage.create(Component, /** @lends module:"ui/ui/inspe
 
     didCreate: {
         value: function() {
-            this.propertiesController = ArrayController.create();
+            this.propertiesController = RangeController.create();
 
-            Object.defineBinding(this, "propertiesController.content", {
-                boundObject: this,
-                boundObjectPropertyPath: "properties",
-                oneway: true
-            });
+            this.defineBinding("propertiesController.content", {"<-": "properties"});
         }
     },
 

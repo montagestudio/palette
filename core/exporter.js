@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     TemplateCreator = require("core/template-creator").TemplateCreator,
-    Template = require("montage/ui/template").Template;
+    Template = require("montage/core/template").Template;
 
 // This object exports a live DOM into a clean template object for eventual serialization into
 // whatever format.
@@ -47,7 +47,7 @@ exports.Exporter = Montage.create(Montage, {
 
             //TODO pass along ignored?allowed?forbidden? whitelist/blacklist of attributes
             // when sanitizing
-            if (originalNode.controller) {
+            if (originalNode.component) {
                 this._sanitizeAttributes(node);
             } else {
                //TODO if no component should we choke if they have a data-montage-id?

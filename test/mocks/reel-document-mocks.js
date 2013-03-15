@@ -15,5 +15,7 @@ exports.mockReelDocument = function (fileUrl, serialization, bodyMarkup) {
 
     //TODO insert bodyMarkup
 
-    return ReelDocument.create().init(fileUrl, Template.initWithDocument(mockDocument), require);
+    return Template.initWithDocument(mockDocument, require).then(function (template) {
+        return ReelDocument.create().init(fileUrl, template, require);
+    });
 };

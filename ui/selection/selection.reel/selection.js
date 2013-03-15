@@ -187,14 +187,14 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
 
     willDraw: {
         value: function() {
-            if (!(this.object && this.object.element)) {
+            if (!(this.object && this.object.stageObject && this.object.stageObject.element)) {
+                this._top = this._left = this._height = this._width = 0;
                 return;
             }
 
-            var object = this.object,
-                el = "element" in object ? object.element : object;
+            var el = this.object.stageObject.element;
 
-            var rect = this._getBounds(this.object.element);
+            var rect = this._getBounds(el);
 
             this._top = this.offsetTop + rect.top;
             this._left = this.offsetLeft + rect.left;

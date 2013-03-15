@@ -1,17 +1,23 @@
-Deserializer = require("montage/core/deserializer").Deserializer;
 //HACK!!! is need so that we can drop the flow synchronously on the stage
-require("montage/ui/dynamic-text.reel");
-require("montage/ui/image.reel");
+require("montage/ui/text.reel");
+require("matte/ui/image.reel");
 
 var moduleId = window.stageData.moduleId,
     packageUrl = window.stageData.packageUrl;
 
-//TODO this is relying on some private methods, they should be available somewhere given their utility
-Deserializer._findObjectNameRegExp.test(moduleId);
-var objectName = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase),
-    ownerComponent;
 
 if (packageUrl && moduleId) {
+
+    var _findObjectNameRegExp = /([^\/]+?)(\.reel)?$/;
+    var _toCamelCaseRegExp = /(?:^|-)([^-])/g;
+    var _replaceToCamelCase = function (_, g1) {
+        return g1.toUpperCase()
+    };
+
+    _findObjectNameRegExp.test(moduleId);
+    var objectName = RegExp.$1.replace(_toCamelCaseRegExp, _replaceToCamelCase),
+        ownerComponent;
+
     // Load the specified package
     require.loadPackage(packageUrl)
         .then(function (packageRequire) {

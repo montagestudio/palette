@@ -17,16 +17,18 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     init: {
         value: function (fileUrl, packageRequire) {
-            this._undoManager = UndoManager.create();
-
             var self = this;
-            this.dispatchPropertyChange("fileUrl", function () {
+            self._undoManager = UndoManager.create();
+
+            self.dispatchBeforeOwnPropertyChange("fileUrl", self._fileUrl);
+            // this.dispatchPropertyChange("fileUrl", function () {
                 self._fileUrl = fileUrl;
-            });
+            // });
+            self.dispatchOwnPropertyChange("fileUrl", fileUrl);
 
-            this._packageRequire = packageRequire;
+            self._packageRequire = packageRequire;
 
-            return this;
+            return self;
         }
     },
 
@@ -76,6 +78,12 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
     redo: {
         value: function () {
             this.undoManager.redo();
+        }
+    },
+
+    getOwnedObjectProperty: {
+        value: function (proxy, property) {
+            return proxy.getObjectProperty(property);
         }
     },
 

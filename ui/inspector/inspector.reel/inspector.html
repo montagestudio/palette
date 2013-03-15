@@ -18,7 +18,7 @@
         },
 
         "title": {
-            "prototype": "montage/ui/input-text.reel",
+            "prototype": "matte/ui/input-text.reel",
             "properties": {
                 "element": {"#": "title"}
             }
@@ -36,7 +36,7 @@
         },
 
         "modalEditorButton": {
-            "prototype": "montage/ui/button.reel",
+            "prototype": "matte/ui/button.reel",
             "properties": {
                 "element": {"#": "editor-button"}
             },
@@ -48,39 +48,17 @@
             ]
         },
 
-        "propertyGroupsCondition": {
-            "prototype": "montage/ui/condition.reel",
+        "blueprintEditor": {
+            "prototype": "../blueprint/blueprint-editor.reel",
             "properties": {
-                "element": {"#": "propertyGroupsCondition"},
-                "removalStrategy": "hide"
-            },
-            "bindings": {
-                "condition": {"<-": "@owner.blueprint"}
-            }
-        },
-
-        "propertyGroups": {
-            "prototype": "montage/ui/repetition.reel",
-            "properties": {
-                "element": {"#": "propertyGroups"}
-            },
-            "bindings": {
-                "contentController": {"<-": "@owner.propertyGroupsController"}
-            }
-        },
-
-        "propertyGroup": {
-            "prototype": "../property-group.reel",
-            "properties": {
-                "element": {"#": "propertyGroup"}
+                "element": {"#": "blueprintEditor"}
             },
             "bindings": {
                 "object": {"<-": "@owner.object"},
-                "name": {"<-": "@propertyGroups.objectAtCurrentIteration.name"},
-                "properties": {"<-": "@propertyGroups.objectAtCurrentIteration.properties"},
-                "open": {"<-": "@propertyGroups.objectAtCurrentIteration.open"}
+                "blueprint": {"<-": "@owner.blueprint"}
             }
         }
+
     }
     </script>
 </head>
@@ -94,11 +72,7 @@
             </div>
         </header>
 
-        <div data-montage-id="propertyGroupsCondition">
-            <div data-montage-id="propertyGroups">
-                <div data-montage-id="propertyGroup"></div>
-            </div>
-        </div>
+        <div data-montage-id="blueprintEditor"></div>
     </section>
 </body>
 </html>
