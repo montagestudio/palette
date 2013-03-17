@@ -1,7 +1,8 @@
 //TODO not create so many globals
 var REEL_LOCATION_KEY = "reel-location",
     PACKAGE_LOCATION_KEY = "package-location",
-    REMOTE_TRIGGER_KEY = "data-remote-trigger",
+    DATA_PACKAGE_KEY = "data-package",
+    DATA_REMOTE_TRIGGER_KEY = "data-remote-trigger",
     DATA_MODULE_KEY = "data-module";
 
 window.addEventListener("message", function (event) {
@@ -58,11 +59,15 @@ function getParams() {
 
     }
 
+    var applicationPath = window.location.pathname;
+    applicationPath = applicationPath.substring(0, applicationPath.lastIndexOf("/"));
+    applicationPath = "__stage" + applicationPath + "/stage-app";
+
     params = {};
     params[REEL_LOCATION_KEY] = reelLocation;
-    params[PACKAGE_LOCATION_KEY] = packageLocation;
-    params[REMOTE_TRIGGER_KEY] = window.location.origin;
-    params[DATA_MODULE_KEY] = "__stage/stage-app";
+    params[DATA_PACKAGE_KEY] = packageLocation;
+    params[DATA_REMOTE_TRIGGER_KEY] = window.location.origin;
+    params[DATA_MODULE_KEY] = applicationPath;
     return params;
 }
 
@@ -82,15 +87,14 @@ function requestParams () {
 
 function loadReel (reelLocation, packageLocation) {
 
-    if (packageLocation) {
-        continueBootstrap(packageLocation);
-    } else {
-        getPackageLocation(reelLocation, continueBootstrap);
+    if (!packageLocation) {
+        packageLocation = loadParams[DATA_PACKAGE_KEY];
     }
+    getPackageLocation(packageLocation, continueBootstrap);
 
-    function continueBootstrap (packageLocation) {
+    function continueBootstrap (packageLocation, packageJSON) {
         var moduleId = reelLocation.replace(packageLocation, "");
-        injectPackageInformation(packageLocation, moduleId);
+        injectPackageInformation(packageLocation, packageJSON, moduleId);
     }
 }
 
@@ -110,13 +114,14 @@ function getPackageLocation (location, callback) {
     }
 
     var packageReq = new XMLHttpRequest();
-    packageReq.open("GET", location + "package.json");
+    packageReq.open("GET", location + "/package.json");
     packageReq.addEventListener("load", function (evt) {
         if (404 === evt.target.status) {
             location = location.replace(/[^\/]+\/$/, "");
             getPackageLocation(location, callback);
         } else {
-            callback(location);
+            // TODO PJYF We should check that the response is actually a package.json
+            callback(location, packageReq.response);
         }
     });
     packageReq.send();
@@ -124,7 +129,7 @@ function getPackageLocation (location, callback) {
 
 // Inject the specified packageInformation into the montage
 // bootstrapping sequence, letting bootstrapping resume
-function injectPackageInformation (packageLocation, moduleId) {
+function injectPackageInformation (packageLocation, packageJSON, moduleId) {
 
     //TODO formalize passing this information along
     window.stageData = {
@@ -132,29 +137,52 @@ function injectPackageInformation (packageLocation, moduleId) {
         moduleId: moduleId
     };
 
+    var injections = {}
+    injections.packageDescriptions = [
+        {
+            montage: true,
+            location: packageLocation,
+            description: JSON.parse(packageJSON)
+        }
+    ];
+    injections.packageDescriptionLocations = [];
+    injections.mappings = [
+        {
+            name: "__stage",
+            application: true,
+            dependency: {
+                name: "__stage",
+                location: loadParams[DATA_REMOTE_TRIGGER_KEY],
+                version: "*"
+            }
+        }
+    ];
+    injections.dependencies = [];
+
     //TODO not hardcode this all
     window.postMessage({
         type: "montageInit",
-        location: packageLocation + "/package.json"
+        location: packageLocation,
+        injections: injections
     }, "*");
 }
 
 function injectMontageBootstrap(old) {
-    var montageLocation = loadParams[PACKAGE_LOCATION_KEY] + "/node_modules/montage/montage.js";
+    var montageLocation = loadParams[DATA_PACKAGE_KEY] + "/node_modules/montage/montage.js";
     var headID = document.getElementsByTagName("head")[0];
     var newScript = document.createElement('script');
     newScript.setAttribute("type", "application/javascript");
     if (old) {
         // This loads the copy of Montage in the stage
         newScript.setAttribute("src", "bootstrap.js");
-        newScript.setAttribute(PACKAGE_LOCATION_KEY, "node_modules/montage/");
-        newScript.setAttribute(REMOTE_TRIGGER_KEY, loadParams[REMOTE_TRIGGER_KEY]);
+        newScript.setAttribute(DATA_PACKAGE_KEY, "node_modules/montage/");
+        newScript.setAttribute(DATA_REMOTE_TRIGGER_KEY, loadParams[DATA_REMOTE_TRIGGER_KEY]);
         newScript.setAttribute(DATA_MODULE_KEY, loadParams[DATA_MODULE_KEY]);
     } else {
         // This loads the copy of Montage in the target package
         newScript.setAttribute("src", montageLocation);
-        newScript.setAttribute(PACKAGE_LOCATION_KEY, loadParams[PACKAGE_LOCATION_KEY]);
-        newScript.setAttribute(REMOTE_TRIGGER_KEY, loadParams[REMOTE_TRIGGER_KEY]);
+        newScript.setAttribute(DATA_PACKAGE_KEY, loadParams[DATA_PACKAGE_KEY]);
+        newScript.setAttribute(DATA_REMOTE_TRIGGER_KEY, loadParams[DATA_REMOTE_TRIGGER_KEY]);
         newScript.setAttribute(DATA_MODULE_KEY, loadParams[DATA_MODULE_KEY]);
     }
     headID.appendChild(newScript);
