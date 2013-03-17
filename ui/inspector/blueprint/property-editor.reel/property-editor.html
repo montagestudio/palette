@@ -13,72 +13,47 @@
             }
         },
 
-        "association":{
-            "prototype":"montage/ui/condition.reel",
+        "propertyTypeSubstitution":{
+            "prototype":"montage/ui/substitution.reel",
             "properties":{
                 "element":{
-                    "#":"association"
-                },
-                "removalStrategy":"hide"
+                    "#":"propertyTypeSubstitution"
+                }
             },
             "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isAssociationBlueprint"
+                "switchValue":{
+                    "<-":"@owner.propertyBlueprint.isAssociationBlueprint ? 'association' : 'property'"
                 }
             }
         },
 
-        "property":{
-            "prototype":"montage/ui/condition.reel",
+        "associationToOneSubstitution":{
+            "prototype":"montage/ui/substitution.reel",
             "properties":{
                 "element":{
-                    "#":"property"
-                },
-                "removalStrategy":"hide"
+                    "#":"associationToOneSubstitution"
+                }
             },
             "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isAssociationBlueprint",
-                    "converter":{
-                        "@":"invertConverter"
-                    }
+                "switchValue":{
+                    "<-":"@owner.propertyBlueprint.isToMany ? 'toMany' : 'toOne'"
                 }
             }
         },
 
-        "associationValueToOne":{
-            "prototype":"montage/ui/condition.reel",
+        "propertyToOneSubstitution":{
+            "prototype":"montage/ui/substitution.reel",
             "properties":{
                 "element":{
-                    "#":"associationValueToOne"
-                },
-                "removalStrategy":"hide"
+                    "#":"propertyToOneSubstitution"
+                }
             },
             "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isToMany",
-                    "converter":{
-                        "@":"invertConverter"
-                    }
+                "switchValue":{
+                    "<-":"@owner.propertyBlueprint.isToMany ? 'toMany' : 'toOne'"
                 }
             }
         },
-
-        "associationValueToMany":{
-            "prototype":"montage/ui/condition.reel",
-            "properties":{
-                "element":{
-                    "#":"associationValueToMany"
-                },
-                "removalStrategy":"hide"
-            },
-            "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isToMany"
-                }
-            }
-        },
-
 
         "objectAssociationInspector":{
             "prototype":"../association-value-type/object-association-inspector.reel",
@@ -177,43 +152,6 @@
                     "<-":"@owner.propertyBlueprint.name"
                 }
             }
-        },
-
-        "propertyValueToOne":{
-            "prototype":"montage/ui/condition.reel",
-            "properties":{
-                "element":{
-                    "#":"propertyValueToOne"
-                },
-                "removalStrategy":"hide"
-            },
-            "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isToMany",
-                    "converter":{
-                        "@":"invertConverter"
-                    }
-                }
-            }
-        },
-
-        "propertyValueToMany":{
-            "prototype":"montage/ui/condition.reel",
-            "properties":{
-                "element":{
-                    "#":"propertyValueToMany"
-                },
-                "removalStrategy":"hide"
-            },
-            "bindings":{
-                "condition":{
-                    "<-":"@owner.propertyBlueprint.isToMany"
-                }
-            }
-        },
-
-        "invertConverter":{
-            "prototype":"montage/core/converter/invert-converter"
         },
 
         "toOnePropertyInspectorSubstitution":{
@@ -459,21 +397,17 @@
 </head>
 <body>
     <label data-montage-id="property-editor" class="PropertyEditor" title="">
-        <div data-montage-id="association">
-            <div data-montage-id="associationValueToOne">
-                <div data-montage-id="objectAssociationInspector"></div>
-            </div>
-            <div data-montage-id="associationValueToMany">
-                <div data-montage-id="toManyAssociationInspectorSubstitution">
+        <div data-montage-id="propertyTypeSubstitution">
+            <div data-arg="association" data-montage-id="associationToOneSubstitution">
+                <div data-arg="toOne" data-montage-id="objectAssociationInspector"></div>
+                <div data-arg="toMany" data-montage-id="toManyAssociationInspectorSubstitution">
                     <div data-arg="list" data-montage-id="listAssociationInspector"></div>
                     <div data-arg="set" data-montage-id="setAssociationInspector"></div>
                     <div data-arg="map" data-montage-id="mapAssociationInspector"></div>
                 </div>
             </div>
-        </div>
-        <div data-montage-id="property">
-            <div data-montage-id="propertyValueToOne">
-                <div data-montage-id="toOnePropertyInspectorSubstitution">
+            <div data-arg="property" data-montage-id="propertyToOneSubstitution">
+                <div data-arg="toOne" data-montage-id="toOnePropertyInspectorSubstitution">
                     <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
                     <div data-arg="date" data-montage-id="datePropertyInspector"></div>
                     <div data-arg="enum" data-montage-id="enumPropertyInspector"></div>
@@ -482,9 +416,7 @@
                     <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
                     <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
                 </div>
-            </div>
-            <div data-montage-id="propertyValueToMany">
-                <div data-montage-id="toManyPropertyInspectorSubstitution">
+                <div data-arg="toMany" data-montage-id="toManyPropertyInspectorSubstitution">
                     <div data-arg="list" data-montage-id="listPropertyInspector"></div>
                     <div data-arg="set" data-montage-id="setPropertyInspector"></div>
                     <div data-arg="map" data-montage-id="mapPropertyInspector"></div>
