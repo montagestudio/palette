@@ -3,7 +3,8 @@ var REEL_LOCATION_KEY = "reel-location",
     PACKAGE_LOCATION_KEY = "package-location",
     DATA_PACKAGE_KEY = "data-package",
     DATA_REMOTE_TRIGGER_KEY = "data-remote-trigger",
-    DATA_MODULE_KEY = "data-module";
+    DATA_MODULE_KEY = "data-module",
+    STAGE_URL = "stage-url";
 
 window.addEventListener("message", function (event) {
 
@@ -60,14 +61,14 @@ function getParams() {
     }
 
     var applicationPath = window.location.pathname;
-    applicationPath = applicationPath.substring(0, applicationPath.lastIndexOf("/"));
-    applicationPath = "__stage" + applicationPath + "/stage-app";
+    applicationPath = window.location.origin + applicationPath.substring(0, applicationPath.lastIndexOf("/") + 1);
 
     params = {};
     params[REEL_LOCATION_KEY] = reelLocation;
     params[DATA_PACKAGE_KEY] = packageLocation;
     params[DATA_REMOTE_TRIGGER_KEY] = window.location.origin;
-    params[DATA_MODULE_KEY] = applicationPath;
+    params[STAGE_URL] = applicationPath;
+    params[DATA_MODULE_KEY] = "__stage/stage-app";
     return params;
 }
 
@@ -138,26 +139,17 @@ function injectPackageInformation (packageLocation, packageJSON, moduleId) {
     };
 
     var injections = {}
-    injections.packageDescriptions = [
-        {
-            montage: true,
-            location: packageLocation,
-            description: JSON.parse(packageJSON)
-        }
-    ];
-    injections.packageDescriptionLocations = [];
     injections.mappings = [
         {
             name: "__stage",
             application: true,
             dependency: {
                 name: "__stage",
-                location: loadParams[DATA_REMOTE_TRIGGER_KEY],
+                location: loadParams[STAGE_URL],
                 version: "*"
             }
         }
     ];
-    injections.dependencies = [];
 
     //TODO not hardcode this all
     window.postMessage({
