@@ -25,98 +25,43 @@ exports.Editor = Montage.create(Component, /** @lends module:"palette/ui/editor.
         }
     },
 
-    _fileUrlDocumentMap:{
-        value:null
-    },
-
-    didCreate:{
-        value:function () {
-            Component.didCreate.call(this);
-            this._fileUrlDocumentMap = new Map();
-        }
-    },
-
-    /*
-     * Create and load the document.<br/>
-     * <b>Note:</> This must be overwritten by sub classes
-     * @returns By default a rejected promise.
-     */
-    loadDocument:{
-        value:function (fileUrl, packageUrl) {
-            return Promise.reject(new Error("The loadDocument method must be overwritten by sub classes to do something useful."));
-        }
+    openDocument: {
+        value: Function.noop
     },
 
     /*
      * Load the document and register it so that it can be closed and tracked
      *
      */
-    load:{
-        value:function (fileUrl, packageUrl) {
-            var self = this;
-            var documentPromise = this._fileUrlDocumentMap.get(fileUrl);
-            if (documentPromise) {
-                // the document was already open
-                return documentPromise.then(function (document) {
-                    self.dispatchBeforeOwnPropertyChange("currentDocument", self._currentDocument);
-                    self._currentDocument = document;
-                    self.dispatchOwnPropertyChange("currentDocument", document);
-                });
+    open: {
+        value: function (document) {
+            if (document !== this.currentDocument) {
+                this.dispatchBeforeOwnPropertyChange("currentDocument", this._currentDocument);
+                this._currentDocument = document;
+                this.openDocument(document);
+                this.dispatchOwnPropertyChange("currentDocument", document);
+            } else {
+                this.openDocument(document);
             }
-            documentPromise = this.loadDocument(fileUrl, packageUrl);
-            this._fileUrlDocumentMap.set(fileUrl, documentPromise);
-            return documentPromise.then(function (document) {
-                self.dispatchBeforeOwnPropertyChange("currentDocument", self._currentDocument);
-                self._currentDocument = document;
-                self.dispatchOwnPropertyChange("currentDocument", document);
-                return document;
-            }, function (error) {
-                self._fileUrlDocumentMap.delete(fileUrl);
-                console.log("Editor could not load document " + fileUrl, error);
-                return Promise.reject(new Error("Editor could not load document " + fileUrl));
-            });
+            this.needsDraw = true;
         }
     },
 
-    close:{
-        value:function (fileUrl) {
-            var self = this;
-            var documentPromise = this._fileUrlDocumentMap.get(fileUrl);
+    closeDocument: {
+        value: Function.noop
+    },
 
-            if (documentPromise) {
-                this._fileUrlDocumentMap.delete(fileUrl);
-
-                return documentPromise.then(function (document) {
-                    if (document == self._currentDocument) {
-
-                        var urls = self._fileUrlDocumentMap.keys;
-                        var newCurrentDocumentPromise = null;
-                        if (urls && (urls.length > 0)) {
-                            newCurrentDocumentPromise = self._fileUrlDocumentMap.get(urls[0]);
-                        }
-                        if (newCurrentDocumentPromise) {
-                            newCurrentDocumentPromise.then(function (newCurrentDocument) {
-                                self.dispatchBeforeOwnPropertyChange("currentDocument", self._currentDocument);
-                                self._currentDocument = newCurrentDocument;
-                                self.dispatchOwnPropertyChange("currentDocument", newCurrentDocument);
-                                self.needsDraw = true;
-                                return documentPromise;
-                            });
-                        } else {
-                            self.dispatchBeforeOwnPropertyChange("currentDocument", self._currentDocument);
-                            self._currentDocument = null;
-                            self.dispatchOwnPropertyChange("currentDocument", null);
-                            self.needsDraw = true;
-                            return documentPromise;
-                        }
-                    } else {
-                        return documentPromise;
-                    }
-                });
+    close: {
+        value:function (document) {
+            if (document === this.currentDocument) {
+                this.dispatchBeforeOwnPropertyChange("currentDocument", this._currentDocument);
+                this._currentDocument = null;
+                this.closeDocument(document);
+                this.dispatchOwnPropertyChange("currentDocument", null);
             } else {
-                console.log("We don't have an open document for " + fileUrl);
+                this.closeDocument(document);
             }
-            return Promise.resolve(null);
+            this.needsDraw = true;
         }
     }
 
