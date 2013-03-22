@@ -6,10 +6,11 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     load: {
         value: function (fileUrl, packageUrl) {
-            var deferredDoc = Promise.defer();
+            var deferredDoc = Promise.defer(),
+                documentType = this;
 
             require.loadPackage(packageUrl).then(function (packageRequire) {
-                deferredDoc.resolve(EditingDocument.create().init(fileUrl, packageRequire));
+                deferredDoc.resolve(documentType.create().init(fileUrl, packageRequire));
             });
             return deferredDoc.promise;
         }
