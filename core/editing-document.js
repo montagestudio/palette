@@ -21,11 +21,11 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
             var self = this;
             self._undoManager = UndoManager.create();
 
-            self.dispatchBeforeOwnPropertyChange("fileUrl", self._fileUrl);
-            // this.dispatchPropertyChange("fileUrl", function () {
-                self._fileUrl = fileUrl;
-            // });
-            self.dispatchOwnPropertyChange("fileUrl", fileUrl);
+            self.dispatchBeforeOwnPropertyChange("fileUrl", self.fileUrl);
+            self.dispatchBeforeOwnPropertyChange("url", self.url);
+            self._fileUrl = fileUrl;
+            self.dispatchOwnPropertyChange("fileUrl", self.fileUrl);
+            self.dispatchOwnPropertyChange("url", self.url);
 
             self._packageRequire = packageRequire;
 
@@ -54,7 +54,17 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
         value: null
     },
 
+    /**
+     * @deprecated
+     * @see url
+     */
     fileUrl: {
+        get: function () {
+            return this._fileUrl;
+        }
+    },
+
+    url: {
         get: function () {
             return this._fileUrl;
         }
