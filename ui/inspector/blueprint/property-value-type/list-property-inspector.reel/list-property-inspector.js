@@ -1,10 +1,10 @@
-    /**
+/**
  @module "./list-property-inspector.reel"
  @requires montage
  @requires "../../value-type-inspector.reel"
  */
 var Montage = require("montage").Montage,
-    List = require("montage/collections/list"),
+    shim = require("montage/collections/shim"),
     ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
@@ -16,15 +16,15 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
 
 
     collectionValue: {
-        get: function() {
+        get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "list")) {
-//                console.log("Property value list " + this.propertyBlueprint.name + " type " + this.propertyBlueprint.valueType + " collection " + this.propertyBlueprint.collectionValueType + " ", this.objectValue);
-                if (!(this.objectValue instanceof List)) {
+                //                console.log("Property value list " + this.propertyBlueprint.name + " type " + this.propertyBlueprint.valueType + " collection " + this.propertyBlueprint.collectionValueType + " ", this.objectValue);
+                if (!(this.objectValue instanceof Array)) {
                     if (this.objectValue && this.objectValue.forEach) {
-                        this.objectValue = new List(this.objectValue);
+                        this.objectValue = new Array(this.objectValue);
                     } else {
                         var temp = this.objectValue;
-                        this.objectValue = new List();
+                        this.objectValue = new Array();
                         if (temp) {
                             this.objectValue.add(temp);
                         }
@@ -32,9 +32,9 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
                 }
                 return this.objectValue;
             }
-            return new List();
+            return new Array();
         },
-        set function() {
+        set function () {
             this.objectValue = value;
         }
     }
