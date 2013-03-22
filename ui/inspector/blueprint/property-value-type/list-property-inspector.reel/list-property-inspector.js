@@ -34,7 +34,7 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
             }
             return new Array();
         },
-        set function () {
+        set: function () {
             this.objectValue = value;
         }
     }

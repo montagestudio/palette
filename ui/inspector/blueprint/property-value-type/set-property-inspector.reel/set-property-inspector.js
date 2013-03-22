@@ -34,7 +34,7 @@ exports.SetPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
             }
             return new Set();
         },
-        set function() {
+        set: function() {
             this.objectValue = value;
         }
     },
