@@ -241,7 +241,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
         value: function (owner, template, frame) {
             var labels = Object.keys(owner.templateObjects),
                 self = this,
-                proxy;
+                proxy,
+                serialization = template.getSerialization().getSerializationObject();
 
             var editController = this._editingController = EditingController.create();
             editController.frame = frame;
@@ -249,7 +250,23 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             labels.forEach(function (label) {
                 proxy = self.editingProxyMap[label];
-                proxy.stageObject = owner.templateObjects[label];
+                var stageObject = owner.templateObjects[label];
+                // If this is an array, and not just array...
+                if (Array.isArray(stageObject) && !("value" in serialization[label])) {
+                    // ... then it's something repeated, and so we don't
+                    // currently have a live representation. This will
+                    // be provided by an inspector
+                    proxy.stageObject = null;
+                    if (!stageObject.length) {
+                        console.error("TODO: cannot get parentComponent of " + label);
+                        proxy.parentComponent = null;
+                        return;
+                    }
+                    proxy.parentComponent = stageObject[0].parentComponent;
+                } else {
+                    proxy.stageObject = stageObject;
+                    proxy.parentComponent = stageObject.parentComponent || owner;
+                }
             });
         }
     },
