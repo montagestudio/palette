@@ -7,66 +7,65 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "list-property-inspector"}
+                "element": {
+                    "#": "list-property-inspector"
+                }
             }
         },
 
-        "propertyNameSubstitution":{
-            "prototype":"montage/ui/substitution.reel",
-            "properties":{
-                "element":{
-                    "#":"propertyNameSubstitution"
+        "propertyNameSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {
+                    "#": "propertyNameSubstitution"
                 }
             },
-            "bindings":{
-                "switchValue":{
-                    "<-":"@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
-                }
-            }
-        },
-
-        "readOnlyPropertyName":{
-            "prototype":"montage/ui/text.reel",
-            "properties":{
-                "element":{
-                    "#":"readOnlyPropertyName"
-                }
-            },
-            "bindings":{
-                "value":{
-                    "<-":"@owner.label"
-                }
-            }
-        },
-
-        "readWritePropertyName":{
-            "prototype":"matte/ui/input-text.reel",
-            "properties":{
-                "element":{
-                    "#":"readWritePropertyName"
-                }
-            },
-            "bindings":{
-                "value":{
-                    "<->":"@owner.label"
-                }
-            }
-        },
-
-        "valuesController": {
-            "prototype": "montage/core/range-controller",
             "bindings": {
-                "content": {"<-": "@owner.collectionValue"}
+                "switchValue": {
+                    "<-": "@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
+                }
+            }
+        },
+
+        "readOnlyPropertyName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {
+                    "#": "readOnlyPropertyName"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<-": "@owner.label"
+                }
+            }
+        },
+
+        "readWritePropertyName": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {
+                    "#": "readWritePropertyName"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<->": "@owner.label"
+                }
             }
         },
 
         "propertyCollection": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
-                "element": {"#": "propertyCollection"}
-             },
+                "element": {
+                    "#": "propertyCollection"
+                }
+            },
             "bindings": {
-                "contentController": {"<-": "@valuesController"}
+                "content": {
+                    "<-": "@owner.collectionValue"
+                }
             }
         },
 
@@ -215,6 +214,52 @@
                     "<-": "@owner.propertyBlueprint"
                 }
             }
+        },
+
+        "addButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "addButton"
+                },
+                "label": "+"
+            },
+            "bindings": {
+                "disabled": {
+                    "<-": "@owner.propertyBlueprint.readOnly"
+                }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
+        },
+
+        "removeButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "removeButton"
+                },
+                "label": "-"
+            },
+            "bindings": {
+                "disabled": {
+                    "<-": "@owner.propertyBlueprint.readOnly"
+                }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
         }
 
     }
@@ -226,6 +271,7 @@
             <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
             <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
         </span>
+        <div data-montage-id="addButton"></div>
         <div data-montage-id="propertyCollection">
             <div data-montage-id="toOnePropertyInspectorSubstitution">
                 <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
@@ -236,6 +282,7 @@
                 <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
                 <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
             </div>
+            <div data-montage-id="removeButton"></div>
         </div>
     </div>
 </body>

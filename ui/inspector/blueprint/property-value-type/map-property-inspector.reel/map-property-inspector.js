@@ -36,6 +36,19 @@ exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
         set: function() {
             this.objectValue = value;
         }
+    },
+
+    handleAddButtonAction: {
+        value: function (evt) {
+            console.log("handleAddButtonAction");
+        }
+    },
+
+    handleRemoveButtonAction: {
+        value: function (evt) {
+            console.log("handleRemoveButtonAction");
+        }
     }
+
 
 });

@@ -37,6 +37,19 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
         set: function () {
             this.objectValue = value;
         }
+    },
+
+    handleAddButtonAction: {
+        value: function (evt) {
+            this.collectionValue.add("");
+        }
+    },
+
+    handleRemoveButtonAction: {
+        value: function (evt) {
+            console.log("handleRemoveButtonAction");
+        }
     }
+
 
 });

@@ -55,15 +55,6 @@
             }
         },
 
-        "valuesController": {
-            "prototype": "montage/core/range-controller",
-            "bindings": {
-                "content": {
-                    "<-": "@owner.collectionValue"
-                }
-            }
-        },
-
         "propertyCollection": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
@@ -72,8 +63,8 @@
                 }
             },
             "bindings": {
-                "contentController": {
-                    "<-": "@valuesController"
+                "content": {
+                    "<-": "@owner.collectionValue"
                 }
             }
         },
