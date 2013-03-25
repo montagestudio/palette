@@ -30,3 +30,7 @@
     line-height: .7;
     color: hsl(0, 0%, 60%);
 }
+
+.Inspector-header-button {
+    position: relative;
+}
