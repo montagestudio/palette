@@ -257,6 +257,8 @@ exports.ReelDocument = Montage.create(EditingDocument, {
                     // currently have a live representation. This will
                     // be provided by an inspector
                     proxy.stageObject = null;
+                    // FIXME/HACK: need a way to get the parent of a component
+                    // without having a live object
                     if (!stageObject.length) {
                         console.error("TODO: cannot get parentComponent of " + label);
                         proxy.parentComponent = null;
