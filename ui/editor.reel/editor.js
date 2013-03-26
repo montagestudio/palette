@@ -48,7 +48,9 @@ exports.Editor = Montage.create(Component, /** @lends module:"palette/ui/editor.
     },
 
     closeDocument: {
-        value: Function.noop
+        value: function(document) {
+            document.close();
+        }
     },
 
     close: {
