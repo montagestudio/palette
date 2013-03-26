@@ -194,7 +194,12 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             //TODO not blindly append to the end of the body
             //TODO react to changing the element?
             if (proxy.element && !proxy.element.parentNode) {
-                this._ownerElement.appendChild(proxy.element);
+                var parentProxy = proxy.parentProxy;
+                if (parentProxy && parentProxy.element) {
+                    parentProxy.element.appendChild(proxy.element);
+                } else {
+                    this._ownerElement.appendChild(proxy.element);
+                }
             }
         }
     },
@@ -500,7 +505,7 @@ exports.ReelDocument = Montage.create(EditingDocument, {
     },
 
     addComponent: {
-        value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
+        value: function (labelInOwner, serialization, markup, elementMontageId, identifier, parentProxy) {
             var self = this,
                 deferredUndo,
                 proxy,
@@ -539,9 +544,10 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             proxy = ReelProxy.create().init(labelInOwner, serialization, this);
             proxy.markup = markup; //TODO formalize this, ComponentProxy subclass?
             proxy.elementMontageId = elementMontageId; //TODO same here
+            proxy.parentProxy = parentProxy;
 
             if (this._editingController) {
-                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier)
+                proxyPromise = this._editingController.addComponent(labelInOwner, serialization, markup, elementMontageId, identifier, parentProxy)
                     .then(function (newComponent) {
                         proxy.stageObject = newComponent;
                         return proxy;

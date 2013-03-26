@@ -82,7 +82,7 @@ exports.EditingController = Montage.create(Montage, {
     },
 
     addComponent: {
-        value: function (labelInOwner, serialization, markup, elementMontageId, identifier) {
+        value: function (labelInOwner, serialization, markup, elementMontageId, identifier, parentProxy) {
 
             if (!labelInOwner) {
                 throw new Error("Cannot add a component without a label for the owner's serialization");
@@ -113,7 +113,11 @@ exports.EditingController = Montage.create(Montage, {
                     element = this._createElementFromMarkup(markup, elementMontageId);
                     //TODO do this off-screen to avoid rendering flash, not sure how to balance that with
                     // putting this in the right spot in the DOM; can we move it after the fact easily?
-                    this.owner.element.appendChild(element);
+                    if (parentProxy && parentProxy.stageObject && parentProxy.stageObject.element) {
+                        parentProxy.stageObject.element.appendChild(element);
+                    } else {
+                        this.owner.element.appendChild(element);
+                    }
                 }
             }
 
