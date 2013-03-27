@@ -1,18 +1,28 @@
 .PropertyEditor {
-    display: -webkit-flex;
+    display: block;
     padding: 5px 0;
     background: hsl(0,0%,85%);
     border-bottom: 1px solid hsla(0,0%,0%,.05);
 }
 
-.PropertyEditor .label,
-.PropertyEditor .field {
+.PropertyEditor > .montage-slot {
+    width: 100%;
+}
+
+/* Property ---------------------- */
+
+.Property {
+    display: -webkit-flex;
+}
+
+.Property-label,
+.Property-field {
     padding: 0 5px;
     line-height: 24px;
 }
 
-.PropertyEditor .label {
-    width: 100px;
+.Property-label {
+    width: 80px;
     color: hsl(0,0%,50%);
     text-align: right;
     text-overflow: ellipsis;
@@ -20,7 +30,7 @@
     overflow: hidden;
 }
  
-.PropertyEditor .field {
+.Property-field {
     -webkit-flex: 1;
     text-align: left;
 }
@@ -28,17 +38,17 @@
 
 /* Montage overrides */
 
-.PropertyEditor .montage-Button {
+.PropertyEditor .matte-Button {
     height: 24px;
 }
 
-.PropertyEditor .montage-InputText {
+.PropertyEditor .matte-InputText {
     display: block;
     width: 100%;
     height: 24px;
 }
 
-.PropertyEditor .montage-InputNumber {
+.PropertyEditor .matte-InputNumber {
     padding-top: 0;
     padding-bottom: 0;
     width: 80px;
