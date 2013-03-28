@@ -433,9 +433,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 self._addProxies(addedProxy);
 
-                self.dispatchEventNamed("didAddObject", true, true, {
-                    object: addedProxy
-                });
+//                self.dispatchEventNamed("didAddObject", true, true, {
+//                    object: addedProxy
+//                });
 
                 if (self.selectObjectsOnAddition) {
                     self.clearSelectedObjects();
@@ -531,9 +531,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 self._addProxies(resolvedProxy);
 
-                self.dispatchEventNamed("didAddComponent", true, true, {
-                    component: resolvedProxy
-                });
+//                self.dispatchEventNamed("didAddComponent", true, true, {
+//                    component: resolvedProxy
+//                });
 
                 if (self.selectObjectsOnAddition) {
                     self.clearSelectedObjects();
@@ -568,9 +568,9 @@ exports.ReelDocument = Montage.create(EditingDocument, {
             return removalPromise.then(function (removedProxy) {
                 self._removeProxies(removedProxy);
 
-                self.dispatchEventNamed("didRemoveComponent", true, true, {
-                    component: removedProxy
-                });
+//                self.dispatchEventNamed("didRemoveComponent", true, true, {
+//                    component: removedProxy
+//                });
 
                 deferredUndo.resolve([
                     self.addComponent,
@@ -583,6 +583,15 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
                 return removedProxy;
             });
+        }
+    },
+
+    deleteSelected: {
+        value: function () {
+            var selectedObject = this.getPath("selectedObjects.0");
+            //TODO object vs component
+            //TODO what about when we add entire templates, do we remove the added template and all objects in one shot?
+            return this.removeComponent(selectedObject);
         }
     },
 
@@ -601,13 +610,13 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this._buildSerialization();
 
-            this.dispatchEventNamed("didSetObjectProperty", true, true, {
-                object: proxy,
-                property: property,
-                value: value,
-                undone: undoManager.isUndoing,
-                redone: undoManager.isRedoing
-            });
+//            this.dispatchEventNamed("didSetObjectProperty", true, true, {
+//                object: proxy,
+//                property: property,
+//                value: value,
+//                undone: undoManager.isUndoing,
+//                redone: undoManager.isRedoing
+//            });
 
             undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
         }
@@ -623,14 +632,14 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this._buildSerialization();
 
-            this.dispatchEventNamed("didDefineBinding", true, true, {
-                sourceObject: sourceObject,
-                sourceObjectPropertyPath: sourceObjectPropertyPath,
-                boundObject: boundObject,
-                boundObjectPropertyPath: boundObjectPropertyPath,
-                oneWay: oneWay,
-                converter: converter
-            });
+//            this.dispatchEventNamed("didDefineBinding", true, true, {
+//                sourceObject: sourceObject,
+//                sourceObjectPropertyPath: sourceObjectPropertyPath,
+//                boundObject: boundObject,
+//                boundObjectPropertyPath: boundObjectPropertyPath,
+//                oneWay: oneWay,
+//                converter: converter
+//            });
 
         }
     },
@@ -675,12 +684,12 @@ exports.ReelDocument = Montage.create(EditingDocument, {
 
             this._buildSerialization();
 
-            this.dispatchEventNamed("didDeleteBinding", true, true, {
-                sourceObject: sourceObject,
-                sourceObjectPropertyPath: sourceObjectPropertyPath,
-                boundObject: boundObject,
-                boundObjectPropertyPath: boundObjectPropertyPath
-            });
+//            this.dispatchEventNamed("didDeleteBinding", true, true, {
+//                sourceObject: sourceObject,
+//                sourceObjectPropertyPath: sourceObjectPropertyPath,
+//                boundObject: boundObject,
+//                boundObjectPropertyPath: boundObjectPropertyPath
+//            });
         }
     }
 
