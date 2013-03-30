@@ -1,8 +1,8 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    Document;
+    UndoManager = require("montage/core/undo-manager").UndoManager;
 
-exports.Document = Document = Montage.create(Montage, {
+exports.Document = Montage.create(Montage, {
 
     /**
      * Return a promise for a document representing the specified URL
@@ -12,7 +12,7 @@ exports.Document = Document = Montage.create(Montage, {
      */
     load: {
         value: function (url) {
-            return Promise.resolve(Document.create().init(url));
+            return Promise.resolve(this.create().init(url));
         }
     },
 
@@ -37,8 +37,85 @@ exports.Document = Document = Montage.create(Montage, {
     init: {
         value: function (url) {
             this._url = url;
+            this.undoManager = UndoManager.create();
             return this;
         }
+    },
+
+    /**
+     * The title of this document
+     */
+    title: {
+        get: function () {
+            return this.url.substring(this.url.lastIndexOf("/") + 1);
+        }
+    },
+
+    /**
+     * This document's UndoManager
+     */
+    undoManager: {
+        value: null
+    },
+
+    /**
+     * Perform the operation at the top of the undo stack
+     */
+    undo: {
+        value: function () {
+            this.undoManager.undo();
+        }
+    },
+
+    /**
+     * Perform the operation at the top of the redo stack
+     */
+    redo: {
+        value: function () {
+            this.undoManager.redo();
+        }
+    },
+
+    /**
+     * Saves the data to the specified dataWriter. For example:<br/>
+     * <code>
+     *      var serializer = Serializer.create().initWithRequire(this.packageRequire);
+     *      var serializedDescription = serializer.serializeObject(this.currentProxyObject.proxiedObject);
+     *      return dataWriter(serializedDescription, location);
+     * </code>
+     * @param {string} url The url to save this document's data to
+     * @param {function} dataWriter The data writing function that will perform the data writing portion of the save operation
+     */
+    save: {
+        value: function (url, dataWriter) {
+            return dataWriter("", url);
+        }
+    },
+
+    /**
+     * Give the document an opportunity to decide if it can be closed.
+     * @return null if the document can be closed, a string withe reason it cannot close otherwise
+     */
+    canClose: {
+        value: function () {
+            // TODO PJYF This message needs to be localized
+            return (this.isDirty() ? "You have unsaved Changes" : null);
+        }
+    },
+
+    /**
+     * Whether or not this document has unsaved changes and is considered dirty
+     * @return {boolean} Whether or not the document has unsaved changes
+     */
+    isDirty: {
+        value: function() {
+            return this.undoManager && this.undoManager.undoCount > 0;
+        }
+    },
+
+    close: {
+        value: Function.noop
     }
+
 
 });

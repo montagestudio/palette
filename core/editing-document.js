@@ -1,8 +1,8 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    UndoManager = require("montage/core/undo-manager").UndoManager;
+    Document = require("core/document").Document;
 
-var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
+var EditingDocument = exports.EditingDocument = Montage.create(Document, {
 
     load: {
         value: function (fileUrl, packageUrl) {
@@ -18,78 +18,10 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     init: {
         value: function (fileUrl, packageRequire) {
-            var self = this;
-            self._undoManager = UndoManager.create();
-
-            self.dispatchBeforeOwnPropertyChange("fileUrl", self.fileUrl);
-            self.dispatchBeforeOwnPropertyChange("url", self.url);
-            self._fileUrl = fileUrl;
-            self.dispatchOwnPropertyChange("fileUrl", self.fileUrl);
-            self.dispatchOwnPropertyChange("url", self.url);
-
+            var self = Document.init.call(this, fileUrl);
             self._packageRequire = packageRequire;
-
             return self;
         }
-    },
-
-    title: {
-        dependencies: ["title"],
-        get: function () {
-            return this._fileUrl.substring(this._fileUrl.lastIndexOf("/") + 1);
-        }
-    },
-
-    /*
-     * Saves the data to the dataWriter. For example:<br/>
-     * <code>
-     *      var serializer = Serializer.create().initWithRequire(this.packageRequire);
-     *      var serializedDescription = serializer.serializeObject(this.currentProxyObject.proxiedObject);
-     *      return dataWriter(serializedDescription, location);
-     * </code>
-     * @param location of the document being saved
-     * @param writer to save teh information to.
-     */
-    save: {
-        value: function (location, dataWriter) {
-            return dataWriter("", location);
-        }
-    },
-
-    /*
-     * Give the document an opportunity to decide if it can be closed.
-     * @param location of the document being saved
-     * @return null if the document can be closed, a string withe reason it cannot close otherwise
-     */
-    canClose: {
-        value: function (location) {
-            // TODO PJYF This message needs to be localized
-            return (this.isDirty() ? "You have unsaved Changes" : null);
-        }
-    },
-
-    isDirty: {
-        value: function() {
-            return this.undoManager && this.undoManager.undoCount > 0;
-        }
-    },
-
-    close: {
-        value: Function.noop
-    },
-
-    _undoManager: {
-        value: null
-    },
-
-    undoManager: {
-       get: function() {
-           return this._undoManager;
-       }
-    },
-
-    _fileUrl: {
-        value: null
     },
 
     /**
@@ -98,13 +30,7 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
      */
     fileUrl: {
         get: function () {
-            return this._fileUrl;
-        }
-    },
-
-    url: {
-        get: function () {
-            return this._fileUrl;
+            return this._url;
         }
     },
 
@@ -115,18 +41,6 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
     packageRequire:{
         get:function () {
             return this._packageRequire;
-        }
-    },
-
-    undo: {
-        value: function () {
-            this.undoManager.undo();
-        }
-    },
-
-    redo: {
-        value: function () {
-            this.undoManager.redo();
         }
     },
 
