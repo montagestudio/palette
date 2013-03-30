@@ -43,6 +43,22 @@ exports.Document = Montage.create(Montage, {
     },
 
     /**
+     * The preferred type of component used for presenting this document
+     */
+    editorType: {
+        get: function () {
+            return null;
+        }
+    },
+
+    /**
+     * The actual component currently presenting this document
+     */
+    editor: {
+        value: null
+    },
+
+    /**
      * The title of this document
      */
     title: {
