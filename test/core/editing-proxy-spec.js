@@ -1,6 +1,4 @@
 var Montage = require("montage").Montage,
-    Promise = require("montage/core/promise").Promise,
-    mockReelDocument = require("test/mocks/reel-document-mocks").mockReelDocument,
     EditingProxy = require("core/editing-proxy").EditingProxy,
     WAITSFOR_TIMEOUT = 2500;
 
