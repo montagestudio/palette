@@ -79,7 +79,7 @@ exports.Document = Montage.create(Montage, {
      */
     undo: {
         value: function () {
-            this.undoManager.undo();
+            return this.undoManager.undo();
         }
     },
 
@@ -88,7 +88,7 @@ exports.Document = Montage.create(Montage, {
      */
     redo: {
         value: function () {
-            this.undoManager.redo();
+            return this.undoManager.redo();
         }
     },
 
