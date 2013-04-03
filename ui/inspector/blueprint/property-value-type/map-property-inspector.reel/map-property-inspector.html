@@ -7,15 +7,297 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "map-property-inspector"}
+                "element": {
+                    "#": "map-property-inspector"
+                }
             }
+        },
+
+        "propertyNameSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {
+                    "#": "propertyNameSubstitution"
+                }
+            },
+            "bindings": {
+                "switchValue": {
+                    "<-": "@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
+                }
+            }
+        },
+
+        "readOnlyPropertyName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {
+                    "#": "readOnlyPropertyName"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<-": "@owner.label"
+                }
+            }
+        },
+
+        "readWritePropertyName": {
+            "prototype": "matte/ui/input-text.reel",
+            "properties": {
+                "element": {
+                    "#": "readWritePropertyName"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<->": "@owner.label"
+                }
+            }
+        },
+
+        "propertyCollection": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {
+                    "#": "propertyCollection"
+                }
+            },
+            "bindings": {
+                "content": {
+                    "<-": "@owner.collectionValue.items()"
+                }
+            }
+        },
+
+        "toOnePropertyInspectorSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {
+                    "#": "toOnePropertyInspectorSubstitution"
+                }
+            },
+            "bindings": {
+                "switchValue": {
+                    "<-": "@owner.propertyBlueprint.valueType"
+                }
+            }
+        },
+
+        "booleanPropertyInspector": {
+            "prototype": "../boolean-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "booleanPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "datePropertyInspector": {
+            "prototype": "../date-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "datePropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "enumPropertyInspector": {
+            "prototype": "../enum-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "enumPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "numberPropertyInspector": {
+            "prototype": "../number-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "numberPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "objectPropertyInspector": {
+            "prototype": "../object-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "objectPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "stringPropertyInspector": {
+            "prototype": "../string-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "stringPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "urlPropertyInspector": {
+            "prototype": "../url-property-inspector.reel",
+            "properties": {
+                "element": {
+                    "#": "urlPropertyInspector"
+                },
+                "readOnlyLabel": false
+            },
+            "bindings": {
+                "label": {
+                    "<->": "@valuesController.objectAtCurrentIteration.0"
+                },
+                "objectValue": {
+                    "<->": "@valuesController.objectAtCurrentIteration.1"
+                },
+                "propertyBlueprint": {
+                    "<-": "@owner.propertyBlueprint"
+                }
+            }
+        },
+
+        "addButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "addButton"
+                },
+                "label": "+"
+            },
+            "bindings": {
+                "disabled": {
+                    "<-": "@owner.propertyBlueprint.readOnly"
+                }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
+        },
+
+        "removeButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "removeButton"
+                },
+                "label": "-"
+            },
+            "bindings": {
+                "disabled": {
+                    "<-": "@owner.propertyBlueprint.readOnly"
+                }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
         }
+
     }
     </script>
 </head>
 <body>
     <div data-montage-id="map-property-inspector" class="MapPropertyInspector">
-        MAP
+        <span data-montage-id="propertyNameSubstitution" class="label">
+            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+            <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
+        </span>
+        <div data-montage-id="addButton"></div>
+        <div data-montage-id="propertyCollection">
+            <div data-montage-id="toOnePropertyInspectorSubstitution">
+                <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
+                <div data-arg="date" data-montage-id="datePropertyInspector"></div>
+                <div data-arg="enum" data-montage-id="enumPropertyInspector"></div>
+                <div data-arg="number" data-montage-id="numberPropertyInspector"></div>
+                <div data-arg="object" data-montage-id="objectPropertyInspector"></div>
+                <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
+                <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
+            </div>
+            <div data-montage-id="removeButton"></div>
+        </div>
     </div>
 </body>
 </html>

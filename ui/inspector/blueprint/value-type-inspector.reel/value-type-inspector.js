@@ -13,65 +13,35 @@ var Montage = require("montage").Montage,
  */
 var ValueTypeInspector = exports.ValueTypeInspector = Montage.create(Component, /** @lends module:"./value-type-inspector.reel".ValueTypeInspector# */ {
 
-    _label:{
-        value:""
+    label: {
+        value: ""
     },
 
-    label:{
-        get:function () {
-            return this._label;
-        },
-        set:function (value) {
-            this._label = value;
-        }
+    _readOnlyLabel: {
+        value: true
     },
 
-    _readOnlyLabel:{
-        value:true
-    },
-
-    readOnlyLabel:{
-        get:function () {
+    readOnlyLabel: {
+        get: function () {
             if (!this._readOnlyLabel) {
                 this._readOnlyLabel = true;
             }
             return this._readOnlyLabel;
         },
-        set:function (value) {
+        set: function (value) {
             this._readOnlyLabel = value;
         }
-    },
-
-    _propertyBlueprint:{
-        value:null
     },
 
     /*
      * Property blueprint that is inspected
      */
-    propertyBlueprint:{
-        get:function () {
-            return this._propertyBlueprint;
-        },
-        set:function (value) {
-            this._propertyBlueprint = value;
-        }
+    propertyBlueprint: {
+        value: null
     },
 
-    _objectValue:{
-        value:null
-    },
-
-    /*
-     * Target value in the object
-     */
-    objectValue:{
-        get:function () {
-            return this._objectValue;
-        },
-        set:function (value) {
-            this._objectValue = value;
-        }
+    objectValue: {
+        value: null
     }
 
 });

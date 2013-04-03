@@ -13,19 +13,44 @@
             }
         },
 
-        "propertyName":{
+        "propertyNameSubstitution":{
+            "prototype":"montage/ui/substitution.reel",
+            "properties":{
+                "element":{
+                    "#":"propertyNameSubstitution"
+                }
+            },
+            "bindings":{
+                "switchValue":{
+                    "<-":"@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
+                }
+            }
+        },
+
+        "readOnlyPropertyName":{
             "prototype":"montage/ui/text.reel",
             "properties":{
                 "element":{
-                    "#":"property-name"
+                    "#":"readOnlyPropertyName"
+                }
+            },
+            "bindings":{
+                "value":{
+                    "<-":"@owner.label"
+                }
+            }
+        },
+
+        "readWritePropertyName":{
+            "prototype":"matte/ui/input-text.reel",
+            "properties":{
+                "element":{
+                    "#":"readWritePropertyName"
                 }
             },
             "bindings":{
                 "value":{
                     "<->":"@owner.label"
-                },
-                "disabled":{
-                    "<-":"@owner.readOnlyLabel"
                 }
             }
         },
@@ -77,7 +102,10 @@
 </head>
 <body>
     <div data-montage-id="object-property-inspector" class="ObjectPropertyInspector">
-        <span data-montage-id="property-name" class="label"></span>
+        <span data-montage-id="propertyNameSubstitution" class="label">
+            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+            <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
+        </span>
         <span data-montage-id="readWritePropertySubstitution" class="field">
             <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
             <input data-arg="readWrite" data-montage-id="propertyValue"/>

@@ -1,15 +1,16 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    UndoManager = require("montage/core/undo-manager").UndoManager;
+    Document = require("core/document").Document;
 
-var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
+var EditingDocument = exports.EditingDocument = Montage.create(Document, {
 
     load: {
         value: function (fileUrl, packageUrl) {
-            var deferredDoc = Promise.defer();
+            var deferredDoc = Promise.defer(),
+                documentType = this;
 
             require.loadPackage(packageUrl).then(function (packageRequire) {
-                deferredDoc.resolve(EditingDocument.create().init(fileUrl, packageRequire));
+                deferredDoc.resolve(documentType.create().init(fileUrl, packageRequire));
             });
             return deferredDoc.promise;
         }
@@ -17,45 +18,19 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
 
     init: {
         value: function (fileUrl, packageRequire) {
-            var self = this;
-            self._undoManager = UndoManager.create();
-
-            self.dispatchBeforeOwnPropertyChange("fileUrl", self._fileUrl);
-            // this.dispatchPropertyChange("fileUrl", function () {
-                self._fileUrl = fileUrl;
-            // });
-            self.dispatchOwnPropertyChange("fileUrl", fileUrl);
-
+            var self = Document.init.call(this, fileUrl);
             self._packageRequire = packageRequire;
-
             return self;
         }
     },
 
-    title: {
-        dependencies: ["title"],
-        get: function () {
-            return this._fileUrl.substring(this._fileUrl.lastIndexOf("/") + 1);
-        }
-    },
-
-    _undoManager: {
-        value: null
-    },
-
-    undoManager: {
-       get: function() {
-           return this._undoManager;
-       }
-    },
-
-    _fileUrl: {
-        value: null
-    },
-
+    /**
+     * @deprecated
+     * @see url
+     */
     fileUrl: {
         get: function () {
-            return this._fileUrl;
+            return this._url;
         }
     },
 
@@ -66,18 +41,6 @@ var EditingDocument = exports.EditingDocument = Montage.create(Montage, {
     packageRequire:{
         get:function () {
             return this._packageRequire;
-        }
-    },
-
-    undo: {
-        value: function () {
-            this.undoManager.undo();
-        }
-    },
-
-    redo: {
-        value: function () {
-            this.undoManager.redo();
         }
     },
 

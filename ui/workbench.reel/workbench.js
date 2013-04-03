@@ -6,7 +6,9 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise,
-    Event = require("core/event").Event;
+    Event = require("core/event").Event,
+    MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 
 /**
     Description TODO
@@ -61,14 +63,32 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
 
     didObserveEvent: {
         value: function(frame, event) {
-            switch (event.type) {
-                // Propogate drag and drop events up
+            //TODO what about non-DOM events...
+            if (Element.isElement(event.target)) {
+
+                switch (event.type) {
+                case "focus":
+                case "mousedown":
+                case "touchstart":
+                    defaultEventManager._prepareComponentsForActivation(this.element);
+                    break;
+                }
+
+                switch (event.type) {
+                    // Propagate drag and drop events up
+                    // TODO not dispatch a DOM event from a component
                 case "dragenter":
                 case "dragleave":
                 case "dragover":
                 case "drop":
                     event.propagationStopped = false;
                     this.dispatchEvent(event);
+                    break;
+                default:
+                    var targettedEvent = MutableEvent.fromEvent(event);
+                    targettedEvent.target = this.element;
+                    defaultEventManager.handleEvent(targettedEvent);
+                }
             }
         }
     },
