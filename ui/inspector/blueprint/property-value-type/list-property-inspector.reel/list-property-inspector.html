@@ -266,23 +266,25 @@
     </script>
 </head>
 <body>
-    <div data-montage-id="list-property-inspector" class="ListPropertyInspector">
-        <span data-montage-id="propertyNameSubstitution" class="label">
+    <div data-montage-id="list-property-inspector" class="Property ListPropertyInspector">
+        <div data-montage-id="propertyNameSubstitution" class="Property-label">
             <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
             <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
-        </span>
-        <div data-montage-id="addButton"></div>
-        <div data-montage-id="propertyCollection">
-            <div data-montage-id="toOnePropertyInspectorSubstitution">
-                <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
-                <div data-arg="date" data-montage-id="datePropertyInspector"></div>
-                <div data-arg="enum" data-montage-id="enumPropertyInspector"></div>
-                <div data-arg="number" data-montage-id="numberPropertyInspector"></div>
-                <div data-arg="object" data-montage-id="objectPropertyInspector"></div>
-                <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
-                <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
+        </div>
+        <div class="Property-field">
+            <button data-montage-id="addButton"></button>
+            <div data-montage-id="propertyCollection">
+                <div data-montage-id="toOnePropertyInspectorSubstitution">
+                    <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
+                    <div data-arg="date" data-montage-id="datePropertyInspector"></div>
+                    <div data-arg="enum" data-montage-id="enumPropertyInspector"></div>
+                    <div data-arg="number" data-montage-id="numberPropertyInspector"></div>
+                    <div data-arg="object" data-montage-id="objectPropertyInspector"></div>
+                    <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
+                    <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
+                </div>
+                <button data-montage-id="removeButton"></button>
             </div>
-            <div data-montage-id="removeButton"></div>
         </div>
     </div>
 </body>
