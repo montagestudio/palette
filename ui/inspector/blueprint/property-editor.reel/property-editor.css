@@ -36,7 +36,7 @@
 }
 
 
-/* Montage overrides */
+/* Matte overrides */
 
 .PropertyEditor .matte-Button {
     height: 24px;
@@ -52,4 +52,12 @@
     padding-top: 0;
     padding-bottom: 0;
     width: 80px;
+}
+
+.PropertyEditor .matte-InputCheckbox {
+    margin: 0;
+}
+
+.PropertyEditor .matte-Select {
+    margin: 0;
 }
