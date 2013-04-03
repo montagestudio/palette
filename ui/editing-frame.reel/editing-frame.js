@@ -225,6 +225,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return;
             }
 
+            console.log("willDistributeEvent", evt.type);
+
             evt.stop();
 
             if (evt.type === "mousedown" && 0 === evt.button) {
