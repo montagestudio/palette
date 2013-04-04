@@ -68,7 +68,7 @@
 .PropertyEditor .matte-InputNumber {
     padding-top: 0;
     padding-bottom: 0;
-    width: 80px;
+    max-width: 50px;
 }
 
 .PropertyEditor .matte-InputCheckbox {
