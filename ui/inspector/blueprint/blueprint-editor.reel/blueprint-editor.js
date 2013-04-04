@@ -14,43 +14,44 @@ var Montage = require("montage").Montage,
  */
 exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./blueprint-editor.reel".BlueprintEditor# */ {
 
-    didCreate:{
-        value:function () {
+    didCreate: {
+        value: function () {
             Component.didCreate.call(this);
             this.propertyGroupsController = RangeController.create();
         }
     },
 
-    _object:{
-        value:null
+    _object: {
+        value: null
     },
 
     /*
      * Target object proxy that is inspected with the blueprint
      */
-    object:{
-        get:function () {
+    object: {
+        get: function () {
             return this._object;
         },
-        set:function (value) {
+        set: function (value) {
+            //            console.log("Blueprint inspector set object ", value);
             if (this._object != value) {
                 this._object = value;
             }
         }
     },
 
-    _blueprint:{
-        value:null
+    _blueprint: {
+        value: null
     },
 
     /*
      * Property blueprint that is inspected
      */
-    blueprint:{
-        get:function () {
+    blueprint: {
+        get: function () {
             return this._blueprint;
         },
-        set:function (value) {
+        set: function (value) {
             if (this._blueprint != value) {
                 this._blueprint = value;
                 if (value != null) {
@@ -59,9 +60,9 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
                     // to change at runtime
                     this.propertyGroupsController.content = value.propertyBlueprintGroups.map(function (groupName, index) {
                         return {
-                            name:groupName,
-                            properties:value.propertyBlueprintGroupForName(groupName),
-                            open:index === 0
+                            name: groupName,
+                            properties: value.propertyBlueprintGroupForName(groupName),
+                            open: index === 0
                         };
                     });
                 }
@@ -69,9 +70,9 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
         }
     },
 
-    propertyGroupsController:{
-        serializable:false,
-        value:null
+    propertyGroupsController: {
+        serializable: false,
+        value: null
     }
 
 });

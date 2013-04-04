@@ -20,12 +20,6 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: null
     },
 
-    didCreate: {
-        value: function () {
-            this.propertyGroupsController = RangeController.create();
-        }
-    },
-
     _hasAcceptedIdentifier: {
         value: false
     },
@@ -80,20 +74,8 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                     .then(function (blueprint) {
                         self._blueprintDeferred.resolve(blueprint);
                         self.blueprint = blueprint;
-
-                        // we could create a binding to the propertyBlueprintGroups,
-                        // but at the moment I'm not expecting the component blueprint
-                        // to change at runtime
-                        self.propertyGroupsController.content = blueprint.propertyBlueprintGroups.map(function (groupName, index) {
-                            return {
-                                name: groupName,
-                                properties: blueprint.propertyBlueprintGroupForName(groupName),
-                                open: index === 0
-                            };
-                        });
                     }, function () {
                         self._blueprintDeferred.reject(null);
-                        self.propertyGroupsController.content = [];
                     }).done();
 
             } else {
@@ -115,11 +97,6 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 this.editingDocument.setOwnedObjectProperty(this.object, "identifier", value);
             }
         }
-    },
-
-    propertyGroupsController: {
-        serializable: false,
-        value: null
     },
 
     /**

@@ -4,7 +4,8 @@
  @requires montage/ui/component
  */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Gate = require("montage/core/gate").Gate;
 
 /**
  Description TODO
@@ -12,6 +13,26 @@ var Montage = require("montage").Montage,
  @extends module:montage/ui/component.Component
  */
 exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property-editor.reel".PropertyEditor# */ {
+
+    _updateGate: {
+        value: null
+    },
+    /**
+     Description TODO
+     @function
+     @returns this._blockDrawGate
+     */
+    updateGate: {
+        enumerable: false,
+        get: function () {
+            if (!this._updateGate) {
+                this._updateGate = Gate.create().initWithDelegate(this);
+                this._updateGate.setField("object", false);
+                this._updateGate.setField("propertyBlueprint", false);
+            }
+            return this._updateGate;
+        }
+    },
 
     _object: {
         value: null
@@ -26,8 +47,13 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         },
         set: function (value) {
             if (this._object !== value) {
+                if (this.updateGate.getField("object")) {
+                    this.updateGate.setField("object", false);
+                }
                 this._object = value;
-                this.__objectValueNeedsPull = true;
+                if (value) {
+                    this.updateGate.setField("object", true);
+                }
             }
         }
     },
@@ -45,14 +71,15 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         },
         set: function (value) {
             if (this._propertyBlueprint !== value) {
+                if (this.updateGate.getField("propertyBlueprint")) {
+                    this.updateGate.setField("propertyBlueprint", false);
+                }
                 this._propertyBlueprint = value;
-                this.__objectValueNeedsPull = true;
+                if (value) {
+                    this.updateGate.setField("propertyBlueprint", true);
+                }
             }
         }
-    },
-
-    __objectValueNeedsPull: {
-        value: true
     },
 
     _objectValue: {
@@ -65,24 +92,48 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
     objectValue: {
         dependencies: ["object", "propertyBlueprint"],
         get: function () {
-            if (this.__objectValueNeedsPull) {
-                if (this._object && this._propertyBlueprint) {
-//                    console.log("Get value for " + this._propertyBlueprint.name)
-                    this._objectValue = this._object.editingDocument.getOwnedObjectProperty(this._object, this._propertyBlueprint.name);
-                    this.__objectValueNeedsPull = false;
-                }
-            }
             return this._objectValue;
         },
         set: function (value) {
-            if (!this.__objectValueNeedsPull) {
-                 if ((this._objectValue !== value) && this._object && this._propertyBlueprint) {
-                    if (typeof value !== "undefined" && !this._propertyBlueprint.readOnly) {
-//                        console.log("Set value for " + this._propertyBlueprint.name + " ", value)
-                        this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyBlueprint.name, value);
+            if ((this._objectValue !== value) && this._object && this._propertyBlueprint) {
+                if (typeof value !== "undefined" && !this._propertyBlueprint.readOnly) {
+//                    console.log("Set value for " + this._propertyBlueprint.name + " ", value)
+                    this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyBlueprint.name, value);
+                }
+            }
+            this._objectValue = value;
+        }
+    },
+
+    gateDidBecomeTrue: {
+        value: function (gate) {
+            if (gate == this._updateGate) {
+                if (this._object && this._propertyBlueprint) {
+                    var value = this._object.editingDocument.getOwnedObjectProperty(this._object, this._propertyBlueprint.name);
+                    if (this._objectValue != value) {
+//                        console.log("gateDidBecomeTrue for " + this._propertyBlueprint.name + " ", value, this.uuid)
+
+                        this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
+                        this._objectValue = value;
+                        this.dispatchOwnPropertyChange("objectValue", value);
                     }
                 }
-                this._objectValue = value;
+            } else if (Component.gateDidBecomeTrue) {
+                Component.gateDidBecomeTrue.call(this, gate);
+            }
+        }
+    },
+
+    gateDidBecomeFalse: {
+        value: function (gate) {
+            if (gate == this._updateGate) {
+//                console.log("gateDidBecomeFalse for " + (this._propertyBlueprint ? this._propertyBlueprint.name : "null") + " ", this.uuid, value)
+
+                this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
+                this._objectValue = null;
+                this.dispatchOwnPropertyChange("objectValue", null);
+            } else if (Component.gateDidBecomeFalse) {
+                Component.gateDidBecomeFalse.call(this, gate);
             }
         }
     }
