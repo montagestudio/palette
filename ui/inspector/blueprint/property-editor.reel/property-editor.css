@@ -35,6 +35,19 @@
     text-align: left;
 }
 
+/* Property Collection ---------------------- */
+
+.PropertyCollection {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.PropertyCollection-item {
+    display: -webkit-flex;
+    margin: 6px 0 0 0;
+    padding-right: 6px;
+}
 
 /* Matte overrides */
 
