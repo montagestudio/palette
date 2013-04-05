@@ -109,7 +109,7 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         value: function (gate) {
             if (gate == this._updateGate) {
                 if (this._object && this._propertyBlueprint) {
-                    var value = this._object.editingDocument.getOwnedObjectProperty(this._object, this._propertyBlueprint.name);
+                    var value = this._object.getObjectProperty(this._propertyBlueprint.name);
                     if (this._objectValue != value) {
 //                        console.log("gateDidBecomeTrue for " + this._propertyBlueprint.name + " ", value, this.uuid)
 
