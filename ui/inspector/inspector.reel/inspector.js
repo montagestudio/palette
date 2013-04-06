@@ -93,7 +93,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: function (value) {
             if (!this._hasAcceptedIdentifier) {
                 this._hasAcceptedIdentifier = true;
-            } else {
+            } else if (this.object) {
                 this.editingDocument.setOwnedObjectProperty(this.object, "identifier", value);
             }
         }
@@ -145,7 +145,9 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
     handlePropertyInspectorChange: {
         value: function (evt) {
             var detail = evt.detail;
-            this.editingDocument.setOwnedObjectProperty(this.object, detail.propertyName, detail.value);
+            if (this.object) {
+                this.editingDocument.setOwnedObjectProperty(this.object, detail.propertyName, detail.value);
+            }
         }
     }
 
