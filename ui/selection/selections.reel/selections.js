@@ -113,21 +113,23 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            // changing the size of the window causes selections to be shifted
-            window.addEventListener("resize", this, true);
-            // CSS animations can change the size of elements, causing
-            // selections to be shifted
-            window.addEventListener("webkitTransitionEnd", this, true);
-            // In fact, any draw can cause the selections to be shifted!
-            var self = this;
-            var root = require("montage/ui/component").__root__;
-            var originalDrawIfNeeded = root.drawIfNeeded;
-            root.drawIfNeeded = function() {
-                self.allNeedDraw();
-                originalDrawIfNeeded.call(root);
-            };
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                // changing the size of the window causes selections to be shifted
+                window.addEventListener("resize", this, true);
+                // CSS animations can change the size of elements, causing
+                // selections to be shifted
+                window.addEventListener("webkitTransitionEnd", this, true);
+                // In fact, any draw can cause the selections to be shifted!
+                var self = this;
+                var root = require("montage/ui/component").__root__;
+                var originalDrawIfNeeded = root.drawIfNeeded;
+                root.drawIfNeeded = function() {
+                    self.allNeedDraw();
+                    originalDrawIfNeeded.call(root);
+                };
+            }
         }
     },
 

@@ -102,22 +102,24 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // EditingFrame Methods
 
-    prepareForDraw: {
-        value: function () {
-            if (null === this._height) {
-                this.height = this.element.offsetHeight;
+    enterDocument: {
+        value: function (firstTime) {
+            if (firstTime) {
+                if (null === this._height) {
+                    this.height = this.element.offsetHeight;
+                }
+
+                if (null === this._width) {
+                    this.width = this.element.offsetWidth;
+                }
+
+                // TODO this is a little dirty, we should accept whatever identifier we were given, not demand one
+                // TODO why is this even necessary?
+                this.element.identifier = "editingFrame";
+
+                // At this point the editingFrame can now "load" a reel from a package
+                this.dispatchEventNamed("canLoadReel", true, true);
             }
-
-            if (null === this._width) {
-                this.width = this.element.offsetWidth;
-            }
-
-            // TODO this is a little dirty, we should accept whatever identifier we were given, not demand one
-            // TODO why is this even necessary?
-            this.element.identifier = "editingFrame";
-
-            // At this point the editingFrame can now "load" a reel from a package
-            this.dispatchEventNamed("canLoadReel", true, true);
         }
     },
 

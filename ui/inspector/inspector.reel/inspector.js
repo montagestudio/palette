@@ -32,10 +32,12 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
-    prepareForDraw: {
-        value: function () {
-            if (this.templateObjects && this.templateObjects.title) {
-                 this.templateObjects.title.addOwnPropertyChangeListener("value", this);
+    enterDocument: {
+        value: function (firstTime) {
+            if (firstTime) {
+                if (this.templateObjects && this.templateObjects.title) {
+                    this.templateObjects.title.addOwnPropertyChangeListener("value", this);
+                }
             }
         }
     },
