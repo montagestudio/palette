@@ -93,21 +93,23 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            // changing the size of the window causes overlays to be shifted
-            window.addEventListener("resize", this, true);
-            // CSS animations can change the size of elements, causing
-            // overlays to be shifted
-            window.addEventListener("webkitTransitionEnd", this, true);
-            // In fact, any draw can cause the overlays to be shifted!
-            var self = this;
-            var root = require("montage/ui/component").__root__;
-            var originalDrawIfNeeded = root.drawIfNeeded;
-            root.drawIfNeeded = function() {
-                self.dispatchEventNamed("update");
-                originalDrawIfNeeded.call(root);
-            };
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                // changing the size of the window causes overlays to be shifted
+                window.addEventListener("resize", this, true);
+                // CSS animations can change the size of elements, causing
+                // overlays to be shifted
+                window.addEventListener("webkitTransitionEnd", this, true);
+                // In fact, any draw can cause the overlays to be shifted!
+                var self = this;
+                var root = require("montage/ui/component").__root__;
+                var originalDrawIfNeeded = root.drawIfNeeded;
+                root.drawIfNeeded = function() {
+                    self.dispatchEventNamed("update");
+                    originalDrawIfNeeded.call(root);
+                };
+            }
         }
     },
 
