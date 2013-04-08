@@ -16,7 +16,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     /**
      * Init
      * @function
-     * @param  {Component} component The component this selection is for.
+     * @param  {Component|HTMLElement} object The component or element this
+     * selection is for.
      * @param  {number} top       Distance from top in pixels.
      * @param  {number} left      Distance from left in pixels.
      * @param  {height} height    Height of the selection in pixels.
@@ -24,8 +25,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
      * @return {Selection}        this
      */
     init: {
-        value: function(component, top, left, height, width) {
-            this.component = component;
+        value: function(object, top, left, height, width) {
+            this.object = object;
 
             if (top) this.top = top;
             if (left) this.left = left;
@@ -36,54 +37,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
         }
     },
 
-    _offsetTop: {
-        value: null
-    },
-    /**
-     * Offset from the top in pixels.
-     *
-     * Needed if the location of the stage is not at 0, 0 of the parent element
-     * of this component.
-     * @type {number}
-     */
-    offsetTop: {
-        get: function() {
-            return this._offsetTop;
-        },
-        set: function(value) {
-            if (this._offsetTop === value) {
-                return;
-            }
-            this._offsetTop = value;
-            this.needsDraw = true;
-        }
-    },
-
-    _offsetLeft: {
-        value: null
-    },
-    /**
-     * Offset from the left in pixels.
-     *
-     * Needed if the location of the stage is not at 0, 0 of the parent element
-     * of this component.
-     * @type {number}
-     */
-    offsetLeft: {
-        get: function() {
-            return this._offsetLeft;
-        },
-        set: function(value) {
-            if (this._offsetLeft === value) {
-                return;
-            }
-            this._offsetLeft = value;
-            this.needsDraw = true;
-        }
-    },
-
     _top: {
-        value: null
+        value: 0
     },
     /**
      * Distance from top in pixels.
@@ -103,7 +58,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _left: {
-        value: null
+        value: 0
     },
     /**
      * Distance from left in pixels.
@@ -123,7 +78,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _height: {
-        value: null
+        value: 0
     },
     /**
      * Height of the selection in pixels.
@@ -143,7 +98,7 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
     },
 
     _width: {
-        value: null
+        value: 0
     },
     /**
      * Width of the seclection in pixels.
@@ -196,8 +151,8 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
 
             var rect = this._getBounds(el);
 
-            this._top = this.offsetTop + rect.top;
-            this._left = this.offsetLeft + rect.left;
+            this._top = rect.top;
+            this._left = rect.left;
             this._height = rect.bottom - rect.top;
             this._width = rect.right - rect.left;
         }

@@ -17,17 +17,6 @@
             "properties": {
                 "element": {"#": "editingFrame"}
             }
-        },
-
-        "selections": {
-            "prototype": "ui/selection/selections.reel",
-            "properties": {
-                "element": {"#": "selections"},
-                "contentComponent": {"@": "editingFrame"}
-            },
-            "bindings": {
-                "selectedObjects": {"<-": "@owner.selectedObjects"}
-            }
         }
     }
     </script>
@@ -35,7 +24,7 @@
 <body>
     <div data-montage-id="workbench" class="Workbench">
         <div data-montage-id="editingFrame"></div>
-        <div data-montage-id="selections"></div>
+        <div data-param="overlay"></div>
     </div>
 </body>
 </html>
