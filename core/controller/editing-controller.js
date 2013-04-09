@@ -125,10 +125,32 @@ exports.EditingController = Montage.create(Montage, {
 
             deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
             return deserializer.deserialize(null, element.parentElement).then(function (objects) {
-                var newComponent = objects[identifier];
-                newComponent.ownerComponent = self.owner;
-                newComponent.needsDraw = true;
-                return newComponent;
+                var label,
+                    object;
+
+                for (label in objects) {
+                    // NOTE the objects is a null-prototyped object that does not need
+                    // to be filtered with a hasOwnProperty
+                    object = objects[label];
+
+                    var documentPart = self.owner._templateDocumentPart;
+
+                    //TODO once we have a template and the resultant documentPart do this
+
+                    // Simulate loading a component from a template
+                    if (object) {
+                        if (typeof object._deserializedFromTemplate === "function") {
+                            object._deserializedFromTemplate(self.owner, label, documentPart);
+                        }
+                        if (typeof object.deserializedFromTemplate === "function") {
+                            object.deserializedFromTemplate(self.owner, label, documentPart);
+                        }
+                    }
+
+
+                    object.needsDraw = true;
+                }
+                return objects;
             });
         }
     },
