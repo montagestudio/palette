@@ -7,12 +7,16 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "inspector"}
+                "element": {
+                    "#": "inspector"
+                }
             },
             "listeners": [
                 {
                     "type": "propertyInspectorChange",
-                    "listener": {"@": "owner"}
+                    "listener": {
+                        "@": "owner"
+                    }
                 }
             ]
         },
@@ -20,30 +24,45 @@
         "title": {
             "prototype": "matte/ui/input-text.reel",
             "properties": {
-                "element": {"#": "title"}
+                "element": {
+                    "#": "title"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<->": "@owner.object.label"
+                }
             }
         },
 
         "editorCondition": {
             "prototype": "montage/ui/condition.reel",
             "properties": {
-                "element": {"#": "editor-condition"},
+                "element": {
+                    "#": "editor-condition"
+                },
                 "removalStrategy": "hide"
             },
             "bindings": {
-                "condition": {"<-": "@owner.inspectorController.hasEditor"}
+                "condition": {
+                    "<-": "@owner.inspectorController.hasEditor"
+                }
             }
         },
 
         "modalEditorButton": {
             "prototype": "matte/ui/button.reel",
             "properties": {
-                "element": {"#": "editor-button"}
+                "element": {
+                    "#": "editor-button"
+                }
             },
             "listeners": [
                 {
                     "type": "action",
-                    "listener": {"@": "owner"}
+                    "listener": {
+                        "@": "owner"
+                    }
                 }
             ]
         },
@@ -51,11 +70,17 @@
         "blueprintEditor": {
             "prototype": "../blueprint/blueprint-editor.reel",
             "properties": {
-                "element": {"#": "blueprintEditor"}
+                "element": {
+                    "#": "blueprintEditor"
+                }
             },
             "bindings": {
-                "object": {"<-": "@owner.object"},
-                "blueprint": {"<-": "@owner.blueprint"}
+                "object": {
+                    "<-": "@owner.object"
+                },
+                "blueprint": {
+                    "<-": "@owner.blueprint"
+                }
             }
         }
 
@@ -66,7 +91,7 @@
     <section data-montage-id="inspector" class="Inspector">
 
         <header class="Inspector-header">
-            <input data-montage-id="title" class="Inspector-header-title" type="text" value="Inspector title" >
+            <input data-montage-id="title" class="Inspector-header-title" type="text" value="Inspector title">
             <div data-montage-id="editor-condition">
                 <button data-montage-id="editor-button" class="Button Inspector-header-button" data-icon="&#59204;"></button>
             </div>

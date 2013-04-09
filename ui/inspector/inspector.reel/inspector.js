@@ -20,28 +20,6 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: null
     },
 
-    _hasAcceptedIdentifier: {
-        value: false
-    },
-
-    templateDidLoad: {
-        value: function () {
-            if (this._object && this.templateObjects && this.templateObjects.title) {
-                this.templateObjects.title.value = this._object.properties.identifier;
-            }
-        }
-    },
-
-    enterDocument: {
-        value: function (firstTime) {
-            if (firstTime) {
-                if (this.templateObjects && this.templateObjects.title) {
-                    this.templateObjects.title.addOwnPropertyChangeListener("value", this);
-                }
-            }
-        }
-    },
-
     _object: {
         value: null
     },
@@ -59,15 +37,10 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             }
 
             this._object = value;
-            this._hasAcceptedIdentifier = false;
 
             this.needsDraw = true;
 
             if (this._object && this._object.moduleId && (this._object.moduleId != "") && this._object.exportName && (this._object.exportName != "")) {
-
-                if (this.templateObjects) {
-                    this.templateObjects.title.value = this._object.getPath("properties.identifier");
-                }
 
                 this._blueprintDeferred = Promise.defer();
 
@@ -83,20 +56,6 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             } else {
                 this._blueprintDeferred = null;
                 this.blueprint = null;
-
-                if (this.templateObjects) {
-                    this.templateObjects.title.value = null;
-                }
-            }
-        }
-    },
-
-    handleValueChange: {
-        value: function (value) {
-            if (!this._hasAcceptedIdentifier) {
-                this._hasAcceptedIdentifier = true;
-            } else if (this.object) {
-                this.editingDocument.setOwnedObjectProperty(this.object, "identifier", value);
             }
         }
     },
