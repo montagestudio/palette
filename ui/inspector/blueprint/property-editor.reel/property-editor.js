@@ -97,7 +97,6 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
         set: function (value) {
             if ((this._objectValue !== value) && this._object && this._propertyBlueprint) {
                 if (typeof value !== "undefined" && !this._propertyBlueprint.readOnly) {
-//                    console.log("Set value for " + this._propertyBlueprint.name + " ", value)
                     this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyBlueprint.name, value);
                 }
             }
@@ -111,8 +110,6 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
                 if (this._object && this._propertyBlueprint) {
                     var value = this._object.getObjectProperty(this._propertyBlueprint.name);
                     if (this._objectValue != value) {
-//                        console.log("gateDidBecomeTrue for " + this._propertyBlueprint.name + " ", value, this.uuid)
-
                         this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                         this._objectValue = value;
                         this.dispatchOwnPropertyChange("objectValue", value);
@@ -127,8 +124,6 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
     gateDidBecomeFalse: {
         value: function (gate) {
             if (gate == this._updateGate) {
-//                console.log("gateDidBecomeFalse for " + (this._propertyBlueprint ? this._propertyBlueprint.name : "null") + " ", this.uuid, value)
-
                 this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                 this._objectValue = null;
                 this.dispatchOwnPropertyChange("objectValue", null);

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="bound-property-editor.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {
+                    "#": "bound-property-editor"
+                }
+            }
+        },
+
+        "bindingCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {
+                    "#": "bindingCondition"
+                },
+                "removalStrategy": "hide"
+            },
+            "bindings": {
+                "condition": {
+                    "<-": "@owner.binding"
+                }
+            }
+        },
+
+        "readOnlyPropertyName": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {
+                    "#": "readOnlyPropertyName"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<-": "@owner.label"
+                }
+            }
+        },
+
+        "unidirectionalCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {
+                    "#": "unidirectionalCondition"
+                }
+            },
+            "bindings": {
+                "condition": {
+                    "<-": "!@owner.binding.twoWay"
+                }
+            }
+        },
+
+        "bidirectionalCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {
+                    "#": "bidirectionalCondition"
+                }
+            },
+            "bindings": {
+                "condition": {
+                    "<-": "@owner.binding.twoWay"
+                }
+            }
+        },
+
+        "sourcePath": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {
+                    "#": "sourcePath"
+                }
+            },
+            "bindings": {
+                "value": {
+                    "<-": "@owner.binding.sourcePath"
+                }
+            }
+        },
+
+        "removeButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "removeButton"
+                },
+                "label": "-"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="bound-property-editor" class="BoundPropertyEditor">
+        <div data-montage-id="bindingCondition">
+            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+            <span data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional"></span>
+            <span data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional"></span>
+            <span data-montage-id="sourcePath" class="BindingEntry-pill"></span>
+            <span data-montage-id="removeButton"></span>
+        </div>
+    </div>
+</body>
+</html>
