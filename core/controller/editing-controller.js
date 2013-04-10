@@ -41,140 +41,55 @@ exports.EditingController = Montage.create(Montage, {
         value: null
     },
 
-    _createElementFromMarkup: {
-        value: function (markup, id) {
-            //TODO not create an element each time
-            var incubator = this.owner.element.ownerDocument.createElement('div'),
-                result;
+    /**
+     * Adds the
+     */
+    addObjectsFromTemplate: {
+        value: function (sourceTemplate) {
 
-            incubator.innerHTML = markup;
-            result = incubator.removeChild(incubator.firstElementChild);
-            result.setAttribute("data-montage-id", id);
-
-            return result;
-        }
-    },
-
-    //TODO clean up object vs component APIs
-
-    addObject: {
-        value: function (labelInOwner, serialization) {
-
-            if (!labelInOwner) {
-                throw new Error("Cannot add an object without a label for the owner's serialization");
-            }
-
-            var deserializer = Deserializer.create(),
-                self = this,
-                serializationWithinOwner = {},
-                newObject;
-
-            serialization = Object.clone(serialization);
-
-            serializationWithinOwner[labelInOwner] = serialization;
-
-            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
-            return deserializer.deserialize(null, this.owner.element).then(function (objects) {
-                newObject = objects[labelInOwner];
-                return newObject;
-            });
-        }
-    },
-
-    addComponent: {
-        value: function (labelInOwner, serialization, markup, elementMontageId, identifier, parentProxy, parentElement) {
-
-            if (!labelInOwner) {
-                throw new Error("Cannot add a component without a label for the owner's serialization");
-            }
-
-            var element,
+            var sourceContentRange,
+                sourceContentFragment,
+                sourceDocument = sourceTemplate.document,
+                ownerElement = this.owner.element,
+                ownerDocument = ownerElement.ownerDocument,
                 deserializer = Deserializer.create(),
-                self = this,
-                serializationWithinOwner = {},
-                ownerDocument = this.owner.element.ownerDocument;
+                sourceSerializationString = sourceTemplate.getSerialization().getSerializationString(),
+                self = this;
 
-            serialization = Object.clone(serialization);
+            // Insert the expected markup into the document
+            sourceContentRange = sourceDocument.createRange();
+            sourceContentRange.selectNodeContents(sourceDocument.body);
+            sourceContentFragment = sourceContentRange.cloneContents();
+            ownerElement.appendChild(sourceContentFragment);
 
-            if (!serialization.properties && (identifier || elementMontageId)) {
-                serialization.properties = {};
-            }
-
-            if (identifier) {
-                serialization.properties.identifier = identifier;
-            }
-
-            if (elementMontageId) {
-                serialization.properties.element = {"#": elementMontageId};
-
-                element = ownerDocument.querySelector("[data-montage-id=" + elementMontageId + "]");
-
-                if (!element) {
-                    element = this._createElementFromMarkup(markup, elementMontageId);
-                    if (parentElement) {
-                        parentElement.appendChild(element);
-                    } else if (parentProxy && parentProxy.stageObject && parentProxy.stageObject.element) {
-                        parentProxy.stageObject.element.appendChild(element);
-                    } else {
-                        this.owner.element.appendChild(element);
-                    }
-                }
-            }
-
-            serializationWithinOwner[labelInOwner] = serialization;
-
-            deserializer.init(JSON.stringify(serializationWithinOwner), this.ownerRequire);
-            return deserializer.deserialize(null, element.parentElement).then(function (objects) {
+            deserializer.init(sourceSerializationString, this.ownerRequire);
+            return deserializer.deserialize(null, ownerElement).then(function (objects) {
                 var label,
                     object;
 
                 for (label in objects) {
-                    // NOTE the objects is a null-prototyped object that does not need
-                    // to be filtered with a hasOwnProperty
-                    object = objects[label];
+                    if (typeof objects.hasOwnProperty !== "function" || objects.hasOwnProperty(label)) {
+                        object = objects[label];
 
-                    var documentPart = self.owner._templateDocumentPart;
+                        var documentPart = self.owner._templateDocumentPart;
 
-                    //TODO once we have a template and the resultant documentPart do this
-
-                    // Simulate loading a component from a template
-                    if (object) {
-                        if (typeof object._deserializedFromTemplate === "function") {
-                            object._deserializedFromTemplate(self.owner, label, documentPart);
+                        // Simulate loading a component from a template
+                        if (object) {
+                            if (typeof object._deserializedFromTemplate === "function") {
+                                object._deserializedFromTemplate(self.owner, label, documentPart);
+                            }
+                            if (typeof object.deserializedFromTemplate === "function") {
+                                object.deserializedFromTemplate(self.owner, label, documentPart);
+                            }
                         }
-                        if (typeof object.deserializedFromTemplate === "function") {
-                            object.deserializedFromTemplate(self.owner, label, documentPart);
+
+                        if (typeof object.needsDraw === "function") {
+                            object.needsDraw = true;
                         }
                     }
-
-
-                    object.needsDraw = true;
                 }
                 return objects;
             });
-        }
-    },
-
-    removeComponent: {
-        value: function (component, originalElement) {
-
-            var element = component.element;
-
-            //TODO if we had an original element, put it back
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
-            }
-
-            //TODO well I'm sure there's more to this...
-            return Promise.resolve(element);
-        }
-    },
-
-    setComponentProperty: {
-        value: function (component, property, value) {
-            //ensure component is child of controlledComponent
-            // is this as simple as: component.setPath(property, value);
-            // what about setting the X coordinate of a component, that should be within the controlledComponent's CSS
         }
     }
 
