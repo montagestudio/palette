@@ -81,10 +81,9 @@ exports.EditingController = Montage.create(Montage, {
                             if (typeof object.deserializedFromTemplate === "function") {
                                 object.deserializedFromTemplate(self.owner, label, documentPart);
                             }
-                        }
-
-                        if (typeof object.needsDraw === "function") {
-                            object.needsDraw = true;
+                            if (typeof object.needsDraw !== "undefined") {
+                                object.needsDraw = true;
+                            }
                         }
                     }
                 }
