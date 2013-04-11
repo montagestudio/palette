@@ -1,3 +1,6 @@
-.BoundPropertyEditor {
 
+.BoundPropertyEditor .BoundPropertyEditor-sourceButton.matte-Button {
+    width: 67px;
+    padding: 0 5px;
+    white-space: nowrap;
 }

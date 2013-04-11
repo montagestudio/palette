@@ -71,14 +71,14 @@
         },
 
         "sourcePath": {
-            "prototype": "montage/ui/text.reel",
+            "prototype": "matte/ui/button.reel",
             "properties": {
                 "element": {
                     "#": "sourcePath"
                 }
             },
             "bindings": {
-                "value": {
+                "label": {
                     "<-": "@owner.binding.sourcePath"
                 }
             }
@@ -107,12 +107,14 @@
 </head>
 <body>
     <div data-montage-id="bound-property-editor" class="BoundPropertyEditor">
-        <div data-montage-id="bindingCondition">
-            <span data-montage-id="readOnlyPropertyName"></span>
-            <span data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional"></span>
-            <span data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional"></span>
-            <span data-montage-id="sourcePath" class="BindingEntry-pill"></span>
-            <span data-montage-id="removeButton"></span>
+        <div data-montage-id="bindingCondition" class="Property">
+            <div data-montage-id="readOnlyPropertyName" class="Property-label"></div> 
+            <div class="Property-field">
+                <span data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional" style="display: none;"></span>
+                <span data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional" style="display: none;"></span>
+                <button data-montage-id="sourcePath" class="BoundPropertyEditor-sourceButton"></button>
+                <button data-montage-id="removeButton" class="BoundPropertyEditor-removeButton"></button>
+            </div>
         </div>
     </div>
 </body>
