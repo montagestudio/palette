@@ -45,25 +45,25 @@ exports.EditingController = Montage.create(Montage, {
      * Adds the
      */
     addObjectsFromTemplate: {
-        value: function (sourceTemplate) {
+        value: function (sourceTemplate, stageElement) {
 
             var sourceContentRange,
                 sourceContentFragment,
                 sourceDocument = sourceTemplate.document,
-                ownerElement = this.owner.element,
-                ownerDocument = ownerElement.ownerDocument,
                 deserializer = Deserializer.create(),
                 sourceSerializationString = sourceTemplate.getSerialization().getSerializationString(),
                 self = this;
+
+            stageElement = stageElement || this.owner.element,
 
             // Insert the expected markup into the document
             sourceContentRange = sourceDocument.createRange();
             sourceContentRange.selectNodeContents(sourceDocument.body);
             sourceContentFragment = sourceContentRange.cloneContents();
-            ownerElement.appendChild(sourceContentFragment);
+            stageElement.appendChild(sourceContentFragment);
 
             deserializer.init(sourceSerializationString, this.ownerRequire);
-            return deserializer.deserialize(null, ownerElement).then(function (objects) {
+            return deserializer.deserialize(null, stageElement).then(function (objects) {
                 var label,
                     object;
 
