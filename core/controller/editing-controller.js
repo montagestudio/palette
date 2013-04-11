@@ -90,6 +90,20 @@ exports.EditingController = Montage.create(Montage, {
                 return objects;
             });
         }
+    },
+
+    removeObject: {
+        value: function (object) {
+
+            var element = object.element;
+
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+
+            //TODO well I'm sure there's more to this...
+            return Promise.resolve(element);
+        }
     }
 
 });
