@@ -46,7 +46,10 @@ exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
 
     handleRemoveButtonAction: {
         value: function (evt) {
-            console.log("handleRemoveButtonAction");
+            var index = evt.detail.index;
+            if (this.collectionValue && (index >= 0) && (index < this.collectionValue.length)) {
+                this.collectionValue.splice(index, 1);
+            }
         }
     }
 

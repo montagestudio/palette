@@ -14,7 +14,6 @@ var Montage = require("montage").Montage,
  */
 exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./list-property-inspector.reel".ListPropertyInspector# */ {
 
-
     collectionValue: {
         get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "list")) {
@@ -47,7 +46,10 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
 
     handleRemoveButtonAction: {
         value: function (evt) {
-            console.log("handleRemoveButtonAction");
+            var index = evt.detail.index;
+            if (this.collectionValue && (index >= 0) && (index < this.collectionValue.length)) {
+                this.collectionValue.splice(index, 1);
+            }
         }
     }
 

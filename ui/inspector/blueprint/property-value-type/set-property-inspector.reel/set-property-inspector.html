@@ -94,7 +94,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -113,7 +113,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -132,7 +132,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -151,7 +151,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -170,7 +170,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -189,7 +189,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -208,7 +208,7 @@
             },
             "bindings": {
                 "objectValue": {
-                    "<->": "@valuesController.objectAtCurrentIteration"
+                    "<-": "@propertyCollection.objectAtCurrentIteration"
                 },
                 "propertyBlueprint": {
                     "<-": "@owner.propertyBlueprint"
@@ -250,6 +250,9 @@
             "bindings": {
                 "disabled": {
                     "<-": "@owner.propertyBlueprint.readOnly"
+                },
+                "detail.index": {
+                    "<-": "@propertyCollection.currentIteration.index"
                 }
             },
             "listeners": [
@@ -282,7 +285,7 @@
                 <div data-arg="string" data-montage-id="stringPropertyInspector"></div>
                 <div data-arg="url" data-montage-id="urlPropertyInspector"></div>
             </div>
-            <div data-montage-id="removeButton"></div>
+            <button data-montage-id="removeButton" class="PropertyCollection-item-removeButton"></button>
         </div>
     </div>
 </body>
