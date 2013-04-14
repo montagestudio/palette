@@ -71,15 +71,24 @@
         },
 
         "sourcePath": {
-            "prototype": "matte/ui/button.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {
                     "#": "sourcePath"
                 }
             },
             "bindings": {
-                "label": {
+                "value": {
                     "<-": "@owner.binding.sourcePath"
+                }
+            }
+        },
+        
+        "boundButton": {
+            "prototype": "matte/ui/button.reel",
+            "properties": {
+                "element": {
+                    "#": "boundButton"
                 }
             }
         },
@@ -112,7 +121,8 @@
             <div class="Property-field">
                 <span data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional" style="display: none;"></span>
                 <span data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional" style="display: none;"></span>
-                <button data-montage-id="sourcePath" class="BoundPropertyEditor-sourceButton"></button>
+                <div data-montage-id="sourcePath" style="display: none;"></div>
+                <button data-montage-id="boundButton" class="BoundPropertyEditor-boundButton"><i class="BoundPropertyEditor-boundIcon"></i></button>
                 <button data-montage-id="removeButton" class="BoundPropertyEditor-removeButton"></button>
             </div>
         </div>

@@ -1,6 +1,11 @@
 
-.BoundPropertyEditor .BoundPropertyEditor-sourceButton.matte-Button {
-    width: 67px;
-    padding: 0 5px;
-    white-space: nowrap;
+.BoundPropertyEditor .BoundPropertyEditor-boundButton {
+    width: 40px;
+}
+
+.BoundPropertyEditor-boundIcon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: url(/assets/icons/binding.svg) no-repeat center;
 }
