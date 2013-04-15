@@ -14,18 +14,16 @@ var Montage = require("montage").Montage,
  */
 exports.SetPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./set-property-inspector.reel".SetPropertyInspector# */ {
 
-
     collectionValue: {
-        get: function() {
+        get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "set")) {
-//                console.log("Property value set " + this.propertyBlueprint.name + " type " + this.propertyBlueprint.valueType + " collection " + this.propertyBlueprint.collectionValueType + " ", this.objectValue);
-                if (!(this.objectValue instanceof Set)) {
-                    if (this.objectValue && this.objectValue.forEach) {
-                        this.objectValue = new Set(this.objectValue);
-                    } else {
-                        var temp = this.objectValue;
-                        this.objectValue = new Set();
-                        if (temp) {
+                if (this.objectValue) {
+                    if (!(this.objectValue instanceof Set)) {
+                        if (this.objectValue.forEach) {
+                            this.objectValue = new Set(this.objectValue);
+                        } else {
+                            var temp = this.objectValue;
+                            this.objectValue = new Set();
                             this.objectValue.add(temp);
                         }
                     }
@@ -34,13 +32,16 @@ exports.SetPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
             }
             return new Set();
         },
-        set: function() {
+        set: function () {
             this.objectValue = value;
         }
     },
 
     handleAddButtonAction: {
         value: function (evt) {
+            if (!this.objectValue) {
+                this.objectValue = new Set();
+            }
             this.collectionValue.add("");
         }
     },

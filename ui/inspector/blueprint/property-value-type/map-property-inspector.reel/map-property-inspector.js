@@ -17,14 +17,13 @@ exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
     collectionValue: {
         get: function() {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "map")) {
-//                console.log("Property value map " + this.propertyBlueprint.name + " type " + this.propertyBlueprint.valueType + " collection " + this.propertyBlueprint.collectionValueType + " ", this.objectValue);
-                if (!(this.objectValue instanceof Map)) {
-                    if (this.objectValue && this.objectValue.forEach) {
-                        this.objectValue = new Map(this.objectValue);
-                    } else {
-                        var temp = this.objectValue;
-                        this.objectValue = new Map();
-                        if (temp) {
+                if (this.objectValue) {
+                    if (!(this.objectValue instanceof Map)) {
+                        if (this.objectValue.forEach) {
+                            this.objectValue = new Map(this.objectValue);
+                        } else {
+                            var temp = this.objectValue;
+                            this.objectValue = new Map();
                             this.objectValue.add(temp);
                         }
                     }
@@ -40,6 +39,9 @@ exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
 
     handleAddButtonAction: {
         value: function (evt) {
+            if (!this.objectValue) {
+                this.objectValue = new Map();
+            }
             console.log("handleAddButtonAction");
         }
     },

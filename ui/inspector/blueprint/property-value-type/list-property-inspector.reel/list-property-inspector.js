@@ -17,14 +17,13 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
     collectionValue: {
         get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "list")) {
-                //                console.log("Property value list " + this.propertyBlueprint.name + " type " + this.propertyBlueprint.valueType + " collection " + this.propertyBlueprint.collectionValueType + " ", this.objectValue);
-                if (!(this.objectValue instanceof Array)) {
-                    if (this.objectValue && this.objectValue.forEach) {
-                        this.objectValue = new Array(this.objectValue);
-                    } else {
-                        var temp = this.objectValue;
-                        this.objectValue = new Array();
-                        if (temp) {
+                if (this.objectValue) {
+                    if (!(this.objectValue instanceof Array)) {
+                        if (this.objectValue.forEach) {
+                            this.objectValue = new Array(this.objectValue);
+                        } else {
+                            var temp = this.objectValue;
+                            this.objectValue = new Array();
                             this.objectValue.add(temp);
                         }
                     }
@@ -40,6 +39,9 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
 
     handleAddButtonAction: {
         value: function (evt) {
+            if (!this.objectValue) {
+                this.objectValue = new Array();
+            }
             this.collectionValue.add("");
         }
     },
