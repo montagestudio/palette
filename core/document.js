@@ -16,6 +16,14 @@ exports.Document = Montage.create(Montage, {
         }
     },
 
+    didCreate: {
+        value: function (url) {
+            this.defineBinding("isDirty", {
+                "<-": "undoManager.undoCount > 0"
+            });
+        }
+    },
+
     _url: {
         value: null
     },
@@ -115,7 +123,7 @@ exports.Document = Montage.create(Montage, {
     canClose: {
         value: function () {
             // TODO PJYF This message needs to be localized
-            return (this.isDirty() ? "You have unsaved Changes" : null);
+            return (this.isDirty ? "You have unsaved Changes" : null);
         }
     },
 
@@ -124,9 +132,7 @@ exports.Document = Montage.create(Montage, {
      * @return {boolean} Whether or not the document has unsaved changes
      */
     isDirty: {
-        value: function() {
-            return this.undoManager && this.undoManager.undoCount > 0;
-        }
+        value: false
     },
 
     close: {
