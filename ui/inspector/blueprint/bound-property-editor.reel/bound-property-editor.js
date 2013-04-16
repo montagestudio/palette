@@ -28,10 +28,7 @@ exports.BoundPropertyEditor = Montage.create(Component, /** @lends module:"./bou
     handleRemoveButtonAction: {
         value: function (evt) {
             if (this.object && this.binding) {
-                var index = this.object.bindings.indexOf(this.binding);
-                if (index >= 0) {
-                    this.object.bindings.splice(index, 1);
-                }
+                this.object.editingDocument.cancelOwnedObjectBinding(this.object, this.binding);
             }
         }
     }
