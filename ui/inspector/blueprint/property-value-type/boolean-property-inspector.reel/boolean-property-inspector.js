@@ -13,4 +13,17 @@ var Montage = require("montage").Montage,
  */
 exports.BooleanPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./boolean-property-inspector.reel".BooleanPropertyInspector# */ {
 
+    booleanValue: {
+        get: function() {
+            return !! this.objectValue;
+        },
+        set function(value) {
+            if (value) {
+                this.objectValue = true;
+            } else if (this.objectValue) {
+                this.objectValue = false;
+            }
+        }
+    }
+
 });
