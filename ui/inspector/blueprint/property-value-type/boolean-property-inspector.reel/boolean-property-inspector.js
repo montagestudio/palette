@@ -17,7 +17,7 @@ exports.BooleanPropertyInspector = Montage.create(ValueTypeInspector, /** @lends
         get: function() {
             return !! this.objectValue;
         },
-        set function(value) {
+        set: function(value) {
             if (value) {
                 this.objectValue = true;
             } else if (this.objectValue) {
