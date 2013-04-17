@@ -42,6 +42,10 @@ var ValueTypeInspector = exports.ValueTypeInspector = Montage.create(Component, 
 
     objectValue: {
         value: null
+    },
+
+    editingDocument: {
+        value: null
     }
 
 });

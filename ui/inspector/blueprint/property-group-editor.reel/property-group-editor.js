@@ -13,6 +13,10 @@ var Montage = require("montage").Montage,
 */
 exports.PropertyGroupEditor = Montage.create(Component, /** @lends module:"./property-group-editor.reel".PropertyGroupEditor# */ {
 
+    editingDocument: {
+        value: null
+    },
+
     object: {
         value: null
     },

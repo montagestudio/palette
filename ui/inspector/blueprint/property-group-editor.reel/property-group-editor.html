@@ -44,6 +44,9 @@
                 "element": {"#": "propertyEditor"}
             },
             "bindings": {
+                "editingDocument": {
+                    "<-": "@owner.editingDocument"
+                },
                 "object": {"<-": "@owner.object"},
                 "propertyBlueprint": {"<-": "@propertyList.objectAtCurrentIteration"}
             }

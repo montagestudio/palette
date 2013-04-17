@@ -38,6 +38,9 @@
                 "element": {"#": "propertyGroup"}
             },
             "bindings": {
+                "editingDocument": {
+                    "<-": "@owner.editingDocument"
+                },
                 "object": {"<-": "@owner.object"},
                 "name": {"<-": "@propertyGroups.objectAtCurrentIteration.name"},
                 "properties": {"<-": "@propertyGroups.objectAtCurrentIteration.properties"},

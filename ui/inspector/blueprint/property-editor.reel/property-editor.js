@@ -14,6 +14,10 @@ var Montage = require("montage").Montage,
  */
 exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property-editor.reel".PropertyEditor# */ {
 
+    editingDocument: {
+        value: null
+    },
+
     _updateGate: {
         value: null
     },

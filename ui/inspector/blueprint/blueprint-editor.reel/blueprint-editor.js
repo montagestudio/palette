@@ -21,6 +21,10 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
         }
     },
 
+    editingDocument: {
+        value: null
+    },
+
     _object: {
         value: null
     },
