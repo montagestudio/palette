@@ -83,14 +83,22 @@
                 }
             }
         },
-        
+
         "boundButton": {
             "prototype": "matte/ui/button.reel",
             "properties": {
                 "element": {
                     "#": "boundButton"
                 }
-            }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
+                }
+            ]
         },
 
         "removeButton": {

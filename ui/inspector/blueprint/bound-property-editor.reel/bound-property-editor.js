@@ -31,6 +31,23 @@ exports.BoundPropertyEditor = Montage.create(Component, /** @lends module:"./bou
                 this.object.editingDocument.cancelOwnedObjectBinding(this.object, this.binding);
             }
         }
+    },
+
+    handleBoundButtonAction: {
+        value: function (evt) {
+            if (this.object && this.binding) {
+                var bindingModel = Object.create(null);
+                bindingModel.targetObject = this.object;
+                bindingModel.targetPath = this.label;
+                bindingModel.oneway = this.binding.oneway;
+                bindingModel.sourcePath = this.binding.sourcePath;
+
+                this.dispatchEventNamed("editBindingForObject", true, false, {
+                    bindingModel: bindingModel,
+                    existingBinding: this.binding
+                });
+            }
+        }
     }
 
 
