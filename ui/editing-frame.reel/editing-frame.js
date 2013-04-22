@@ -105,20 +105,25 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
+
+                var iframe = this.iframe;
+
                 if (null === this._height) {
-                    this.height = this.element.offsetHeight;
+                    this.height = iframe.offsetHeight;
                 }
 
                 if (null === this._width) {
-                    this.width = this.element.offsetWidth;
+                    this.width = iframe.offsetWidth;
                 }
 
                 // TODO this is a little dirty, we should accept whatever identifier we were given, not demand one
                 // TODO why is this even necessary?
-                this.element.identifier = "editingFrame";
+                iframe.identifier = "editingFrame";
 
                 // At this point the editingFrame can now "load" a reel from a package
                 this.dispatchEventNamed("canLoadReel", true, true);
+
+                this.element.addEventListener("mousedown", this);
             }
         }
     },
@@ -126,27 +131,30 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     draw: {
         value: function () {
 
+            var iframe = this.iframe;
+
             if (this.currentMode === DESIGN_MODE) {
                 this.element.classList.add("designMode");
             } else {
                 this.element.classList.remove("designMode");
             }
 
-            if (this._stageUrl && this._stageUrl !== this.element.src) {
-                this.element.addEventListener("load", this, false);
-                this.element.src = this._stageUrl;
-            } else if (!this._stageUrl && this.element.src) {
-                this.element.removeAttribute("src");
+            if (this._stageUrl && this._stageUrl !== iframe.src) {
+                iframe.addEventListener("load", this, false);
+                iframe.src = this._stageUrl;
+            } else if (!this._stageUrl && iframe.src) {
+                iframe.removeAttribute("src");
             }
 
-            this.element.width = this.width;
-            this.element.height = this.height;
+            this.screen.width = iframe.width = this.width;
+            this.screen.height = iframe.height = this.height;
         }
     },
 
     handleEditingFrameLoad: {
         value: function () {
-            this.element.removeEventListener("load", this, false);
+            var iframe = this.iframe;
+            iframe.removeEventListener("load", this, false);
             window.addEventListener("message", this);
         }
     },
@@ -154,7 +162,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     handleMessage: {
         value: function (evt) {
 
-            var iFrameWindow = this._element.contentWindow,
+            var iframe = this.iframe,
+                iFrameWindow = iframe.contentWindow,
                 ownerComponent,
                 self = this;
 
@@ -202,51 +211,37 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     _addDragAndDropEvents: {
         value: function(iFrameWindow) {
-            var body = iFrameWindow.document.body;
-            body.addEventListener("dragenter", this, false);
-            body.addEventListener("dragleave", this, false);
-            body.addEventListener("dragover", this, false);
-            body.addEventListener("drop", this, false);
+            var element = this.element;
+            element.addEventListener("dragenter", this, false);
+            element.addEventListener("dragleave", this, false);
+            element.addEventListener("dragover", this, false);
+            element.addEventListener("drop", this, false);
         }
     },
 
     // EditingFrame Delegate Methods
 
-    willDistributeEvent: {
+    handleMousedown: {
         value: function (evt) {
 
-            //TODO extract modes as strategies? Don't need tons of flags everywhere
-            // TODO we allow firstdraw to continue to not hinder rendering, any others?
-            if (RUN_MODE === this.currentMode || "firstDraw" === evt.type) {
-
-                // TODO improve detection of current owner component, assuming it is the first one drawn
-                // seems a little brittle, or verify that it is certainly always the first (it should be)
-                if ("firstDraw" === evt.type && null === this.currentComponent) {
-                    this.currentComponent = evt.target;
-                }
+            if (RUN_MODE === this.currentMode || 0 !== evt.button) {
                 return;
             }
 
-            evt.stop();
+            var x = evt.offsetX,
+                y = evt.offsetY,
+                frameDocument = this.iframe.contentDocument,
+                selectionCandidate = frameDocument.elementFromPoint(x, y),
+                isAddingToSelection = false,
+                isRemovingFromSelection = false;
 
-            if (evt.type === "mousedown" && 0 === evt.button) {
-
-                var selectionCandidate = evt.target,
-                    isAddingToSelection = false,
-                    isRemovingFromSelection = false;
-
-                this.dispatchEventNamed("select", true, true, {
-                    candidate: selectionCandidate,
-                    addToSelection: false,
-                    expandToSelection: false,
-                    removeFromSelection: false,
-                    retractFromSelection: false
-                });
-            }
-
-            if (this.delegate && typeof this.delegate.didObserveEvent === "function") {
-                this.delegate.didObserveEvent(this, evt);
-            }
+            this.dispatchEventNamed("select", true, true, {
+                candidate: selectionCandidate,
+                addToSelection: false,
+                expandToSelection: false,
+                removeFromSelection: false,
+                retractFromSelection: false
+            });
         }
     },
 
