@@ -19,9 +19,9 @@ exports.Editor = Montage.create(Component, /** @lends module:"./editor.reel".Edi
     },
 
     title:{
-        dependencies:["blueprint"],
+        dependencies:["objectBlueprint"],
         get:function () {
-            return this.blueprint ? this.blueprint.name : "";
+            return this.objectBlueprint ? this.objectBlueprint.name : "";
         }
     },
 
@@ -44,22 +44,22 @@ exports.Editor = Montage.create(Component, /** @lends module:"./editor.reel".Edi
                 if (this._object.proxiedObject) {
                     this._object.proxiedObject.blueprint.then(function (blueprint) {
 
-                        self.dispatchBeforeOwnPropertyChange("blueprint", self.blueprint);
-                        self.blueprint = blueprint;
-                        self.dispatchOwnPropertyChange("blueprint", blueprint);
+                        self.dispatchBeforeOwnPropertyChange("objectBlueprint", self.objectBlueprint);
+                        self.objectBlueprint = blueprint;
+                        self.dispatchOwnPropertyChange("objectBlueprint", blueprint);
 
                     }).done;
                 } else {
                     console.log("We have a proxy object without any object !!!!", this._object);
-                    this.blueprint = null;
+                    this.objectBlueprint = null;
                 }
             } else {
-                this.blueprint = null;
+                this.objectBlueprint = null;
             }
         }
     },
 
-    blueprint:{
+    objectBlueprint:{
         serializable:false,
         value:null
     }

@@ -44,20 +44,20 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
         }
     },
 
-    _blueprint: {
+    _objectBlueprint: {
         value: null
     },
 
     /*
      * Property blueprint that is inspected
      */
-    blueprint: {
+    objectBlueprint: {
         get: function () {
-            return this._blueprint;
+            return this._objectBlueprint;
         },
         set: function (value) {
-            if (this._blueprint != value) {
-                this._blueprint = value;
+            if (this._objectBlueprint != value) {
+                this._objectBlueprint = value;
                 if (value != null) {
                     // we could create a binding to the propertyBlueprintGroups,
                     // but at the moment I'm not expecting the component blueprint

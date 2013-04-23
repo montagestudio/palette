@@ -48,14 +48,14 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
                 this._object.packageRequire.async(this._object.moduleId).get(this._object.exportName).get("blueprint")
                     .then(function (blueprint) {
                         self._blueprintDeferred.resolve(blueprint);
-                        self.blueprint = blueprint;
+                        self.objectBlueprint = blueprint;
                     }, function () {
                         self._blueprintDeferred.reject(null);
                     }).done();
 
             } else {
                 this._blueprintDeferred = null;
-                this.blueprint = null;
+                this.objectBlueprint = null;
             }
         }
     },
@@ -73,7 +73,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         value: Promise.defer()
     },
 
-    blueprint: {
+    objectBlueprint: {
         serializable: false,
         value: null
     },
