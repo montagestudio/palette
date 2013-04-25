@@ -160,7 +160,8 @@ function injectPackageInformation (packageLocation, packageJSON, moduleId) {
 }
 
 function injectMontageBootstrap(old) {
-    var montageLocation = loadParams[DATA_PACKAGE_KEY] + "/node_modules/montage/montage.js";
+    // replace() to remove a trailing slash
+    var montageLocation = loadParams[DATA_PACKAGE_KEY].replace(/\/$/, "") + "/node_modules/montage/montage.js";
     var headID = document.getElementsByTagName("head")[0];
     var newScript = document.createElement('script');
     newScript.setAttribute("type", "application/javascript");
