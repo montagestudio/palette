@@ -39,7 +39,7 @@ function getParams() {
         keyValuesCount = keyValues.length;
 
         params = {};
-        for (i = 0; i < keyValuesCount; i += 2) {
+        for (var i = 0; i < keyValuesCount; i += 2) {
             value = keyValues[i + 1];
             params[keyValues[i]] = value ? decodeURIComponent(value) : null;
         }
@@ -52,12 +52,8 @@ function getParams() {
         packageLocation = userInput[PACKAGE_LOCATION_KEY];
     }
 
-    if (reelLocation) {
-
-        if (packageLocation) {
-            packageLocation = packageLocation.replace("package.json", "");
-        }
-
+    if (reelLocation && packageLocation) {
+        packageLocation = packageLocation.replace("package.json", "");
     }
 
     var applicationPath = window.location.pathname;
@@ -74,16 +70,15 @@ function getParams() {
 
 function requestParams () {
     var params = {},
-        reelLocation,
-        packageLocation;
+        reelLocation;
 
-        params[REEL_LOCATION_KEY] = reelLocation = prompt("Load component", window.location.origin);
+    params[REEL_LOCATION_KEY] = reelLocation = prompt("Load component", window.location.origin);
 
-        if (reelLocation) {
-            params[PACKAGE_LOCATION_KEY] = prompt("Load package (Blank to search)");
-        }
+    if (reelLocation) {
+        params[PACKAGE_LOCATION_KEY] = prompt("Load package (Blank to search)");
+    }
 
-        return params;
+    return params;
 }
 
 function loadReel (reelLocation, packageLocation) {
@@ -107,7 +102,7 @@ function loadReel (reelLocation, packageLocation) {
 function getPackageLocation (location, callback) {
 
     if (!location || (window.location.protocol + "//") === location) {
-       return;
+        return;
     }
 
     if (!/\/$/.test(location)) {
@@ -138,7 +133,7 @@ function injectPackageInformation (packageLocation, packageJSON, moduleId) {
         moduleId: moduleId
     };
 
-    var injections = {}
+    var injections = {};
     injections.mappings = [
         {
             name: "__stage",
