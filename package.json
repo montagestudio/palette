@@ -10,6 +10,9 @@
         "montage-testing": "0.1.1",
         "testacular": "0.5.7"
     },
+    "mappings": {
+        "stage": "stage"
+    },
     "scripts": {
         "install": "cd stage && npm install",
         "update": "cd stage && npm update"

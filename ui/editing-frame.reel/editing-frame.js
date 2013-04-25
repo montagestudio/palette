@@ -85,7 +85,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             this._deferredEditingInformation = Promise.defer();
 
             var encodedFileUrl = encodeURIComponent(fileUrl);
-            this._stageUrl = require.location + "/stage/index.html?reel-location=" + encodedFileUrl;
+            // use mappings as the location of the stage package changes after mopping
+            this._stageUrl = require.mappings.stage.location + "index.html?reel-location=" + encodedFileUrl;
 
             if (packageUrl) {
                 this._stageUrl += "&package-location=" + encodeURIComponent(packageUrl);
