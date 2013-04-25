@@ -247,7 +247,7 @@
             },
             "bindings": {
                 "disabled": {
-                    "<-": "@owner.propertyBlueprint.readOnly"
+                    "<-": "@owner.propertyBlueprint.readOnly || @propertyCollection.length.ge(@owner.propertyBlueprint.cardinality)"
                 }
             },
             "listeners": [
@@ -296,9 +296,7 @@
                 <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
                 <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
             </div>
-            <div class="Property-field">
-                <button data-montage-id="addButton"></button>
-            </div>
+            <button data-montage-id="addButton"></button>
         </div>
         <ul data-montage-id="propertyCollection" class="PropertyCollection">
             <li class="PropertyCollection-item">

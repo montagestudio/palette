@@ -261,7 +261,7 @@
             },
             "bindings": {
                 "disabled": {
-                    "<-": "@owner.propertyBlueprint.readOnly"
+                    "<-": "@owner.propertyBlueprint.readOnly || @propertyCollection.length.ge(@owner.propertyBlueprint.cardinality)"
                 }
             },
             "listeners": [
@@ -305,11 +305,13 @@
 </head>
 <body>
     <div data-montage-id="map-property-inspector" class="MapPropertyInspector">
-        <span data-montage-id="propertyNameSubstitution" class="label">
-            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
-            <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
-        </span>
-        <div data-montage-id="addButton"></div>
+        <div class="Property">
+            <div data-montage-id="propertyNameSubstitution" class="label">
+                <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+                <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
+            </div>
+            <button data-montage-id="addButton"></button>
+        </div>
         <div data-montage-id="propertyCollection">
             <div data-montage-id="toOnePropertyInspectorSubstitution">
                 <div data-arg="boolean" data-montage-id="booleanPropertyInspector"></div>
