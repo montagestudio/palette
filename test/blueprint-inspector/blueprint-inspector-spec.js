@@ -1,12 +1,6 @@
 /* <copyright>
  </copyright> */
-var Montage = require("montage").Montage;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
-var Component = require("montage/ui/component").Component;
-var Selector = require("montage/core/selector").Selector;
-var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var Promise = require("montage/core/promise").Promise;
-var Serializer = require("montage/core/serialization").Serializer;
 
 TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", function (testPage) {
 
@@ -59,7 +53,7 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
             // Toggle the value in the compoent
             enumPropertyEditor.childComponents[1].childComponents[0].selection = "red";
             expect(enumPropertyEditor.objectValue).toBe("red");
-       });
+        });
 
         it("can create new number property inspector", function () {
             expect(numberPropertyEditor).toBeTruthy();
