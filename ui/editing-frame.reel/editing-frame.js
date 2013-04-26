@@ -179,17 +179,15 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 ownerComponent = iFrameWindow.stageData.ownerComponent;
 
-                // This is done to maintain compatibility with older version of Montage
-                // In particular versions of teh desrialization that did not return a promise.
-                var deferredTemplate = ownerComponent._loadTemplate(function (template) {
-                    self._deferredEditingInformation.resolve({owner:ownerComponent, template:template, frame:self});
-                });
-                if (deferredTemplate && Promise.isPromise(deferredTemplate)) {
-                    deferredTemplate.then(function (template) {
-                        self._deferredEditingInformation.resolve({owner:ownerComponent, template:template, frame:self});
-                    }).done();
-                }
+                // This is done to maintain compatibility with pre 0.13
+                // versions of Montage where _loadTemplate did not return a
+                // promise and used a callback instead.
+                var deferredTemplate = Promise.defer();
+                deferredTemplate = ownerComponent._loadTemplate(deferredTemplate.resolve) || deferredTemplate;
 
+                deferredTemplate.then(function (template) {
+                    self._deferredEditingInformation.resolve({owner:ownerComponent, template:template, frame:self});
+                }).done();
             }
 
         }
