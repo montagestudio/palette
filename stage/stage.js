@@ -110,7 +110,7 @@ function getPackageLocation (location, callback) {
     }
 
     var packageReq = new XMLHttpRequest();
-    packageReq.open("GET", location + "/package.json");
+    packageReq.open("GET", location + "package.json");
     packageReq.addEventListener("load", function (evt) {
         if (404 === evt.target.status) {
             location = location.replace(/[^\/]+\/$/, "");
@@ -156,7 +156,7 @@ function injectPackageInformation (packageLocation, packageJSON, moduleId) {
 
 function injectMontageBootstrap(old) {
     // replace() to remove a trailing slash
-    var montageLocation = loadParams[DATA_PACKAGE_KEY].replace(/\/$/, "") + "/node_modules/montage/montage.js";
+    var montageLocation = (loadParams[DATA_PACKAGE_KEY] || "").replace(/\/$/, "") + "/node_modules/montage/montage.js";
     var headID = document.getElementsByTagName("head")[0];
     var newScript = document.createElement('script');
     newScript.setAttribute("type", "application/javascript");
