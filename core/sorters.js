@@ -36,7 +36,7 @@ function sortedStringComparator(strings) {
 exports.makeObjectPropertySorter = objectPropertySorter;
 function objectPropertySorter(comparator, sort) {
     return function (object, name) {
-        if (typeof object !== "object") {
+        if (Array.isArray(object) || typeof object !== "object") {
             return object;
         }
         var newObject = {};
