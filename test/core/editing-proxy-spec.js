@@ -4,12 +4,17 @@ var Montage = require("montage").Montage,
 
 describe("core/editing-proxy-spec", function () {
 
-    var proxy, label, doc;
+    var proxy, label, serialization, exportId, editingDocument;
 
     beforeEach(function () {
+        exportId = "foo/bar/baz";
         label = "myObject";
-        doc = Montage.create();
-        proxy = EditingProxy.create().init(label, doc);
+        serialization = {
+            prototype: exportId,
+            properties: {}
+        };
+        editingDocument = Montage.create();
+        proxy = EditingProxy.create().init(label, serialization, exportId, editingDocument);
     });
 
     describe("initialization", function () {
@@ -19,7 +24,7 @@ describe("core/editing-proxy-spec", function () {
         });
 
         it("should have the expected editingDocument", function () {
-            expect(proxy.editingDocument).toBe(doc);
+            expect(proxy.editingDocument).toBe(editingDocument);
         });
 
     });

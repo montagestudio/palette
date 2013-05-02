@@ -101,6 +101,24 @@ exports.Document = Montage.create(Target, {
         }
     },
 
+    /*
+     *
+     */
+    canUndo: {
+        get: function () {
+            return this.getPath("undoManager.undoCount > 0");
+        }
+    },
+
+    /*
+     *
+     */
+    canRedo: {
+        get: function () {
+            return this.getPath("undoManager.redoCount > 0");
+        }
+    },
+
     /**
      * Saves the data to the specified dataWriter. For example:<br/>
      * <code>

@@ -1,6 +1,10 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    Document = require("core/document").Document;
+    Document = require("core/document").Document,
+    SORTERS = require("core/sorters"),
+    ProxySerializer = require("core/serialization/proxy-serializer").ProxySerializer,
+    ProxyReviver = require("core/serialization/proxy-reviver").ProxyReviver,
+    ProxyContext = require("core/serialization/proxy-context").ProxyContext;
 
 var EditingDocument = exports.EditingDocument = Montage.create(Document, {
 
@@ -20,8 +24,56 @@ var EditingDocument = exports.EditingDocument = Montage.create(Document, {
         value: function (fileUrl, packageRequire) {
             var self = Document.init.call(this, fileUrl);
             self._packageRequire = packageRequire;
+            self._editingProxyMap = {};
+            self.selectedObjects = [];
+            self.errors = [];
             return self;
         }
+    },
+
+    deserializationContext: {
+        value: function (serialization, objects) {
+            var context = this.newContext.init(serialization, this.newReviver, objects);
+            context.editingDocument = this;
+            return context;
+        }
+    },
+
+    newReviver: {
+        get: function() {
+            return ProxyReviver.create();
+        }
+    },
+
+    newContext: {
+        get: function() {
+            return ProxyContext.create();
+        }
+    },
+
+    newSerializer: {
+        get: function() {
+            return ProxySerializer.create();
+        }
+    },
+
+    _buildSerializationObjects: {
+        value: function () {
+            return {};
+        }
+    },
+
+    serializationForProxy: {
+        value: function (proxy) {
+            var serializer = this.newSerializer.initWithRequire(this._packageRequire);
+            var serialization = JSON.parse(serializer.serializeObject(proxy))[proxy.label];
+            return SORTERS.unitSorter(serialization);
+        }
+    },
+
+    //TODO this will probably be actually discovered at the project level, maybe stored here? or is this just an accessor?
+    errors: {
+        value: null
     },
 
     /**
@@ -34,12 +86,12 @@ var EditingDocument = exports.EditingDocument = Montage.create(Document, {
         }
     },
 
-    _packageRequire:{
-        value:null
+    _packageRequire: {
+        value: null
     },
 
-    packageRequire:{
-        get:function () {
+    packageRequire: {
+        get: function () {
             return this._packageRequire;
         }
     },
@@ -72,6 +124,157 @@ var EditingDocument = exports.EditingDocument = Montage.create(Document, {
             });
 
             undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
+        }
+    },
+
+    // Editing Model
+
+    _addProxies: {
+        value: function (proxies) {
+            var self = this;
+
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
+
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__addProxy(proxy);
+                });
+            } else {
+                self.__addProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            this._buildSerializationObjects();
+        }
+    },
+
+    __addProxy: {
+        value: function (proxy) {
+            var proxyMap = this._editingProxyMap;
+
+            proxyMap[proxy.label] = proxy;
+
+            //TODO not simply stick this on the object; the inspector needs it right now
+            proxy.packageRequire = this._packageRequire;
+        }
+    },
+
+    _removeProxies: {
+        value: function (proxies) {
+            var self = this;
+
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
+
+            if (Array.isArray(proxies)) {
+                proxies.forEach(function (proxy) {
+                    self.__removeProxy(proxy);
+                });
+            } else {
+                self.__removeProxy(proxies);
+            }
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+
+            this._buildSerializationObjects();
+        }
+    },
+
+    __removeProxy: {
+        value: function (proxy) {
+            var proxyMap = this._editingProxyMap,
+                parentNode;
+
+            if (!proxyMap.hasOwnProperty(proxy.label)) {
+                throw new Error("Could not find proxy to remove with label '" + proxy.label + "'");
+            }
+            delete proxyMap[proxy.label];
+        }
+    },
+
+
+    _editingProxyMap: {
+        value: null
+    },
+
+    /*
+     * Returns the poxy map
+     */
+    editingProxyMap: {
+        get: function () {
+            return this._editingProxyMap;
+        }
+    },
+
+    editingProxies: {
+        get: function () {
+            //TODO cache this
+            var proxyMap = this._editingProxyMap,
+                labels = Object.keys(proxyMap);
+
+            return labels.map(function (label) {
+                return proxyMap[label];
+            });
+        }
+    },
+
+    editingProxyForObject: {
+        value: function (object) {
+            var label = Montage.getInfoForObject(object).label,
+                proxy = this._editingProxyMap[label];
+
+            // label is undefined for the owner component
+            if (label && !proxy) {
+                throw new Error("No editing proxy found for object with label '" + label + "'");
+            }
+
+            return proxy;
+        }
+    },
+
+
+    // Selection API
+
+    selectObjectsOnAddition: {
+        value: true
+    },
+
+    selectedObjects: {
+        value: null
+    },
+
+    // Selects nothing
+    clearSelectedObjects: {
+        value: function () {
+            this.selectedObjects.clear();
+        }
+    },
+
+    // Remove object from current set of selectedObjects
+    deselectObject: {
+        value: function (object) {
+            var index = this.selectedObjects.indexOf(object);
+            if (index >= 0) {
+                this.selectedObjects.splice(index, 1);
+            }
+        }
+    },
+
+    // Add object to current set of selectedObjects
+    selectObject: {
+        value: function (object) {
+            var selectedObjects = this.selectedObjects;
+
+            if (selectedObjects.indexOf(object) === -1) {
+                //TODO what is the order ofthe selectedObjects?
+                selectedObjects.push(object);
+            }
+            //TODO otherwise, do we remove it here?
+
         }
     }
 

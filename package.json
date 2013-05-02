@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "montage": "0.13.0-alpha",
+        "mousse": "0.1.2",
         "matte": "0.1.1-alpha"
     },
     "devDependencies": {
