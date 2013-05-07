@@ -186,6 +186,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             template = template.clone();
             var instances = template.getInstances();
+
+            var frameWindow = this.iframe.contentWindow;
+            var frameDocument = this.iframe.contentDocument;
+
             var packageRequire;
 
             this._deferredEditingInformation = Promise.defer();
@@ -203,27 +207,25 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     }
                 }
 
-                self.iframe.contentWindow.name = "editingFrame=" + packageRequire.location;
+                frameWindow.name = "editingFrame=" + packageRequire.location;
 
                 // We need to boot Montage in the frame so that all the shims
                 // Montage needs get installed
-                if (self.iframe.src !== "" || !self.iframe.contentWindow.montageRequire) {
+                if (self.iframe.src !== "" || !frameWindow.montageRequire) {
                     // self.iframe.src = "";
-                    return self._bootMontage(self.iframe.contentWindow, packageRequire.location);
+                    return self._bootMontage(frameWindow, packageRequire.location);
                 }
             })
             .spread(function (_, frameMontageRequire) {
-                debugger;
-                frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(self.iframe.contentWindow);
-                debugger;
+                frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
 
                 var packageMontageRequire = packageRequire.getPackage({name: "montage"});
-                packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(self.iframe.contentWindow);
+                packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
                 return packageMontageRequire.async("ui/component");
             })
             .then(function (component) {
                 debugger;
-                component.__root__.element = self.iframe.contentDocument;
+                component.__root__.element = frameDocument;
                 function firstDrawHandler() {
                     // Strictly speaking this handler is only being called
                     // because the event is bubbling up from its children and
@@ -256,7 +258,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 }
             })
             .then(function (owner) {
-                var frameDocument = self.iframe.contentDocument;
 
                 if (owner) {
                     instances = instances || {};
@@ -267,8 +268,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return template.instantiate(frameDocument);
             })
             .then(function (part) {
-                self.iframe.contentDocument.body.appendChild(part.fragment);
                 debugger;
+                frameDocument.body.appendChild(part.fragment);
+
                 return Promise.all(Object.keys(part.objects).map(function (label) {
                     var object = part.objects[label];
                     if (object.loadComponentTree) {
@@ -279,6 +281,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     }
                 }))
                 .then(function () {
+                    debugger;
                     return {owner: part.objects.owner, template: template, frame: self};
                 });
             })
