@@ -34,12 +34,19 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/core/promise").Promise;
 
 //TODO do we care about having various modes available?
 var DESIGN_MODE = 0;
 var RUN_MODE = 1;
+
+// We maintain one window reference for each package that we see, and load all
+// modules from that package in the window so all objects have the same
+// window reference.
+// TODO: Make a WeakMap?
+var PACKAGE_WINDOWS = [];
 
 /**
     @class module:"ui/editing-frame.reel".EditingFrame
@@ -98,6 +105,175 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             this.needsDraw = true;
 
             return this._deferredEditingInformation.promise;
+        }
+    },
+
+    _getRequireForPackage: {
+        value: function (_require) {
+            if (!(_require.location in PACKAGE_WINDOWS)) {
+
+                var iframe = document.createElement("iframe");
+                // An iframe must be in a document for its `window` to be
+                // created an valid, so insert it but hide it.
+                iframe.style.display = "none";
+                document.body.appendChild(iframe);
+                // Label for debugging
+                iframe.dataset.packageFrame = _require.location;
+                iframe.contentWindow.name = "packageFrame=" + _require.location;
+
+                PACKAGE_WINDOWS[_require.location] = this._bootMontage(iframe.contentWindow, _require.location)
+                .spread(function (applicationRequire) {
+                    return applicationRequire;
+                });
+            }
+
+            return PACKAGE_WINDOWS[_require.location];
+        }
+    },
+
+    _bootMontage: {
+        value: function (frameWindow, applicationLocation) {
+            var booted = Promise.defer();
+
+            var frameDocument = frameWindow.document;
+
+            frameWindow.addEventListener("message", function (event) {
+                if (event.data.type === "montageReady") {
+                    frameWindow.postMessage({
+                        type: "montageInit",
+                        location: applicationLocation
+                    }, "*");
+                }
+            }, true);
+
+            frameWindow.montageDidLoad = function () {
+                booted.resolve([frameWindow.require, frameWindow.montageRequire]);
+            };
+
+            // Can't use the mappings Montage location as this package
+            // has been loaded through filament's require, and so maps
+            // Montage to filament's Montage
+            var montageLocation = applicationLocation + "node_modules/montage/montage.js";
+            var script = document.createElement("script");
+            script.src = montageLocation;
+            script.dataset.remoteTrigger = "http://client";
+            // Bootstrapper removes the script tag when done, so no need
+            // to do it here on load
+            frameDocument.head.appendChild(script);
+
+            return booted.promise;
+        }
+    },
+
+    _isObjectFromPackageRequire: {
+        value: function (object, packageRequire) {
+            // Check that the require the object was loaded with is the our
+            // require for the package. This ensures that they have the same
+            // window reference.
+            return Montage.getInfoForObject(object).require.config.mappings === packageRequire.config.mappings;
+        }
+    },
+
+    loadTemplate: {
+        value: function (template, ownerModule, ownerName) {
+            // If already loading reject current loading request and load the new one
+            if (this._deferredEditingInformation) {
+                this._deferredEditingInformation.reject();
+            }
+            this._deferredEditingInformation = Promise.defer();
+
+            var self = this;
+
+            template = template.clone();
+            var instances = template.getInstances();
+            var packageRequire;
+
+            return this._deferredEditingInformation = this._getRequireForPackage(template._require)
+            .then(function (_packageRequire) {
+                packageRequire = _packageRequire;
+                template._require = packageRequire;
+
+                if (instances && Object.keys(instances).length) {
+                    for (var label in instances) {
+                        if (!self._isObjectFromPackageRequire(instances[label], packageRequire)) {
+                            throw new Error("Template instance '" + label + "' was not loaded using the correct require");
+                        }
+                    }
+                }
+
+                self.iframe.contentWindow.name = "editingFrame=" + packageRequire.location;
+
+                // We need to boot Montage in the frame so that all the shims
+                // Montage needs get installed
+                if (self.iframe.src !== "" || !self.iframe.contentWindow.montageRequire) {
+                    // self.iframe.src = "";
+                    return self._bootMontage(self.iframe.contentWindow, packageRequire.location);
+                }
+            })
+            .spread(function (_, frameMontageRequire) {
+                debugger;
+                frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(self.iframe.contentWindow);
+                debugger;
+
+                // packageRequire("montage/core/event-manager").defaultEventManager.registerWindow(self.iframe.contentWindow);
+                // Worth this to do it sync?
+                var packageMontageRequire = packageRequire.getPackage({name: "montage"});
+                packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(self.iframe.contentWindow);
+                return packageMontageRequire.async("ui/component");
+            })
+            .then(function (component) {
+                debugger;
+                component.__root__.element = self.iframe.contentDocument;
+
+                if (!instances || !instances.owner) {
+                    // if the template has an owner then we need to
+                    // instantiate it
+                    return template.getObjectsString(template.document)
+                    .then(function (objectsString) {
+                        var objects = JSON.parse(objectsString);
+                        if (objects.owner) {
+                            ownerName = ownerName || MontageReviver.parseObjectLocationId(ownerModule).objectName;
+
+                            return packageRequire.async(ownerModule)
+                            .get(ownerName)
+                            .then(function (ownerPrototype) {
+                                return ownerPrototype.create();
+                            });
+                        }
+                    });
+                }
+            })
+            .then(function (owner) {
+                var frameDocument = self.iframe.contentDocument;
+
+                if (owner) {
+                    instances = instances || {};
+                    instances.owner = owner;
+                    template.setInstances(instances);
+                }
+
+                return template.instantiate(frameDocument);
+            })
+            .then(function (part) {
+                self.iframe.contentDocument.body.appendChild(part.fragment);
+                debugger;
+                return Promise.all(Object.keys(part.objects).map(function (label) {
+                    var object = part.objects[label];
+                    if (object.loadComponentTree) {
+                        object.attachToParentComponent();
+                        return object.loadComponentTree();
+                    }
+                }))
+                .then(function () {
+                    return {owner: part.objects.owner, template: template, frame: self};
+                });
+            });
+        }
+    },
+
+    reboot: {
+        value: function () {
+
         }
     },
 

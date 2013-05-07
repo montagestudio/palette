@@ -31,6 +31,11 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
+    loadTemplate: {
+        value: function (template, ownerModule, ownerName) {
+            return this.editingFrame.loadTemplate(template, ownerModule, ownerName);
+        }
+    },
 
     _editingFrame: {
         value: null
