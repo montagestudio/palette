@@ -188,7 +188,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var instances = template.getInstances();
             var packageRequire;
 
-            return this._deferredEditingInformation = this._getRequireForPackage(template._require)
+            this._deferredEditingInformation = Promise.defer();
+
+            var promise = this._getRequireForPackage(template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
                 template._require = packageRequire;
@@ -215,8 +217,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(self.iframe.contentWindow);
                 debugger;
 
-                // packageRequire("montage/core/event-manager").defaultEventManager.registerWindow(self.iframe.contentWindow);
-                // Worth this to do it sync?
                 var packageMontageRequire = packageRequire.getPackage({name: "montage"});
                 packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(self.iframe.contentWindow);
                 return packageMontageRequire.async("ui/component");
@@ -224,6 +224,18 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             .then(function (component) {
                 debugger;
                 component.__root__.element = self.iframe.contentDocument;
+                function firstDrawHandler() {
+                    // Strictly speaking this handler is only being called
+                    // because the event is bubbling up from its children and
+                    // so the stage may not be fully drawn. However the drawing
+                    // completes syncronously but the resolution of the
+                    // promise is async, so by the time the promise handler
+                    // is called, the drawing will be complete.
+                    component.__root__.removeEventListener("firstDraw", firstDrawHandler, false);
+                    // this promise is resolved with the data needed.
+                    self._deferredEditingInformation.resolve(promise);
+                }
+                component.__root__.addEventListener("firstDraw", firstDrawHandler, false);
 
                 if (!instances || !instances.owner) {
                     // if the template has an owner then we need to
@@ -260,14 +272,19 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return Promise.all(Object.keys(part.objects).map(function (label) {
                     var object = part.objects[label];
                     if (object.loadComponentTree) {
-                        object.attachToParentComponent();
+                        if (!object.parentComponent) {
+                            object.attachToParentComponent();
+                        }
                         return object.loadComponentTree();
                     }
                 }))
                 .then(function () {
                     return {owner: part.objects.owner, template: template, frame: self};
                 });
-            });
+            })
+            .fail(this._deferredEditingInformation.reject);
+
+            return this._deferredEditingInformation.promise;
         }
     },
 
