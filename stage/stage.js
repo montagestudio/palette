@@ -89,7 +89,7 @@ function loadReel (reelLocation, packageLocation) {
     getPackageLocation(packageLocation, continueBootstrap);
 
     function continueBootstrap (packageLocation, packageJSON) {
-        var moduleId = reelLocation.replace(packageLocation, "");
+        var moduleId = reelLocation ? reelLocation.replace(packageLocation, "") : void 0;
         injectPackageInformation(packageLocation, packageJSON, moduleId);
     }
 }
