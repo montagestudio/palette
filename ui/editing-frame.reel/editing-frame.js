@@ -168,9 +168,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 ownerComponent,
                 self = this;
 
-            //TODO verify event.origin
-
-            if (evt._event.source === iFrameWindow && evt.data === "ready") {
+            if (evt._event.source === iFrameWindow && evt.data === "componentReady") {
                 window.removeEventListener("message", this);
                 iFrameWindow.defaultEventManager.delegate = this;
 

@@ -47,7 +47,7 @@ if (packageUrl && moduleId) {
                 // Palette expects to be told when the stage is ready with a drawn component
                 // that can be interacted with
                 if (window.parent) {
-                    window.parent.postMessage("ready", "*");
+                    window.parent.postMessage("componentReady", "*");
                 }
             });
         })
