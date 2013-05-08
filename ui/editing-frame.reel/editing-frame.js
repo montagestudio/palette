@@ -184,8 +184,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var self = this;
 
-            template = template.clone();
-            var instances = template.getInstances();
+            var instances;
 
             var frameWindow = this.iframe.contentWindow;
             var frameDocument = this.iframe.contentDocument;
@@ -197,7 +196,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var promise = this._getRequireForPackage(template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
+
+                template = packageRequire.getPackage({name: "montage"})("core/template").Template.clone.call(template);
                 template._require = packageRequire;
+                instances = template.getInstances();
 
                 if (instances && Object.keys(instances).length) {
                     for (var label in instances) {
@@ -260,6 +262,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             .then(function (owner) {
 
                 if (owner) {
+                    owner._isTemplateLoaded = true;
+                    owner.hasTemplate = false;
                     instances = instances || {};
                     instances.owner = owner;
                     template.setInstances(instances);
