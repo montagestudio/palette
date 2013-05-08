@@ -48,6 +48,13 @@ var RUN_MODE = 1;
 // TODO: Make a WeakMap?
 var PACKAGE_WINDOWS = [];
 
+var STAGE_CSS;
+require.read(require.mappings.stage.location + "stage.css")
+.then(function (contents) {
+    STAGE_CSS = contents.replace("bg-stage.svg", require.mappings.stage.location + "bg-stage.svg");
+}).done();
+
+
 /**
     @class module:"ui/editing-frame.reel".EditingFrame
     @extends module:ui/component.Component
@@ -223,6 +230,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     // self.iframe.src = "";
                     return self._bootMontage(frameWindow, packageRequire.location)
                     .spread(function (_, frameMontageRequire) {
+                        var style = frameDocument.createElement("style");
+                        style.textContent = STAGE_CSS;
+                        frameDocument.head.appendChild(style);
+
                         frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
 
                         packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
