@@ -226,16 +226,26 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
 
                         packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
+
+                        var rootComponent = packageMontageRequire("ui/component").__root__;
+                        rootComponent.element = frameDocument;
+
+                        // replace draw
+                        var originalDrawIfNeeded = rootComponent.drawIfNeeded;
+                        rootComponent.drawIfNeeded = function() {
+                            originalDrawIfNeeded.call(rootComponent);
+                            self.dispatchEventNamed("update", true, false);
+                        };
                     });
                 }
             })
             .then(function () {
                 var rootComponent = packageMontageRequire("ui/component").__root__;
-                rootComponent.element = frameDocument;
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (owner) {
-                self._replaceDraw(frameWindow);
+                // self._replaceDraw(frameWindow);
+                // var rootComponent = packageMontageRequire("ui/component").__root__;
 
                 self._deferredEditingInformation.resolve({owner: owner, template: template, frame: self});
             })
@@ -451,7 +461,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     originalDrawIfNeeded.call(root);
                     self.dispatchEventNamed("update", true, false);
                 };
-            });
+            }).done();
         }
     },
 
