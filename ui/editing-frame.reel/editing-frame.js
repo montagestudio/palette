@@ -188,18 +188,25 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var frameWindow = this.iframe.contentWindow;
             var frameDocument = this.iframe.contentDocument;
 
-            var packageRequire;
+            var packageRequire, packageMontageRequire;
 
             this._deferredEditingInformation = Promise.defer();
 
             this._getRequireForPackage(template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
+                packageMontageRequire = packageRequire.getPackage({name: "montage"});
 
-                template = packageRequire.getPackage({name: "montage"})("core/template").Template.clone.call(template);
+                template = packageMontageRequire("core/template").Template.clone.call(template);
                 template._require = packageRequire;
+
+                self._loadedTemplate = template;
+                self._ownerModule = ownerModule;
+                self._ownerName = ownerName;
+
                 instances = template.getInstances();
 
+                // check that all instances are from the packageRequire
                 if (instances && Object.keys(instances).length) {
                     for (var label in instances) {
                         if (!self._isObjectFromPackageRequire(instances[label], packageRequire)) {
@@ -214,20 +221,22 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 // Montage needs get installed
                 if (self.iframe.src !== "" || !frameWindow.montageRequire) {
                     // self.iframe.src = "";
-                    return self._bootMontage(frameWindow, packageRequire.location);
+                    return self._bootMontage(frameWindow, packageRequire.location)
+                    .spread(function (_, frameMontageRequire) {
+                        frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
+
+                        packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
+                    });
                 }
             })
-            .spread(function (_, frameMontageRequire) {
-                frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
-
-                var packageMontageRequire = packageRequire.getPackage({name: "montage"});
-                packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
-
+            .then(function () {
                 var rootComponent = packageMontageRequire("ui/component").__root__;
                 rootComponent.element = frameDocument;
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (owner) {
+                self._replaceDraw(frameWindow);
+
                 self._deferredEditingInformation.resolve({owner: owner, template: template, frame: self});
             })
             .fail(this._deferredEditingInformation.reject);
@@ -315,9 +324,29 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
-    reboot: {
-        value: function () {
+    // might not need this function, currently just used to clear the frame
+    // but this should probably be part of loadTemplate
+    refresh: {
+        value: function (template) {
+            if (!this._loadedTemplate) {
+                throw new Error("Editing frame must have a loaded template before refreshing");
+            }
 
+            var packageRequire = this._loadedTemplate._require;
+            var packageMontageRequire = packageRequire.getPackage({name: "montage"});
+
+            var rootComponent = packageMontageRequire("ui/component").__root__;
+
+            // Really don't care about any errors that occur here as we're
+            // blowing away the contents anyways
+            try {
+                rootComponent.childComponents.forEach(function (child) {
+                    rootComponent.removeChildComponent(child);
+                });
+            } catch (e) {}
+            this.iframe.contentDocument.body.innerHTML = "";
+
+            return this.loadTemplate(template, this._ownerModule, this._ownerName);
         }
     },
 

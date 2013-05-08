@@ -37,6 +37,12 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
         }
     },
 
+    refresh: {
+        value: function (template) {
+            return this.editingFrame.refresh(template);
+        }
+    },
+
     _editingFrame: {
         value: null
     },
