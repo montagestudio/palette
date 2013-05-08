@@ -111,7 +111,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     _getRequireForPackage: {
         value: function (_require) {
             if (!(_require.location in PACKAGE_WINDOWS)) {
-
                 var iframe = document.createElement("iframe");
                 // An iframe must be in a document for its `window` to be
                 // created an valid, so insert it but hide it.
@@ -193,7 +192,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             this._deferredEditingInformation = Promise.defer();
 
-            var promise = this._getRequireForPackage(template._require)
+            this._getRequireForPackage(template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
 
@@ -223,57 +222,82 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 var packageMontageRequire = packageRequire.getPackage({name: "montage"});
                 packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
-                return packageMontageRequire.async("ui/component");
-            })
-            .then(function (component) {
-                debugger;
-                component.__root__.element = frameDocument;
-                function firstDrawHandler() {
-                    // Strictly speaking this handler is only being called
-                    // because the event is bubbling up from its children and
-                    // so the stage may not be fully drawn. However the drawing
-                    // completes syncronously but the resolution of the
-                    // promise is async, so by the time the promise handler
-                    // is called, the drawing will be complete.
-                    component.__root__.removeEventListener("firstDraw", firstDrawHandler, false);
-                    // this promise is resolved with the data needed.
-                    self._deferredEditingInformation.resolve(promise);
-                }
-                component.__root__.addEventListener("firstDraw", firstDrawHandler, false);
 
-                if (!instances || !instances.owner) {
-                    // if the template has an owner then we need to
-                    // instantiate it
-                    return template.getObjectsString(template.document)
-                    .then(function (objectsString) {
-                        var objects = JSON.parse(objectsString);
-                        if (objects.owner) {
-                            ownerName = ownerName || MontageReviver.parseObjectLocationId(ownerModule).objectName;
-
-                            return packageRequire.async(ownerModule)
-                            .get(ownerName)
-                            .then(function (ownerPrototype) {
-                                return ownerPrototype.create();
-                            });
-                        }
-                    });
-                }
+                var rootComponent = packageMontageRequire("ui/component").__root__;
+                rootComponent.element = frameDocument;
+                return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (owner) {
+                self._deferredEditingInformation.resolve({owner: owner, template: template, frame: self});
+            })
+            .fail(this._deferredEditingInformation.reject);
 
-                if (owner) {
-                    owner._isTemplateLoaded = true;
-                    owner.hasTemplate = false;
-                    instances = instances || {};
-                    instances.owner = owner;
-                    template.setInstances(instances);
-                }
+            return this._deferredEditingInformation.promise;
+        }
+    },
 
+    _setupTemplate: {
+        value: function (template, packageRequire, rootComponent, ownerModule, ownerName) {
+            if (!this.iframe.contentWindow.montageRequire) {
+                throw new Error("Montage must have been initialized in the frame before setting up the template");
+            }
+
+            // set once the template has been initialized
+            var owner;
+            var drawn = Promise.defer();
+
+            var frameDocument = this.iframe.contentDocument;
+            var instances = template.getInstances();
+
+            function firstDrawHandler() {
+                // Strictly speaking this handler is only being called
+                // because the event is bubbling up from its children and
+                // so the stage may not be fully drawn. However the drawing
+                // completes syncronously but the resolution of the
+                // promise is async, so by the time the promise handler
+                // is called, the drawing will be complete.
+                rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
+                drawn.resolve(owner);
+            }
+            rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
+
+            var createOwner;
+            if (!instances || !instances.owner) {
+                // if the template has an owner then we need to
+                // instantiate it
+                createOwner = template.getObjectsString(template.document)
+                .then(function (objectsString) {
+                    var objects = JSON.parse(objectsString);
+                    if (objects.owner) {
+                        ownerName = ownerName || MontageReviver.parseObjectLocationId(ownerModule).objectName;
+
+                        return packageRequire.async(ownerModule)
+                        .get(ownerName)
+                        .then(function (ownerPrototype) {
+                            return ownerPrototype.create();
+                        }).then(function (owner) {
+                            // prevent owner from loading its own template
+                            owner._isTemplateLoaded = true;
+                            owner.hasTemplate = false;
+
+                            instances = instances || {};
+                            instances.owner = owner;
+                            template.setInstances(instances);
+                        });
+                    }
+                });
+            } else {
+                createOwner = Promise.resolve();
+            }
+
+            createOwner.then(function () {
                 return template.instantiate(frameDocument);
             })
             .then(function (part) {
-                debugger;
                 frameDocument.body.appendChild(part.fragment);
+
+                // TODO does this exist when the template is an inner template?
+                owner = part.objects.owner;
 
                 return Promise.all(Object.keys(part.objects).map(function (label) {
                     var object = part.objects[label];
@@ -283,15 +307,11 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         }
                         return object.loadComponentTree();
                     }
-                }))
-                .then(function () {
-                    debugger;
-                    return {owner: part.objects.owner, template: template, frame: self};
-                });
+                }));
             })
-            .fail(this._deferredEditingInformation.reject);
+            .fail(drawn.reject);
 
-            return this._deferredEditingInformation.promise;
+            return drawn.promise;
         }
     },
 
