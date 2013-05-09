@@ -28,10 +28,18 @@ exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/se
         value: function(object, top, left, height, width) {
             this.object = object;
 
-            if (top) this.top = top;
-            if (left) this.left = left;
-            if (height) this.height = top;
-            if (width) this.width = width;
+            if (top) {
+                this.top = top;
+            }
+            if (left) {
+                this.left = left;
+            }
+            if (height) {
+                this.height = top;
+            }
+            if (width) {
+                this.width = width;
+            }
 
             return this;
         }

@@ -114,7 +114,9 @@ exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.re
                 window.addEventListener("webkitTransitionEnd", this, true);
                 // In fact, any draw can cause the overlays to be shifted!
                 var self = this;
+                //jshint -W106
                 var root = require("montage/ui/component").__root__;
+                //jshint +W106
                 var originalDrawIfNeeded = root.drawIfNeeded;
                 root.drawIfNeeded = function() {
                     self.dispatchEventNamed("update");

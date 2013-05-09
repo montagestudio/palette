@@ -27,11 +27,10 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                     nextDraw = testPage.nextDraw();
                 });
 
-                it("should not load without a fileUrl specified", function () {
-                        expect(function () {
-                            editingFrame.load();
-                        }).toThrow();
-
+                it("should not load without a fileUrl specified", function() {
+                    expect(function() {
+                        editingFrame.load();
+                    }).toThrow();
                 });
 
                 it("should load the specified fileUrl", function () {

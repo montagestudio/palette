@@ -15,11 +15,17 @@ function sortedStringComparator(strings) {
             bIndex = strings.indexOf(b);
 
         // Not found, do a regular compare
-        if (aIndex === -1 && bIndex == -1) return a.localeCompare(b);
+        if (aIndex === -1 && bIndex === -1) {
+            return a.localeCompare(b);
+        }
         // a not found, a goes after
-        if (aIndex === -1) return 1;
+        if (aIndex === -1) {
+            return 1;
+        }
         // b not found, a goes before
-        if (bIndex === -1) return -1;
+        if (bIndex === -1) {
+            return -1;
+        }
         // order as in the strings array
         return aIndex - bIndex;
     };
@@ -64,4 +70,4 @@ var unitSorter = exports.unitSorter = objectPropertySorter(unitComparator, funct
 });
 
 var labelComparator = exports.labelComparator = sortedStringComparator(["owner", "application"]);
-var labelSorter = exports.labelSorter = objectPropertySorter(labelComparator, unitSorter);
+exports.labelSorter = objectPropertySorter(labelComparator, unitSorter);

@@ -37,8 +37,7 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
             return this._object;
         },
         set: function (value) {
-            //            console.log("Blueprint inspector set object ", value);
-            if (this._object != value) {
+            if (this._object !== value) {
                 this._object = value;
             }
         }
@@ -56,7 +55,7 @@ exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./bluepri
             return this._objectBlueprint;
         },
         set: function (value) {
-            if (this._objectBlueprint != value) {
+            if (this._objectBlueprint !== value) {
                 this._objectBlueprint = value;
                 if (value != null) {
                     // we could create a binding to the propertyBlueprintGroups,

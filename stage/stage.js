@@ -1,3 +1,5 @@
+/*global prompt */
+
 //TODO not create so many globals
 var REEL_LOCATION_KEY = "reel-location",
     PACKAGE_LOCATION_KEY = "package-location",

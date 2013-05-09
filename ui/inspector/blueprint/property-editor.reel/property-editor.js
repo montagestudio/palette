@@ -110,10 +110,10 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
 
     gateDidBecomeTrue: {
         value: function (gate) {
-            if (gate == this._updateGate) {
+            if (gate === this._updateGate) {
                 if (this._object && this._propertyBlueprint) {
                     var value = this._object.getObjectProperty(this._propertyBlueprint.name);
-                    if (this._objectValue != value) {
+                    if (this._objectValue !== value) {
                         this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                         this._objectValue = value;
                         this.dispatchOwnPropertyChange("objectValue", value);
@@ -127,7 +127,7 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
 
     gateDidBecomeFalse: {
         value: function (gate) {
-            if (gate == this._updateGate) {
+            if (gate === this._updateGate) {
                 this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                 this._objectValue = null;
                 this.dispatchOwnPropertyChange("objectValue", null);

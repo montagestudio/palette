@@ -7,7 +7,7 @@ if (packageUrl && moduleId) {
     var _findObjectNameRegExp = /([^\/]+?)(\.reel)?$/;
     var _toCamelCaseRegExp = /(?:^|-)([^-])/g;
     var _replaceToCamelCase = function (_, g1) {
-        return g1.toUpperCase()
+        return g1.toUpperCase();
     };
 
     _findObjectNameRegExp.test(moduleId);
@@ -28,7 +28,10 @@ if (packageUrl && moduleId) {
             return require.async("montage/ui/component");
         })
         .then(function (exports) {
+            //jshint -W106
             var rootComponent = exports.__root__;
+            //jshint +W106
+
             //TODO how do we know what kind of element to use?
             ownerComponent.element = document.createElement("div");
             ownerComponent.setElementWithParentComponent(ownerComponent.element, rootComponent);

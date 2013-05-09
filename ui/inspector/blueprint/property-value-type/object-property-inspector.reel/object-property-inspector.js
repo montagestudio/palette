@@ -27,7 +27,7 @@ exports.ObjectPropertyInspector = Montage.create(ValueTypeInspector, /** @lends 
                     var target = this.editingDocument.editingProxyMap[label];
                     console.log("setting target ", target);
                     if (target) {
-                        this.objectValue = target
+                        this.objectValue = target;
                     }
                 } else if (value.length === 0) {
                     this.objectValue = null;

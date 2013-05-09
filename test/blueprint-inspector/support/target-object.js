@@ -1,6 +1,6 @@
-var Montage = require("montage").Montage
+var Montage = require("montage").Montage;
 
-var TargetObject = exports.TargetObject = Montage.create(Montage, {
+exports.TargetObject = Montage.create(Montage, {
 
     booleanProperty: {
         value: false
@@ -19,7 +19,7 @@ var TargetObject = exports.TargetObject = Montage.create(Montage, {
     },
 
     objectProperty: {
-        value: new Object()
+        value: {}
     },
 
     stringProperty: {

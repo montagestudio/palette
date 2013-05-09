@@ -23,16 +23,16 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
                             this.objectValue = new Array(this.objectValue);
                         } else {
                             var temp = this.objectValue;
-                            this.objectValue = new Array();
+                            this.objectValue = [];
                             this.objectValue.add(temp);
                         }
                     }
                 }
                 return this.objectValue;
             }
-            return new Array();
+            return [];
         },
-        set: function () {
+        set: function (value) {
             this.objectValue = value;
         }
     },
@@ -40,7 +40,7 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
     handleAddButtonAction: {
         value: function (evt) {
             if (!this.objectValue) {
-                this.objectValue = new Array();
+                this.objectValue = [];
             }
             this.collectionValue.add("");
         }

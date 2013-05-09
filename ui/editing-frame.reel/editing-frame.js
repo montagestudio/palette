@@ -238,7 +238,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                         packageMontageRequire("core/event/event-manager").defaultEventManager.registerWindow(frameWindow);
 
+                        //jshint -W106
                         var rootComponent = packageMontageRequire("ui/component").__root__;
+                        //jshint +W106
                         rootComponent.element = frameDocument;
 
                         // replace draw
@@ -251,7 +253,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 }
             })
             .then(function () {
+                //jshint -W106
                 var rootComponent = packageMontageRequire("ui/component").__root__;
+                //jshint +W106
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (owner) {
@@ -356,7 +360,9 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var packageRequire = this._loadedTemplate._require;
             var packageMontageRequire = packageRequire.getPackage({name: "montage"});
 
+            //jshint -W106
             var rootComponent = packageMontageRequire("ui/component").__root__;
+            //jshint +W106
 
             // Really don't care about any errors that occur here as we're
             // blowing away the contents anyways

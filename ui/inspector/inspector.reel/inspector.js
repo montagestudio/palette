@@ -40,7 +40,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
             this.needsDraw = true;
 
-            if (this._object && this._object.moduleId && (this._object.moduleId != "") && this._object.exportName && (this._object.exportName != "")) {
+            if (this._object && this._object.moduleId && (this._object.moduleId !== "") && this._object.exportName && (this._object.exportName !== "")) {
 
                 this._blueprintDeferred = Promise.defer();
 

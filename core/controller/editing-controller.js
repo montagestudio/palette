@@ -1,6 +1,5 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    Exporter = require("core/exporter").Exporter,
     Deserializer = require("montage/core/serialization").Deserializer,
     Component = require("montage/ui/component").Component; //TODO this is only for debugging
 
@@ -11,21 +10,6 @@ exports.EditingController = Montage.create(Montage, {
 
     frame: {
         value: null
-    },
-
-    template: {
-        get: function () {
-            var iframeWindow = this.frame.window,
-                exporter,
-                template;
-
-            if (iframeWindow) {
-                exporter = Exporter.create();
-                template = exporter.export(iframeWindow, this.owner, this.ownerRequire);
-            }
-
-            return template;
-        }
     },
 
     //TODO cache this

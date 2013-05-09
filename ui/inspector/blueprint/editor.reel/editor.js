@@ -48,7 +48,7 @@ exports.Editor = Montage.create(Component, /** @lends module:"./editor.reel".Edi
                         self.objectBlueprint = blueprint;
                         self.dispatchOwnPropertyChange("objectBlueprint", blueprint);
 
-                    }).done;
+                    }).done();
                 } else {
                     console.log("We have a proxy object without any object !!!!", this._object);
                     this.objectBlueprint = null;

@@ -38,9 +38,9 @@ exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/s
             return this._selectedObjects;
         },
         set: function(value) {
-            if (value != this._selectedObjects) {
+            if (value !== this._selectedObjects) {
                 if (this._selectedObjects) {
-                  this._selectedObjects.removeRangeChangeListener(this, "selectedObjects");
+                    this._selectedObjects.removeRangeChangeListener(this, "selectedObjects");
                 }
                 this._selectedObjects = value;
                 this._selectedObjects.addRangeChangeListener(this, "selectedObjects");

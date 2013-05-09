@@ -8,13 +8,15 @@
     },
     "devDependencies": {
         "montage-testing": "0.1.1",
-        "testacular": "0.5.7"
+        "testacular": "0.5.7",
+        "jshint": "~2.0.1"
     },
     "mappings": {
         "stage": "stage"
     },
     "scripts": {
         "install": "cd stage && npm install",
-        "update": "cd stage && npm update"
+        "update": "cd stage && npm update",
+        "lint": "./node_modules/.bin/jshint --verbose ."
     }
 }
