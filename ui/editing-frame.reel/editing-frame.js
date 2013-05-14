@@ -328,6 +328,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return template.instantiate(frameDocument);
             })
             .then(function (part) {
+
                 frameDocument.body.appendChild(part.fragment);
 
                 // TODO does this exist when the template is an inner template?
@@ -342,6 +343,21 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         return object.loadComponentTree();
                     }
                 }));
+            })
+            .then(function () {
+                return packageRequire.async("montage/core/document-resources");
+            })
+            .then(function (exports) {
+                var documentResources = exports.DocumentResources.getInstanceForDocument(frameDocument);
+
+                var resources = template.getResources(frameDocument);
+                // Inserts scripts
+                resources.loadScripts().done();
+                // Inserts styles
+                resources.createStylesForDocument(frameDocument).forEach(function (style) {
+                    documentResources.addStyle(style);
+                });
+
             })
             .fail(drawn.reject);
 
