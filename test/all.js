@@ -4,5 +4,6 @@ require("montage-testing").run(require, [
     "test/core/document-spec",
     "test/core/document-controller-spec",
     "test/core/editing-proxy-spec",
+    "test/core/template-formatter-spec",
     "test/ui/editing-frame-spec"
 ]);
