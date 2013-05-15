@@ -167,7 +167,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             // to do it here on load
             frameDocument.head.appendChild(script);
 
-            return booted.promise;
+            return booted.promise.timeout(10000, "Montage from " + applicationLocation + " timed out while booting");
         }
     },
 
