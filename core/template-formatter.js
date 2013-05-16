@@ -112,10 +112,11 @@ exports.TemplateFormatter = Montage.create(Montage, {
             depth = depth || 0;
 
             if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.tagName === "SCRIPT" &&
-                    node.type === SERIALIZATION_SCRIPT_TYPE) {
-                    // skip serialization
-                } else {
+                // skip serialization
+                if (!(
+                    node.tagName === "SCRIPT" &&
+                    node.type === SERIALIZATION_SCRIPT_TYPE
+                )) {
                     return this.getElementHtml(node, depth);
                 }
             } else if (node.nodeType === Node.TEXT_NODE) {
