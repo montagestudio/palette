@@ -205,11 +205,16 @@ exports.TemplateFormatter = Montage.create(Montage, {
 
     getAttributesHtml: {
         value: function(attributes) {
-            var attributeList = [];
+            var attributeList = [],
+                nodeValue;
 
             for (var i = 0, attribute; attribute = attributes[i]; i++) {
-                attributeList.push(attribute.nodeName + '="' +
-                    attribute.nodeValue + '"');
+                if (attribute.nodeValue) {
+                    nodeValue = attribute.nodeValue.replace("\"", "&quot;");
+                } else {
+                    nodeValue = attribute.nodeValue;
+                }
+                attributeList.push(attribute.nodeName + '="' + nodeValue + '"');
             }
 
             return attributeList.join(" ");

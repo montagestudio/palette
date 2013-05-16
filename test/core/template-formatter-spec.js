@@ -76,6 +76,17 @@ describe("core/template-formatter-spec", function () {
             expect(html).toBe('class="header" tabindex="-1"');
         });
 
+        it("should escape quotes", function() {
+            var node = document.createElement("input"),
+                html;
+
+            node.type = "checkbox";
+            node.setAttribute("checked", "a\"b");
+
+            html = formatter.getAttributesHtml(node.attributes);
+            expect(html).toBe('type="checkbox" checked="a&quot;b"');
+        });
+
         it("should format a valueless attributes", function() {
             var node = document.createElement("input"),
                 html;
