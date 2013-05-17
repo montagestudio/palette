@@ -80,6 +80,41 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
 
             this._stageUrl = null;
+
+            if (this._loadedTemplate) {
+                var packageRequire = this._loadedTemplate._require;
+                var packageMontageRequire = packageRequire.getPackage({name: "montage"});
+
+                //jshint -W106
+                var rootComponent = packageMontageRequire("ui/component").__root__;
+                //jshint +W106
+
+                // Really don't care about any errors that occur here as we're
+                // blowing away the contents anyways
+                try {
+                    rootComponent.childComponents.forEach(function (child) {
+                        rootComponent.removeChildComponent(child);
+                    });
+                } catch (e) {}
+
+                var frameDocument = this.iframe.contentDocument;
+
+                frameDocument.head.innerHTML = "";
+                frameDocument.body.innerHTML = "";
+
+                this._addStageStyle(frameDocument);
+
+                // Clear any loaded resources in document resources
+                packageMontageRequire("core/document-resources")
+                .DocumentResources
+                .getInstanceForDocument(frameDocument)
+                .clear();
+
+                this._loadedTemplate = null;
+                this._ownerModule = null;
+                this._ownerName = null;
+            }
+
             this.needsDraw = true;
         }
     },
@@ -180,6 +215,15 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
+    _addStageStyle: {
+        value: function (_document) {
+            // Attach our stage styling
+            var style = _document.createElement("style");
+            style.textContent = STAGE_CSS;
+            _document.head.appendChild(style);
+        }
+    },
+
     loadTemplate: {
         value: function (template, ownerModule, ownerName) {
             // If already loading reject current loading request and load the new one
@@ -187,6 +231,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this._deferredEditingInformation.reject();
             }
             this._deferredEditingInformation = Promise.defer();
+
+            this.reset();
 
             var self = this;
 
@@ -230,9 +276,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     // self.iframe.src = "";
                     return self._bootMontage(frameWindow, packageRequire.location)
                     .spread(function (_, frameMontageRequire) {
-                        var style = frameDocument.createElement("style");
-                        style.textContent = STAGE_CSS;
-                        frameDocument.head.appendChild(style);
+                        self._addStageStyle(frameDocument);
 
                         frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
 
@@ -372,22 +416,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             if (!this._loadedTemplate) {
                 throw new Error("Editing frame must have a loaded template before refreshing");
             }
-
-            var packageRequire = this._loadedTemplate._require;
-            var packageMontageRequire = packageRequire.getPackage({name: "montage"});
-
-            //jshint -W106
-            var rootComponent = packageMontageRequire("ui/component").__root__;
-            //jshint +W106
-
-            // Really don't care about any errors that occur here as we're
-            // blowing away the contents anyways
-            try {
-                rootComponent.childComponents.forEach(function (child) {
-                    rootComponent.removeChildComponent(child);
-                });
-            } catch (e) {}
-            this.iframe.contentDocument.body.innerHTML = "";
 
             return this.loadTemplate(template, this._ownerModule, this._ownerName);
         }
