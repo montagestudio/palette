@@ -1,18 +1,19 @@
 /**
-    @module "./list-association-inspector.reel"
-    @requires montage
-    @requires "../../value-type-inspector.reel"
-*/
+ @module "./list-association-inspector.reel"
+ @requires montage
+ @requires "../../value-type-inspector.reel"
+ */
 var Montage = require("montage").Montage,
     ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
-    Description TODO
-    @class module:"./list-association-inspector.reel".ListAssociationInspector
+ Description TODO
+ @class module:"./list-association-inspector.reel".ListAssociationInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
-*/
+ */
 exports.ListAssociationInspector = Montage.create(ValueTypeInspector, /** @lends module:"./list-association-inspector.reel".ListAssociationInspector# */ {
 
+    //jshint -W009
     collectionValue: {
         get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "list")) {
@@ -31,7 +32,7 @@ exports.ListAssociationInspector = Montage.create(ValueTypeInspector, /** @lends
             }
             return new Array();
         },
-        set: function () {
+        set: function (value) {
             this.objectValue = value;
         }
     },
@@ -44,6 +45,7 @@ exports.ListAssociationInspector = Montage.create(ValueTypeInspector, /** @lends
             this.collectionValue.add("");
         }
     },
+    //jshint +W009
 
     handleRemoveButtonAction: {
         value: function (evt) {

@@ -31,7 +31,7 @@ exports.SetAssociationInspector = Montage.create(ValueTypeInspector, /** @lends 
             }
             return new Set();
         },
-        set: function () {
+        set: function (value) {
             this.objectValue = value;
         }
     },

@@ -31,7 +31,7 @@ exports.MapAssociationInspector = Montage.create(ValueTypeInspector, /** @lends 
             }
             return new Map();
         },
-        set: function() {
+        set: function(value) {
             this.objectValue = value;
         }
     },

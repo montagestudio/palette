@@ -10,7 +10,7 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
 
     proxyType: {
         get: function() {
-            return "ProxyObject"
+            return "ProxyObject";
         }
     },
 

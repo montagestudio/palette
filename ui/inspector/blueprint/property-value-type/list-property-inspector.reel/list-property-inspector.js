@@ -14,6 +14,7 @@ var Montage = require("montage").Montage,
  */
 exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./list-property-inspector.reel".ListPropertyInspector# */ {
 
+    //jshint -W009
     collectionValue: {
         get: function () {
             if (this.propertyBlueprint && this.propertyBlueprint.isToMany && (this.propertyBlueprint.collectionValueType === "list")) {
@@ -23,14 +24,14 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
                             this.objectValue = new Array(this.objectValue);
                         } else {
                             var temp = this.objectValue;
-                            this.objectValue = [];
+                            this.objectValue = new Array();
                             this.objectValue.add(temp);
                         }
                     }
                 }
                 return this.objectValue;
             }
-            return [];
+            return new Array();
         },
         set: function (value) {
             this.objectValue = value;
@@ -40,11 +41,12 @@ exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mo
     handleAddButtonAction: {
         value: function (evt) {
             if (!this.objectValue) {
-                this.objectValue = [];
+                this.objectValue = new Array();
             }
             this.collectionValue.add("");
         }
     },
+    //jshint +W009
 
     handleRemoveButtonAction: {
         value: function (evt) {

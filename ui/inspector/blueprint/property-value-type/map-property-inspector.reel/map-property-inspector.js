@@ -32,7 +32,7 @@ exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends mod
             }
             return new Map();
         },
-        set: function(value) {
+        set: function (value) {
             this.objectValue = value;
         }
     },
