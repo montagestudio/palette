@@ -162,7 +162,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var montageLocation = applicationLocation + "node_modules/montage/montage.js";
             var script = document.createElement("script");
             script.src = montageLocation;
-            script.dataset.remoteTrigger = "http://client";
+            script.dataset.remoteTrigger = window.location.origin;
             // Bootstrapper removes the script tag when done, so no need
             // to do it here on load
             frameDocument.head.appendChild(script);
