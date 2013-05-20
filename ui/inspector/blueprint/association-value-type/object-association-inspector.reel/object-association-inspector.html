@@ -100,7 +100,14 @@
 </head>
 <body>
     <div data-montage-id="object-association-inspector" class="ObjectAssociationInspector">
-        OBJECT ASSOCIATION
+        <div data-montage-id="propertyNameSubstitution" class="Property-label">
+            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+            <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
+        </div>
+        <div data-montage-id="readWritePropertySubstitution" class="Property-field">
+            <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
+            <input data-arg="readWrite" data-montage-id="propertyValue"/>
+        </div>
     </div>
 </body>
 </html>
