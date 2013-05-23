@@ -239,7 +239,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var instances;
 
             var frameWindow = this.iframe.contentWindow;
-            var frameDocument = this.iframe.contentDocument;
+            var frame = this.iframe;
 
             var packageRequire, packageMontageRequire;
 
@@ -276,7 +276,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     // self.iframe.src = "";
                     return self._bootMontage(frameWindow, packageRequire.location)
                     .spread(function (_, frameMontageRequire) {
-                        self._addStageStyle(frameDocument);
+                        self._addStageStyle(frame.contentDocument);
 
                         frameMontageRequire("core/event/event-manager").defaultEventManager.unregisterWindow(frameWindow);
 
@@ -285,7 +285,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         //jshint -W106
                         var rootComponent = packageMontageRequire("ui/component").__root__;
                         //jshint +W106
-                        rootComponent.element = frameDocument;
+                        rootComponent.element = frame.contentDocument;
 
                         // replace draw
                         var originalDrawIfNeeded = rootComponent.drawIfNeeded;
@@ -405,7 +405,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             })
             .fail(drawn.reject);
 
-            return drawn.promise;
+            return drawn.promise.timeout(10000, "Timeout waiting for template's first draw");
         }
     },
 

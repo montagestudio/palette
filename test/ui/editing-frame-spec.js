@@ -1,5 +1,7 @@
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
+var Template = require("montage/core/template").Template;
+
 var WAITSFOR_TIMEOUT = 2000;
 
 TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
@@ -57,6 +59,87 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
 
             });
 
+        });
+
+        describe("loading a template", function () {
+            var template;
+
+            beforeEach(function () {
+                editingFrame.reset();
+                template = Template.create();
+            });
+
+            it("can load template without an owner", function () {
+                var html = '<html><head><script type="text/montage-serialization">{'+
+                    '    "text": {'+
+                    '        "prototype": "montage/ui/text.reel",'+
+                    '        "properties": {'+
+                    '            "element": {"#": "text"},'+
+                    '            "value": "pass"'+
+                    '        }'+
+                    '    }'+
+                    '}</script>'+
+                    '</head>' +
+                    '<body>' +
+                    '    <span data-montage-id="text"></span>' +
+                    '</body>' +
+                    '</html>';
+
+                template.initWithHtml(html, require);
+
+                return editingFrame.loadTemplate(template)
+                .then(function (info) {
+                    expect(info.template).toBeDefined();
+                    expect(info.frame).toBeDefined();
+
+                    expect(info.template._require).not.toBe(require);
+
+                    expect(info.frame.iframe.contentDocument.querySelector("[data-montage-id=text]").textContent).toBe("pass");
+                });
+            });
+
+            it("can load template with an owner", function () {
+                var html = '<html><head>'+
+                '    <script type="text/montage-serialization">'+
+                '    {'+
+                '        "owner": {'+
+                '            "properties": {'+
+                '                "element": {"#": "test"},'+
+                '                "value": "pass"'+
+                '            }'+
+                '        },'+
+                '        "text": {'+
+                '            "prototype": "montage/ui/text.reel",'+
+                '            "properties": {'+
+                '                "element": {"#": "text"},'+
+                '                "value": "pass"'+
+                '            }'+
+                '        }'+
+                '    }'+
+                '    </script>'+
+                '</head>'+
+                '<body>'+
+                '    <div data-montage-id="test">'+
+                '        <span data-montage-id="text"></span>'+
+                '    </div>'+
+                '</body>'+
+                '</html>';
+
+                template.initWithHtml(html, require);
+
+                return editingFrame.loadTemplate(template, "test/ui/editing-frame/test.reel", "Abc")
+                .then(function (info) {
+                    expect(info.owner).toBeDefined();
+                    expect(info.template).toBeDefined();
+                    expect(info.frame).toBeDefined();
+
+                    expect(info.owner.value).toBe("pass");
+
+                    expect(info.template._require).not.toBe(require);
+
+                    expect(info.frame.iframe.contentDocument.querySelector("[data-montage-id=text]").textContent).toBe("pass");
+                });
+            });
         });
 
     });
