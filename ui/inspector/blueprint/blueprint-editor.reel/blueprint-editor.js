@@ -14,9 +14,9 @@ var Montage = require("montage").Montage,
  */
 exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./blueprint-editor.reel".BlueprintEditor# */ {
 
-    didCreate: {
+    constructor: {
         value: function () {
-            Component.didCreate.call(this);
+            this.super();
             this.propertyGroupsController = RangeController.create();
         }
     },

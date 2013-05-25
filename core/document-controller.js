@@ -6,8 +6,9 @@ var Montage = require("montage/core/core").Montage,
 
 exports.DocumentController = Montage.create(Target, {
 
-    didCreate: {
+    constructor: {
         value: function () {
+            this.super();
             this.documents = [];
             this._urlDocumentMap = new Map();
         }

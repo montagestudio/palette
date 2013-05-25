@@ -6,12 +6,10 @@ var TargetObject = require("../support/target-object").TargetObject;
 
 var BlueprintInspectorTest = exports.BlueprintInspectorTest = Montage.create(Component, {
 
-    didCreate: {
+    constructor: {
         value: function () {
             var self = this;
-            if (Component.didCreate) {
-                Component.didCreate.call(self);
-            }
+            this.super();
             self.object = TargetObject.create();
             self.object.blueprint.then(function(blueprint) {
                 self.blueprint = blueprint;

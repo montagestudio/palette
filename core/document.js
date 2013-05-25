@@ -17,8 +17,9 @@ exports.Document = Montage.create(Target, {
         }
     },
 
-    didCreate: {
+    constructor: {
         value: function (url) {
+            this.super();
             this.defineBinding("isDirty", {
                 "<-": "undoManager.undoCount > 0"
             });
