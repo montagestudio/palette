@@ -155,6 +155,39 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
         }
     },
 
+    setObjectProperties: {
+        value: function (values) {
+            for (var name in values) {
+              if (values.hasOwnProperty(name)) {
+                  this.properties.set(name, values[name]);
+               }
+            }
+        }
+    },
+
+    getObjectProperties: {
+        value: function (values) {
+            var result = {};
+            if (values) {
+                // We have a values object only returmn the required values
+                for (var name in values) {
+                  if (values.hasOwnProperty(name)) {
+                      result[name] = this.properties.get(name);
+                   }
+                }
+            } else {
+                // return all properties
+                var keys = this.properties.keys();
+                    values = this.properties.values();
+                var index, key, value;
+                for (index = 0; (typeof (key = keys[index]) !== "undefined") &&  (typeof (value = values[index]) !== "undefined"); index++) {
+                    result[key] = value;
+                }
+            }
+            return result;
+        }
+    },
+
     // Schematic Information
     x: {
         value: null
