@@ -3,7 +3,13 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     UndoManager = require("montage/core/undo-manager").UndoManager;
 
-exports.Document = Montage.create(Target, {
+exports.Document = Target.specialize( {
+
+    constructor: {
+        value: function Document() {
+            this.super();
+        }
+    },
 
     /**
      * Return a promise for a document representing the specified URL

@@ -6,7 +6,14 @@ var Montage = require("montage").Montage,
     ProxyReviver = require("core/serialization/proxy-reviver").ProxyReviver,
     ProxyContext = require("core/serialization/proxy-context").ProxyContext;
 
-var EditingDocument = exports.EditingDocument = Montage.create(Document, {
+var EditingDocument = exports.EditingDocument = Document.specialize( {
+
+    constructor: {
+        value: function EditingDocument() {
+            this.super();
+        }
+    },
+
 
     load: {
         value: function (fileUrl, packageUrl) {
@@ -127,6 +134,9 @@ var EditingDocument = exports.EditingDocument = Montage.create(Document, {
             proxy.setObjectProperty(property, value);
 
             undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
+
+            this._buildSerializationObjects();
+
         }
     },
 
@@ -144,6 +154,9 @@ var EditingDocument = exports.EditingDocument = Montage.create(Document, {
             proxy.setObjectProperties(property, values);
 
             undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, values, undoneValues]));
+
+            this._buildSerializationObjects();
+
          }
     },
 

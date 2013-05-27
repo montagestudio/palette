@@ -6,7 +6,13 @@ var Montage = require("montage").Montage,
  @class module:palette/coreediting-proxy.EditingProxy
  This the abstract class far all editor proxies.
  */
-exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreediting-proxy.EditingProxy# */  {
+exports.EditingProxy = Montage.specialize( /** @lends module:palette/coreediting-proxy.EditingProxy# */  {
+
+    constructor: {
+        value: function EditingProxy() {
+            this.super();
+        }
+    },
 
     proxyType: {
         get: function() {
@@ -159,7 +165,7 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
         value: function (values) {
             for (var name in values) {
               if (values.hasOwnProperty(name)) {
-                  this.properties.set(name, values[name]);
+                  this.setObjectProperty(name, values[name]);
                }
             }
         }
@@ -172,7 +178,7 @@ exports.EditingProxy = Montage.create(Montage, /** @lends module:palette/coreedi
                 // We have a values object only returmn the required values
                 for (var name in values) {
                   if (values.hasOwnProperty(name)) {
-                      result[name] = this.properties.get(name);
+                      result[name] = this.getObjectProperty(name);
                    }
                 }
             } else {
