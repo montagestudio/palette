@@ -146,6 +146,17 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             var undoManager = this.undoManager,
                 undoneValues = (previousValues ? previousValues : proxy.getObjectProperties(values));
 
+            var identicalValues = true;
+            for (var name in values) {
+                if (values[name] != undoneValues[name]) {
+                    identicalValues = false;
+                    break;
+                }
+            }
+            if (identicalValues) {
+                return;
+            }
+
             //TODO maybe the proxy shouldn't be involved in doing this as we hand out the proxies
             // throughout the editingEnvironment, I don't want to expose accessible editing APIs
             // that do not go through the editingDocument...or do I?
