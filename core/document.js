@@ -8,6 +8,10 @@ exports.Document = Target.specialize( {
     constructor: {
         value: function Document() {
             this.super();
+
+            this.defineBinding("isDirty", {
+                "<-": "undoManager.undoCount > 0"
+            });
         }
     },
 
@@ -20,15 +24,6 @@ exports.Document = Target.specialize( {
     load: {
         value: function (url) {
             return Promise.resolve(this.create().init(url));
-        }
-    },
-
-    constructor: {
-        value: function (url) {
-            this.super();
-            this.defineBinding("isDirty", {
-                "<-": "undoManager.undoCount > 0"
-            });
         }
     },
 
