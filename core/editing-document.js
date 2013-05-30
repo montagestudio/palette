@@ -148,7 +148,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
             var identicalValues = true;
             for (var name in values) {
-                if (values[name] != undoneValues[name]) {
+                if (values[name] !== undoneValues[name]) {
                     identicalValues = false;
                     break;
                 }
@@ -168,7 +168,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
             this._buildSerializationObjects();
 
-         }
+        }
     },
 
     // Editing Model

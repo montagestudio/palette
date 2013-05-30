@@ -164,28 +164,33 @@ exports.EditingProxy = Montage.specialize( /** @lends module:palette/coreediting
     setObjectProperties: {
         value: function (values) {
             for (var name in values) {
-              if (values.hasOwnProperty(name)) {
-                  this.setObjectProperty(name, values[name]);
-               }
+                if (values.hasOwnProperty(name)) {
+                    this.setObjectProperty(name, values[name]);
+                }
             }
         }
     },
 
     getObjectProperties: {
         value: function (values) {
-            var result = {};
+            var result = {},
+                keys,
+                index,
+                key,
+                value;
+
             if (values) {
                 // We have a values object only returmn the required values
                 for (var name in values) {
-                  if (values.hasOwnProperty(name)) {
-                      result[name] = this.getObjectProperty(name);
-                   }
+                    if (values.hasOwnProperty(name)) {
+                        result[name] = this.getObjectProperty(name);
+                    }
                 }
             } else {
                 // return all properties
-                var keys = this.properties.keys();
-                    values = this.properties.values();
-                var index, key, value;
+                values = this.properties.values();
+                keys = this.properties.keys();
+
                 for (index = 0; (typeof (key = keys[index]) !== "undefined") &&  (typeof (value = values[index]) !== "undefined"); index++) {
                     result[key] = value;
                 }
