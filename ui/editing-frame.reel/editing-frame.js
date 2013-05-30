@@ -224,6 +224,18 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
+    /**
+     * Load the specified template and return enough information from the result to be able to
+     * interact with the loaded template.
+     *
+     * @param {Template} template A template to load
+     * @param {String} ownerModule The moduleId of the owner object
+     * @param {String} ownerName The exportName of the owner object
+     *
+     * @return {Promise} A promise for the object containing the keys template, the template that was loaded;
+     * documentPart, the document part from the template that was loaded;
+     * and frame, a reference to this editingFrame
+     */
     loadTemplate: {
         value: function (template, ownerModule, ownerName) {
             // If already loading reject current loading request and load the new one
@@ -302,11 +314,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 //jshint +W106
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
-            .then(function (owner) {
-                // self._replaceDraw(frameWindow);
-                // var rootComponent = packageMontageRequire("ui/component").__root__;
-
-                self._deferredEditingInformation.resolve({owner: owner, template: template, frame: self});
+            .then(function (part) {
+                self._deferredEditingInformation.resolve({documentPart: part, template: template, frame: self});
             })
             .fail(this._deferredEditingInformation.reject);
 
@@ -321,7 +330,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
 
             // set once the template has been initialized
-            var owner;
+            var documentPart;
             var drawn = Promise.defer();
 
             var frameDocument = this.iframe.contentDocument;
@@ -335,7 +344,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 // promise is async, so by the time the promise handler
                 // is called, the drawing will be complete.
                 rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
-                drawn.resolve(owner);
+                drawn.resolve(documentPart);
             }
             rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
 
@@ -376,7 +385,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 frameDocument.body.appendChild(part.fragment);
 
                 // TODO does this exist when the template is an inner template?
-                owner = part.objects.owner;
+                documentPart = part;
 
                 return Promise.all(Object.keys(part.objects).map(function (label) {
                     var object = part.objects[label];
