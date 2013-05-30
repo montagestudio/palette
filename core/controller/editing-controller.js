@@ -1,32 +1,56 @@
 var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
-    Deserializer = require("montage/core/serialization").Deserializer,
-    Component = require("montage/ui/component").Component; //TODO this is only for debugging
+    Deserializer = require("montage/core/serialization").Deserializer;
 
-// The actual object responsible for add, removing, and altering components that belong to the owner it controls.
-// This controller will inform others of the intent and result of each operation it performs allowing consumers
-// to react to changes for whatever reason.
+/**
+ * The EditingController manages altering the template backing a live component.
+ * This facilify is used to update a live visual representation of a component;
+ * the edits performed are not intended to be authoritative from an editing
+ * standpoint. i.e. The live template should be be considered the model of what
+ * is being edited.
+ * @type {EditingController}
+ * TODO rename this as TemplateController?
+ */
 exports.EditingController = Montage.create(Montage, {
 
+    /**
+     * The EditingFrame housing the template this EditingController is controlling
+     */
     frame: {
         value: null
     },
 
-    //TODO cache this
+    /**
+     * The template being controlled by this EditingController
+     */
+    template: {
+        value: null
+    },
+
+    /**
+     * The require function that is used for locating modules within this template
+     */
     ownerRequire: {
         get: function() {
-            return this.owner.element.ownerDocument.defaultView.require;
+            return this.template._require;
         }
     },
 
-    //TODO what to do if owner changes in the middle of adding a childComponent?
-    //TODO should the owner be able to be changed?
+    /**
+     * The instance of the owner component of the controlled template
+     * TODO what to do if owner changes in the middle of adding a childComponent?
+     * TODO should the owner be able to be changed?
+     */
     owner: {
         value: null
     },
 
     /**
-     * Adds the
+     * Adds the objects found within the sourceTemplate inside the controlled template
+     * @param {Template} sourceTemplate The template detailing the objects to inject into the controlled template
+     * @param {Element} stageElement The optional element to append components inside of in the template,
+     * if none is provided the components are appended inside the owner's element
+     * @return {Promise} A promise for the added objects
      */
     addObjectsFromTemplate: {
         value: function (sourceTemplate, stageElement) {
@@ -76,6 +100,11 @@ exports.EditingController = Montage.create(Montage, {
         }
     },
 
+    /**
+     * Remove the specified object from the controlled template
+     * @param {Object} object The object to remove from the controlled template
+     * @return {Promise} A Promise for the removed object
+     */
     removeObject: {
         value: function (object) {
 
@@ -86,7 +115,7 @@ exports.EditingController = Montage.create(Montage, {
             }
 
             //TODO well I'm sure there's more to this...
-            return Promise.resolve(element);
+            return Promise.resolve(object);
         }
     }
 
