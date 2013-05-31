@@ -14,6 +14,14 @@ var Montage = require("montage").Montage,
  */
 exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property-editor.reel".PropertyEditor# */ {
 
+    constructor: {
+        value: function PropertyEditor () {
+            this.super();
+
+            this.addPathChangeListener("object.properties.get(propertyBlueprint.name)", this, "_valueChanged");
+        }
+    },
+
     editingDocument: {
         value: null
     },
@@ -88,6 +96,12 @@ exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property
 
     _objectValue: {
         value: null
+    },
+
+    _valueChanged: {
+        value: function (value) {
+            this.objectValue = value;
+        }
     },
 
     /*
