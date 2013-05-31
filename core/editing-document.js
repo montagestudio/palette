@@ -134,9 +134,6 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             proxy.setObjectProperty(property, value);
 
             undoManager.register("Set Property", Promise.resolve([this.setOwnedObjectProperty, this, proxy, property, undoneValue]));
-
-            this._buildSerializationObjects();
-
         }
     },
 
@@ -165,9 +162,6 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             proxy.setObjectProperties(values);
 
             undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, values, undoneValues]));
-
-            this._buildSerializationObjects();
-
         }
     },
 
@@ -190,8 +184,6 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
             this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
-
-            this._buildSerializationObjects();
         }
     },
 
@@ -223,8 +215,6 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
             this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
             this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
-
-            this._buildSerializationObjects();
         }
     },
 
