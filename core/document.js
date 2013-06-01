@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     UndoManager = require("montage/core/undo-manager").UndoManager;
 
-exports.Document = Target.specialize( {
+exports.Document = Target.specialize({
 
     constructor: {
         value: function Document() {
@@ -55,15 +55,6 @@ exports.Document = Target.specialize( {
             undoManager.addEventListener("redo", this, false);
 
             return this;
-        }
-    },
-
-    /**
-     * The preferred type of component used for presenting this document
-     */
-    editorType: {
-        get: function () {
-            return null;
         }
     },
 
@@ -226,5 +217,16 @@ exports.Document = Target.specialize( {
         value: Function.noop
     }
 
+
+}, {
+
+    /**
+     * The preferred type of component used for presenting this document
+     */
+    editorType: {
+        get: function () {
+            return null;
+        }
+    }
 
 });

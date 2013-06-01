@@ -40,28 +40,22 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
     deserializationContext: {
         value: function (serialization, objects) {
-            var context = this.newContext.init(serialization, this.newReviver, objects);
+            var context = new this.contextConstructor().init(serialization, new this.reviverConstructor(), objects);
             context.editingDocument = this;
             return context;
         }
     },
 
-    newReviver: {
-        get: function() {
-            return ProxyReviver.create();
-        }
+    reviverConstructor: {
+        value: ProxyReviver
     },
 
-    newContext: {
-        get: function() {
-            return ProxyContext.create();
-        }
+    contextConstructor: {
+        value: ProxyContext
     },
 
-    newSerializer: {
-        get: function() {
-            return ProxySerializer.create();
-        }
+    serializerConstructor: {
+        value: ProxySerializer
     },
 
     _buildSerializationObjects: {
@@ -72,7 +66,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
     serializationForProxy: {
         value: function (proxy) {
-            var serializer = this.newSerializer.initWithRequire(this._packageRequire);
+            var serializer = new this.serializerConstructor().initWithRequire(this._packageRequire);
             var serialization = JSON.parse(serializer.serializeObject(proxy))[proxy.label];
             return SORTERS.unitSorter(serialization);
         }

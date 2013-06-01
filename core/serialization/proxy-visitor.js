@@ -1,7 +1,13 @@
 var Montage = require("montage").Montage,
     MontageVisitor = require("montage/core/serialization/serializer/montage-visitor").MontageVisitor;
 
-exports.ProxyVisitor = Montage.create(MontageVisitor, {
+exports.ProxyVisitor = MontageVisitor.specialize({
+
+    constructor: {
+        value: function ProxyVisitor() {
+            this.super();
+        }
+    },
 
     getTypeOf: {
         value: function (object) {
@@ -14,7 +20,7 @@ exports.ProxyVisitor = Montage.create(MontageVisitor, {
     },
 
     visitProxyObject: {
-        value: function(malker, proxyObject, name) {
+        value: function (malker, proxyObject, name) {
             if (this.isObjectSerialized(proxyObject)) {
                 this.serializeReferenceToProxyObject(malker, proxyObject, name);
             } else {
@@ -46,7 +52,7 @@ exports.ProxyVisitor = Montage.create(MontageVisitor, {
     },
 
     serializeProxyObject: {
-        value: function(malker, proxyObject, builderObject) {
+        value: function (malker, proxyObject, builderObject) {
             var propertiesBuilderObject = this.builder.createObjectLiteral();
 
             this.setObjectType(proxyObject, builderObject);
@@ -71,7 +77,7 @@ exports.ProxyVisitor = Montage.create(MontageVisitor, {
     },
 
     setObjectProperties: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             var propertiesSerializer,
                 propertiesObject;
 
@@ -84,7 +90,7 @@ exports.ProxyVisitor = Montage.create(MontageVisitor, {
     },
 
     setSerializableObjectProperties: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             var type,
                 propertyName,
                 propertyNames = object.properties.keys(),
@@ -98,12 +104,12 @@ exports.ProxyVisitor = Montage.create(MontageVisitor, {
     },
 
     setObjectCustomUnit: {
-        value: function(malker, object, unitName) {
+        value: function (malker, object, unitName) {
         }
     },
 
     setObjectType: {
-        value: function(object, builderObject) {
+        value: function (object, builderObject) {
             var exportId = object.getObjectProperty("prototype"),
                 objectId = object.getObjectProperty("object");
 

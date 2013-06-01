@@ -4,7 +4,7 @@ var Montage = require("montage/core/core").Montage,
     Promise = require("montage/core/promise").Promise,
     Map = require("montage/collections/map");
 
-exports.DocumentController = Montage.create(Target, {
+exports.DocumentController = Target.specialize({
 
     constructor: {
         value: function () {

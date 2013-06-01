@@ -1,16 +1,22 @@
 var Montage = require("montage").Montage,
     Context = require("mousse/deserialization/context").Context;
 
-exports.ProxyContext = Montage.create(Context.prototype, {
+exports.ProxyContext = Montage.specialize.call(Context, {
+
+    constructor: {
+        value: function ProxyContext() {
+            this.super();
+        }
+    },
 
     create: {
-        value: function() {
+        value: function () {
             return Montage.create(this);
         }
     },
 
     init: {
-        value: function(serialization, reviver, objects) {
+        value: function (serialization, reviver, objects) {
             Context.call(this, serialization, reviver, objects);
 
             return this;
@@ -28,7 +34,7 @@ exports.ProxyContext = Montage.create(Context.prototype, {
     },
 
     getObjects: {
-        value: function() {
+        value: function () {
             var results = [],
                 serialization = this._serialization,
                 object;
@@ -45,7 +51,7 @@ exports.ProxyContext = Montage.create(Context.prototype, {
     },
 
     getObject: {
-        value: function(label) {
+        value: function (label) {
             var serialization = this._serialization,
                 reviver = this._reviver,
                 objects = this._objects,
