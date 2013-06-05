@@ -76,7 +76,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         value: function () {
 
             if (this._deferredEditingInformation) {
-                this._deferredEditingInformation.reject();
+                this._deferredEditingInformation.reject(new Error("Editing frame reset"));
             }
 
             this._stageUrl = null;
@@ -128,7 +128,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             // If already loading reject current loading request and load the new one
             if (this._deferredEditingInformation) {
-                this._deferredEditingInformation.reject();
+                this._deferredEditingInformation.reject(new Error("New file loaded"));
             }
 
             this._deferredEditingInformation = Promise.defer();
@@ -240,7 +240,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         value: function (template, ownerModule, ownerName) {
             // If already loading reject current loading request and load the new one
             if (this._deferredEditingInformation) {
-                this._deferredEditingInformation.reject();
+                this._deferredEditingInformation.reject(new Error("New template loaded"));
             }
             this._deferredEditingInformation = Promise.defer();
 
