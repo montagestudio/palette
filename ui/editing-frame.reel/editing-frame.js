@@ -150,8 +150,39 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
+    _hookEventManager: {
+        value: function (eventManager, document, location) {
+            function hook(original) {
+                return function (target, eventType, listener) {
+                    var newTarget;
+                    if (target === document) {
+                        // Oh goodness gracious this is quite the HACK
+                        // Try and get the correct document from the
+                        // listener...
+                        if (
+                            typeof listener === "object" &&
+                            typeof listener.element === "object" &&
+                            listener.element.ownerDocument
+                        ) {
+                            console.warn("Redirected " + original.name + " on package document for " + eventType + " in " + location + " package to ", listener.element.ownerDocument);
+                            target = listener.element.ownerDocument;
+                        } else {
+                            console.warn("'Incorrect' " + original.name + " on package document for " + eventType + " in " + location + " package");
+                        }
+                    }
+
+                    return original.apply(this, arguments);
+                };
+            }
+
+            eventManager.registerEventListener = hook(eventManager.registerEventListener);
+            eventManager.unregisterEventListener = hook(eventManager.unregisterEventListener);
+        }
+    },
+
     _getRequireForPackage: {
         value: function (_require) {
+            var self = this;
             if (!(_require.location in PACKAGE_WINDOWS)) {
                 var iframe = document.createElement("iframe");
                 // An iframe must be in a document for its `window` to be
@@ -163,7 +194,10 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 iframe.contentWindow.name = "packageFrame=" + _require.location;
 
                 PACKAGE_WINDOWS[_require.location] = this._bootMontage(iframe.contentWindow, _require.location)
-                .spread(function (applicationRequire) {
+                .spread(function (applicationRequire, montageRequire) {
+                    var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
+                    self._hookEventManager(defaultEventManager, iframe.contentDocument, _require.location);
+
                     return applicationRequire;
                 });
             }
