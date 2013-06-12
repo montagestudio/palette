@@ -191,7 +191,7 @@ exports.Document = Target.specialize( {
      * Note: The change count can be negative after the document is saved and
      * an undo is performed.
      * @type {number}
-     * @private
+     * @protected
      */
     _changeCount: {
         value: 0
