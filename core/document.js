@@ -10,7 +10,7 @@ exports.Document = Target.specialize( {
             this.super();
 
             this.defineBinding("isDirty", {
-                "<-": "changeCount != 0"
+                "<-": "_changeCount != 0"
             });
         }
     },
@@ -147,7 +147,7 @@ exports.Document = Target.specialize( {
      *      return dataWriter(serializedDescription, location);
      * </code>
      *
-     * By default sets the changeCount to 0. If you override this method then
+     * By default sets the _changeCount to 0. If you override this method then
      * you must do this yourself.
      * @param {string} url The url to save this document's data to
      * @param {function} dataWriter The data writing function that will perform the data writing portion of the save operation
@@ -157,7 +157,7 @@ exports.Document = Target.specialize( {
             var self = this;
             return Promise.when(dataWriter("", url))
             .then(function (value) {
-                self.changeCount = 0;
+                self._changeCount = 0;
                 return value;
             });
         }
@@ -176,6 +176,9 @@ exports.Document = Target.specialize( {
 
     /**
      * Whether or not this document has unsaved changes and is considered dirty
+     *
+     * If you are using the default undo manger created by the Document then
+     * this property will be managed automatically.
      * @type {boolean}
      */
     isDirty: {
@@ -186,44 +189,37 @@ exports.Document = Target.specialize( {
      * The number of changes that have been made to this document. Used to set
      * isDirty to true if non-zero.
      *
-     * If you are using the default undo manger created by the Document then
-     * this property will be managed automatically; increasing when an undo
-     * is registered or a redo is performed, and decreasing when an undo is
-     * performed. If the document is saved, one or more undos are performed
-     * and then a new change is registered then the changeCount is set to
-     * `POSITIVE_INFINITY` as it is now not possible to return to a non-dirty
-     * state.
-     *
      * Note: The change count can be negative after the document is saved and
      * an undo is performed.
      * @type {number}
+     * @private
      */
-    changeCount: {
+    _changeCount: {
         value: 0
     },
 
     didRegisterChange: {
         value: function () {
-            var changeCount = this.changeCount;
+            var changeCount = this._changeCount;
             // If we are behind the save and cannot redo then we can never get
             // back to the non-dirty state.
-            if (this.changeCount < 0 && !this.undoManager.canRedo) {
-                this.changeCount = Number.POSITIVE_INFINITY;
+            if (changeCount < 0 && !this.undoManager.canRedo) {
+                this._changeCount = Number.POSITIVE_INFINITY;
             } else {
-                this.changeCount = changeCount + 1;
+                this._changeCount = changeCount + 1;
             }
         }
     },
 
     didUndo: {
         value: function () {
-            this.changeCount--;
+            this._changeCount--;
         }
     },
 
     didRedo: {
         value: function () {
-            this.changeCount++;
+            this._changeCount++;
         }
     },
 
