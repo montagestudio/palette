@@ -49,6 +49,7 @@ exports.Document = Target.specialize( {
         value: function (url) {
             this._url = url;
             this.undoManager = UndoManager.create();
+            this.undoManager.delegate = this;
             return this;
         }
     },
@@ -93,13 +94,7 @@ exports.Document = Target.specialize( {
                 return;
             }
 
-            if (this._undoManager && this._undoManager.delegate === this) {
-                this._undoManager.delegate = null;
-            }
             this._undoManager = value;
-            if (!value.delegate) {
-                value.delegate = this;
-            }
         }
     },
 
