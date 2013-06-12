@@ -48,7 +48,12 @@ exports.Document = Target.specialize( {
     init: {
         value: function (url) {
             this._url = url;
-            this.undoManager = UndoManager.create();
+
+            var undoManager = this.undoManager = UndoManager.create();
+            undoManager.addEventListener("operationRegistered", this, false);
+            undoManager.addEventListener("undo", this, false);
+            undoManager.addEventListener("redo", this, false);
+
             return this;
         }
     },
@@ -93,13 +98,7 @@ exports.Document = Target.specialize( {
                 return;
             }
 
-            if (this._undoManager && this._undoManager.delegate === this) {
-                this._undoManager.delegate = null;
-            }
             this._undoManager = value;
-            if (!value.delegate) {
-                value.delegate = this;
-            }
         }
     },
 
@@ -192,13 +191,13 @@ exports.Document = Target.specialize( {
      * Note: The change count can be negative after the document is saved and
      * an undo is performed.
      * @type {number}
-     * @private
+     * @protected
      */
     _changeCount: {
         value: 0
     },
 
-    didRegisterChange: {
+    handleOperationRegistered: {
         value: function () {
             var changeCount = this._changeCount;
             // If we are behind the save and cannot redo then we can never get
@@ -211,13 +210,13 @@ exports.Document = Target.specialize( {
         }
     },
 
-    didUndo: {
+    handleUndo: {
         value: function () {
             this._changeCount--;
         }
     },
 
-    didRedo: {
+    handleRedo: {
         value: function () {
             this._changeCount++;
         }
