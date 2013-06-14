@@ -1,11 +1,15 @@
 {
     "name": "palette",
-    "version": "0.6.0",
+    "version": "0.10.0",
     "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:declarativ/palette.git"
+    },
     "dependencies": {
-        "montage": "0.13.0-alpha",
+        "montage": "git@github.com:montagejs/montage.git#6096b96573e7f1ea35761d38cd9c5d8b8f6cf36f",
         "mousse": "0.1.2",
-        "matte": "0.1.1-alpha"
+        "matte": "0.1.1"
     },
     "devDependencies": {
         "montage-testing": "0.1.1",
