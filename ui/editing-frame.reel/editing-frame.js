@@ -349,7 +349,12 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (part) {
-                self._deferredEditingInformation.resolve({documentPart: part, template: template, frame: self});
+                self._deferredEditingInformation.resolve({
+                    owner: part.objects.owner,
+                    documentPart: part,
+                    template: template,
+                    frame: self
+                });
             })
             .fail(this._deferredEditingInformation.reject);
 
