@@ -85,9 +85,10 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                     '</body>' +
                     '</html>';
 
-                template.initWithHtml(html, require);
-
-                return editingFrame.loadTemplate(template)
+                return template.initWithHtml(html, require)
+                .then(function () {
+                    return editingFrame.loadTemplate(template);
+                })
                 .then(function (info) {
                     expect(info.template).toBeDefined();
                     expect(info.frame).toBeDefined();
@@ -125,9 +126,10 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                 '</body>'+
                 '</html>';
 
-                template.initWithHtml(html, require);
-
-                return editingFrame.loadTemplate(template, "test/ui/editing-frame/test.reel", "Abc")
+                return template.initWithHtml(html, require)
+                .then(function () {
+                    return editingFrame.loadTemplate(template, "test/ui/editing-frame/test.reel", "Abc");
+                })
                 .then(function (info) {
                     expect(info.owner).toBeDefined();
                     expect(info.template).toBeDefined();
