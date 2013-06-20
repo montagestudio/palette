@@ -63,84 +63,22 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
 
         describe("loading a template", function () {
             var template;
+            var noOwnerHtml = '<html><head><script type="text/montage-serialization">{'+
+                '    "text": {'+
+                '        "prototype": "montage/ui/text.reel",'+
+                '        "properties": {'+
+                '            "element": {"#": "text"},'+
+                '            "value": "pass"'+
+                '        }'+
+                '    }'+
+                '}</script>'+
+                '</head>' +
+                '<body>' +
+                '    <span data-montage-id="text"></span>' +
+                '</body>' +
+                '</html>';
 
-            beforeEach(function () {
-                editingFrame.reset();
-                template = Template.create();
-            });
-
-            describe("", function () {
-                var init;
-                beforeEach(function () {
-                    var html = '<html><head><script type="text/montage-serialization">{'+
-                        '    "text": {'+
-                        '        "prototype": "montage/ui/text.reel",'+
-                        '        "properties": {'+
-                        '            "element": {"#": "text"},'+
-                        '            "value": "pass"'+
-                        '        }'+
-                        '    }'+
-                        '}</script>'+
-                        '</head>' +
-                        '<body>' +
-                        '    <span data-montage-id="text"></span>' +
-                        '</body>' +
-                        '</html>';
-
-                    init = template.initWithHtml(html, require);
-                });
-
-                it("can be reloaded twice without errors", function () {
-                    return init.then(function () {
-                        editingFrame.loadTemplate(template);
-                    }).then(function () {
-                        var a = editingFrame.refresh(template);
-                        var b = editingFrame.refresh(template);
-
-                        return a.then(function (aInfo) {
-                            expect(aInfo.template).not.toBe(template);
-                            expect(b.isPending()).toBe(true);
-
-                            return b.then(function (bInfo) {
-                                expect(bInfo.template).not.toBe(aInfo.template);
-                            });
-                        });
-                    });
-                });
-            });
-
-            it("can load template without an owner", function () {
-                var html = '<html><head><script type="text/montage-serialization">{'+
-                    '    "text": {'+
-                    '        "prototype": "montage/ui/text.reel",'+
-                    '        "properties": {'+
-                    '            "element": {"#": "text"},'+
-                    '            "value": "pass"'+
-                    '        }'+
-                    '    }'+
-                    '}</script>'+
-                    '</head>' +
-                    '<body>' +
-                    '    <span data-montage-id="text"></span>' +
-                    '</body>' +
-                    '</html>';
-
-                return template.initWithHtml(html, require)
-                .then(function () {
-                    return editingFrame.loadTemplate(template);
-                })
-                .then(function (info) {
-                    expect(info.template).toBeDefined();
-                    expect(info.frame).toBeDefined();
-
-                    expect(info.template._require).not.toBe(require);
-
-                    expect(info.frame.iframe.contentDocument.querySelector("[data-montage-id=text]").textContent).toBe("pass");
-                });
-            });
-
-            it("can load template with an owner", function () {
-                var html = '<html><head>'+
+            var ownerHtml = '<html><head>'+
                 '    <script type="text/montage-serialization">'+
                 '    {'+
                 '        "owner": {'+
@@ -166,7 +104,53 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                 '</body>'+
                 '</html>';
 
-                return template.initWithHtml(html, require)
+            beforeEach(function () {
+                editingFrame.reset();
+                template = Template.create();
+            });
+
+            describe("", function () {
+                var init;
+                beforeEach(function () {
+                    init = template.initWithHtml(noOwnerHtml, require);
+                });
+
+                it("can be reloaded twice without errors", function () {
+                    return init.then(function () {
+                        editingFrame.loadTemplate(template);
+                    }).then(function () {
+                        var a = editingFrame.refresh(template);
+                        var b = editingFrame.refresh(template);
+
+                        return a.then(function (aInfo) {
+                            expect(aInfo.template).not.toBe(template);
+                            expect(b.isPending()).toBe(true);
+
+                            return b.then(function (bInfo) {
+                                expect(bInfo.template).not.toBe(aInfo.template);
+                            });
+                        });
+                    });
+                });
+            });
+
+            it("can load template without an owner", function () {
+                return template.initWithHtml(noOwnerHtml, require)
+                .then(function () {
+                    return editingFrame.loadTemplate(template);
+                })
+                .then(function (info) {
+                    expect(info.template).toBeDefined();
+                    expect(info.frame).toBeDefined();
+
+                    expect(info.template._require).not.toBe(require);
+
+                    expect(info.frame.iframe.contentDocument.querySelector("[data-montage-id=text]").textContent).toBe("pass");
+                });
+            });
+
+            it("can load template with an owner", function () {
+                return template.initWithHtml(ownerHtml, require)
                 .then(function () {
                     return editingFrame.loadTemplate(template, "test/ui/editing-frame/test.reel", "Abc");
                 })
@@ -180,6 +164,23 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                     expect(info.template._require).not.toBe(require);
 
                     expect(info.frame.iframe.contentDocument.querySelector("[data-montage-id=text]").textContent).toBe("pass");
+                });
+            });
+
+            it("reuses the same require when loading from the same package", function () {
+                var packageRequire;
+
+                return template.initWithHtml(noOwnerHtml, require)
+                .then(function () {
+                    return editingFrame.loadTemplate(template);
+                })
+                .then(function (info) {
+                    packageRequire = info.template._require;
+
+                    return editingFrame.loadTemplate(info.template);
+                })
+                .then(function (info) {
+                    expect(info.template._require).toBe(packageRequire);
                 });
             });
         });
