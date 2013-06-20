@@ -272,15 +272,35 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
      */
     loadTemplate: {
         value: function (template, ownerModule, ownerName) {
-            // If already loading reject current loading request and load the new one
-            if (this._deferredEditingInformation) {
-                this._deferredEditingInformation.reject(new Error("New template loaded"));
+            var self = this;
+
+            // // If already loading finish off and then load again
+            var deferredEditingInformation = this._deferredEditingInformation;
+            if (deferredEditingInformation && deferredEditingInformation.promise.isPending()) {
+                var newDeferredEditingInformation = this._deferredEditingInformation = Promise.defer();
+
+                var next = function () {
+                    // Clear out the defered editing info so that this
+                    // loadTemplate call does not think there is a pending load
+                    self._deferredEditingInformation = null;
+                    return self.loadTemplate(template, ownerModule, ownerName);
+                };
+
+                deferredEditingInformation.promise
+                // try and load the frame, regardless of whether the previous
+                // load succeeded or failed
+                .then(next, next)
+                .then(newDeferredEditingInformation.resolve, newDeferredEditingInformation.reject);
+
+                return newDeferredEditingInformation.promise;
             }
-            this._deferredEditingInformation = Promise.defer();
 
             this.reset();
+            this._loadedTemplate = template;
+            this._ownerModule = ownerModule;
+            this._ownerName = ownerName;
 
-            var self = this;
+            deferredEditingInformation = this._deferredEditingInformation = Promise.defer();
 
             var instances;
 
@@ -289,8 +309,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var packageRequire, packageMontageRequire;
 
-            this._deferredEditingInformation = Promise.defer();
-
             this._getRequireForPackage(template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
@@ -298,10 +316,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 template = packageMontageRequire("core/template").Template.clone.call(template);
                 template._require = packageRequire;
-
-                self._loadedTemplate = template;
-                self._ownerModule = ownerModule;
-                self._ownerName = ownerName;
 
                 instances = template.getInstances();
 
@@ -349,16 +363,16 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 return self._setupTemplate(template, packageRequire, rootComponent, ownerModule, ownerName);
             })
             .then(function (part) {
-                self._deferredEditingInformation.resolve({
+                deferredEditingInformation.resolve({
                     owner: part.objects.owner,
                     documentPart: part,
                     template: template,
                     frame: self
                 });
             })
-            .fail(this._deferredEditingInformation.reject);
+            .fail(deferredEditingInformation.reject);
 
-            return this._deferredEditingInformation.promise;
+            return deferredEditingInformation.promise;
         }
     },
 

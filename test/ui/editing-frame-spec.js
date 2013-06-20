@@ -69,6 +69,46 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                 template = Template.create();
             });
 
+            describe("", function () {
+                var init;
+                beforeEach(function () {
+                    var html = '<html><head><script type="text/montage-serialization">{'+
+                        '    "text": {'+
+                        '        "prototype": "montage/ui/text.reel",'+
+                        '        "properties": {'+
+                        '            "element": {"#": "text"},'+
+                        '            "value": "pass"'+
+                        '        }'+
+                        '    }'+
+                        '}</script>'+
+                        '</head>' +
+                        '<body>' +
+                        '    <span data-montage-id="text"></span>' +
+                        '</body>' +
+                        '</html>';
+
+                    init = template.initWithHtml(html, require);
+                });
+
+                it("can be reloaded twice without errors", function () {
+                    return init.then(function () {
+                        editingFrame.loadTemplate(template);
+                    }).then(function () {
+                        var a = editingFrame.refresh(template);
+                        var b = editingFrame.refresh(template);
+
+                        return a.then(function (aInfo) {
+                            expect(aInfo.template).not.toBe(template);
+                            expect(b.isPending()).toBe(true);
+
+                            return b.then(function (bInfo) {
+                                expect(bInfo.template).not.toBe(aInfo.template);
+                            });
+                        });
+                    });
+                });
+            });
+
             it("can load template without an owner", function () {
                 var html = '<html><head><script type="text/montage-serialization">{'+
                     '    "text": {'+
