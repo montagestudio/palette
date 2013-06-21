@@ -11,6 +11,9 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
     constructor: {
         value: function EditingDocument() {
             this.super();
+            this._editingProxyMap = {};
+            this.selectedObjects = [];
+            this.errors = [];
         }
     },
 
@@ -29,11 +32,8 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
     init: {
         value: function (fileUrl, packageRequire) {
-            var self = Document.init.call(this, fileUrl);
+            var self = this.super(fileUrl);
             self._packageRequire = packageRequire;
-            self._editingProxyMap = {};
-            self.selectedObjects = [];
-            self.errors = [];
             return self;
         }
     },

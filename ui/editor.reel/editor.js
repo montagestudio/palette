@@ -13,14 +13,20 @@ var Map = require("montage/collections/map");
  @class module:"palette/ui/editor.reel".Editor
  @extends module:montage/ui/component.Component
  */
-exports.Editor = Montage.create(Component, /** @lends module:"palette/ui/editor.reel".Editor# */ {
+exports.Editor = Component.specialize(/** @lends module:"palette/ui/editor.reel".Editor# */ {
 
-    _currentDocument:{
-        value:null
+    constructor: {
+        value: function Editor() {
+            this.super();
+        }
     },
 
-    currentDocument:{
-        get:function () {
+    _currentDocument: {
+        value: null
+    },
+
+    currentDocument: {
+        get: function () {
             return this._currentDocument;
         }
     },
@@ -48,13 +54,13 @@ exports.Editor = Montage.create(Component, /** @lends module:"palette/ui/editor.
     },
 
     closeDocument: {
-        value: function(document) {
+        value: function (document) {
             document.close();
         }
     },
 
     close: {
-        value:function (document) {
+        value: function (document) {
             if (document === this.currentDocument) {
                 this.dispatchBeforeOwnPropertyChange("currentDocument", this._currentDocument);
                 this._currentDocument = null;

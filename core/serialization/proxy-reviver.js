@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
+    Promise = require("montage/core/promise").Promise,
     EditingProxy = require("../editing-proxy").EditingProxy;
 
 exports.ProxyReviver = MontageReviver.specialize({

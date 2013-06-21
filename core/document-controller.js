@@ -7,7 +7,7 @@ var Montage = require("montage/core/core").Montage,
 exports.DocumentController = Target.specialize({
 
     constructor: {
-        value: function () {
+        value: function DocumentController() {
             this.super();
             this.documents = [];
             this._urlDocumentMap = new Map();
