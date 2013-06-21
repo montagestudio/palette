@@ -296,7 +296,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
 
             this.reset();
-            this._loadedTemplate = template;
             this._ownerModule = ownerModule;
             this._ownerName = ownerName;
 
@@ -316,6 +315,8 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 template = packageMontageRequire("core/template").Template.clone.call(template);
                 template._require = packageRequire;
+
+                self._loadedTemplate = template;
 
                 instances = template.getInstances();
 
@@ -475,7 +476,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     // but this should probably be part of loadTemplate
     refresh: {
         value: function (template) {
-            if (!this._loadedTemplate) {
+            if (!this._loadedTemplate && !this._ownerModule) {
                 throw new Error("Editing frame must have a loaded template before refreshing");
             }
 
