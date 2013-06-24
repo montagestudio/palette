@@ -70,7 +70,7 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
      * @private
      */
     _blueprintDeferred: {
-        value: Promise.defer()
+        value: null
     },
 
     objectBlueprint: {

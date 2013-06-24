@@ -29,15 +29,23 @@ exports.ProxyReviver = MontageReviver.specialize({
             context.setObjectLabel(proxyObject, label);
             revivedSerialization = this.reviveObjectLiteral(value, context);
 
-            if (this.rootObjectLabel === label) {
-                exportId = context.ownerExportId;
-            }
-
             if (Promise.isPromise(revivedSerialization)) {
                 return revivedSerialization.then(function (revivedSerialization) {
+                    if (this.rootObjectLabel === label) {
+                        exportId = context.ownerExportId;
+                    } else {
+                        exportId = revivedSerialization.prototype || revivedSerialization.object;
+                    }
+
                     return proxyObject.init(label, revivedSerialization, exportId, context.editingDocument);
                 });
             } else {
+                if (this.rootObjectLabel === label) {
+                    exportId = context.ownerExportId;
+                } else {
+                    exportId = revivedSerialization.prototype || revivedSerialization.object;
+                }
+
                 return proxyObject.init(label, revivedSerialization, exportId, context.editingDocument);
             }
         }
