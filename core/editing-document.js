@@ -155,7 +155,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperties(values);
 
-            undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, values, undoneValues]));
+            undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, undoneValues, values]));
         }
     },
 
