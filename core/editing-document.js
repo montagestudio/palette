@@ -132,10 +132,10 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
     },
 
     setOwnedObjectProperties: {
-        value: function (proxy, values, previousValues) {
+        value: function (proxy, values) {
 
             var undoManager = this.undoManager,
-                undoneValues = (previousValues ? previousValues : proxy.getObjectProperties(values));
+                undoneValues = proxy.getObjectProperties(values);
 
             var identicalValues = true;
             for (var name in values) {
@@ -155,7 +155,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             // Might be nice to have an editing API that avoids undoability and event dispatching?
             proxy.setObjectProperties(values);
 
-            undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, undoneValues, values]));
+            undoManager.register("Set Properties", Promise.resolve([this.setOwnedObjectProperties, this, proxy, undoneValues]));
         }
     },
 
