@@ -28,9 +28,7 @@ exports.ProxyContext = Montage.specialize.call(Context, {
     },
 
     ownerExportId: {
-        get: function () {
-            return void 0;
-        }
+        value: void 0
     },
 
     getObjects: {
