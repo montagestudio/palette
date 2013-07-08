@@ -42,6 +42,10 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
 
             if (this._object && this._object.moduleId && (this._object.moduleId !== "") && this._object.exportName && (this._object.exportName !== "")) {
 
+                if (this.templateObjects) {
+                    this.templateObjects.labelField.value = this._object.label;
+                }
+
                 this._blueprintDeferred = Promise.defer();
 
                 var self = this;
@@ -56,6 +60,9 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
             } else {
                 this._blueprintDeferred = null;
                 this.objectBlueprint = null;
+                if (this.templateObjects) {
+                    this.templateObjects.labelField.value = "";
+                }
             }
         }
     },
