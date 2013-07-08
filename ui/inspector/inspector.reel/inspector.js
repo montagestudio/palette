@@ -103,11 +103,21 @@ exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/in
         }
     },
 
+    //TODO wait for the change to be considered committed, this action happens on every character change
     handlePropertyInspectorChange: {
         value: function (evt) {
             var detail = evt.detail;
             if (this.object) {
                 this.editingDocument.setOwnedObjectProperty(this.object, detail.propertyName, detail.value);
+            }
+        }
+    },
+
+    //TODO wait for the change to be considered committed, this action happens on every character change
+    handleLabelFieldAction : {
+        value: function (evt) {
+            if (this.object) {
+                this.editingDocument.setOwnedObjectLabel(this.object, evt.target.value);
             }
         }
     }

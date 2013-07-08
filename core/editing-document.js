@@ -159,6 +159,25 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
         }
     },
 
+    setOwnedObjectLabel: {
+        value: function (proxy, newLabel) {
+            var proxyMap = this._editingProxyMap,
+                oldLabel = proxy.label;
+
+            //TODO report an error when given an invalid label e.g. no label or label already exists
+            if (newLabel && !proxyMap[newLabel]) {
+                // add new label and current reference in editingProxyMap
+                proxyMap[newLabel] = proxy;
+                delete proxyMap[oldLabel];
+
+                //TODO dispatch change for identifier etc.?
+                proxy.label = newLabel;
+
+                this.undoManager.register("Set Label", Promise.resolve([this.setOwnedObjectLabel, this, proxy, oldLabel]));
+            }
+        }
+    },
+
     // Editing Model
 
     _addProxies: {

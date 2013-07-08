@@ -21,18 +21,21 @@
             ]
         },
 
-        "title": {
+        "labelField": {
             "prototype": "matte/ui/input-text.reel",
             "properties": {
                 "element": {
                     "#": "title"
                 }
             },
-            "bindings": {
-                "value": {
-                    "<->": "@owner.object.label"
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {
+                        "@": "owner"
+                    }
                 }
-            }
+            ]
         },
 
         "editorCondition": {
