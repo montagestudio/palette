@@ -9,7 +9,7 @@
     "dependencies": {
         "montage": "git://github.com/montagejs/montage.git#v0.13.1",
         "mousse": "0.1.2",
-        "matte": "0.1.1"
+        "matte": "git://github.com/montagejs/matte.git#8e5bad1cbb757425a20091e26b4abba694bfe3ad"
     },
     "devDependencies": {
         "montage-testing": "0.1.1",
