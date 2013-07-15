@@ -70,7 +70,9 @@ exports.Document = Target.specialize({
      */
     title: {
         get: function () {
-            return this.url.substring(this.url.lastIndexOf("/") + 1);
+            // Get the last pathname component of the url, whether it's a file
+            // or directory (trailing-slash).
+            return this.url.match(/\/([^\/]+)\/*$/)[1];
         }
     },
 
