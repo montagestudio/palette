@@ -11,6 +11,13 @@ var Montage = require("montage").Montage,
  @class module:"./date-property-inspector.reel".DatePropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.DatePropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./date-property-inspector.reel".DatePropertyInspector# */ {
+exports.DatePropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./date-property-inspector.reel".DatePropertyInspector# */ {
+
+    constructor: {
+        value: function DatePropertyInspector() {
+            this.super();
+        }
+    }
+
 
 });

@@ -11,7 +11,20 @@ var Montage = require("montage").Montage,
  @class module:"./boolean-property-inspector.reel".BooleanPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.BooleanPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./boolean-property-inspector.reel".BooleanPropertyInspector# */ {
+exports.BooleanPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./boolean-property-inspector.reel".BooleanPropertyInspector# */ {
+
+    constructor: {
+        value: function BooleanPropertyInspector() {
+            this.super();
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("booleanValue", this.booleanValue);
+        }
+    },
 
     booleanValue: {
         get: function() {

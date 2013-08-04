@@ -11,7 +11,21 @@ var Montage = require("montage").Montage,
  @class module:"./list-association-inspector.reel".ListAssociationInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.ListAssociationInspector = Montage.create(ValueTypeInspector, /** @lends module:"./list-association-inspector.reel".ListAssociationInspector# */ {
+exports.ListAssociationInspector = ValueTypeInspector.specialize(/** @lends module:"./list-association-inspector.reel".ListAssociationInspector# */ {
+
+    constructor: {
+        value: function ListAssociationInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+        }
+    },
 
     //jshint -W009
     collectionValue: {

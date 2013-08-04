@@ -11,6 +11,13 @@ var Montage = require("montage").Montage,
  @class module:"./number-property-inspector.reel".NumberPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.NumberPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./number-property-inspector.reel".NumberPropertyInspector# */ {
+exports.NumberPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./number-property-inspector.reel".NumberPropertyInspector# */ {
+
+    constructor: {
+        value: function NumberPropertyInspector() {
+            this.super();
+        }
+    }
+
 
 });

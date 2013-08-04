@@ -11,7 +11,13 @@ var Montage = require("montage").Montage,
  @class module:"./value-type-inspector.reel".ValueTypeInspector
  @extends module:montage/ui/component.Component
  */
-var ValueTypeInspector = exports.ValueTypeInspector = Montage.create(Component, /** @lends module:"./value-type-inspector.reel".ValueTypeInspector# */ {
+var ValueTypeInspector = exports.ValueTypeInspector = Component.specialize(/** @lends module:"./value-type-inspector.reel".ValueTypeInspector# */ {
+
+    constructor: {
+        value: function ValueTypeInspector() {
+            this.super();
+        }
+    },
 
     label: {
         value: ""

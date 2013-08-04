@@ -12,7 +12,21 @@ var Montage = require("montage").Montage,
  @class module:"./map-property-inspector.reel".MapPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.MapPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./map-property-inspector.reel".MapPropertyInspector# */ {
+exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./map-property-inspector.reel".MapPropertyInspector# */ {
+
+    constructor: {
+        value: function MapPropertyInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+        }
+    },
 
     collectionValue: {
         get: function() {

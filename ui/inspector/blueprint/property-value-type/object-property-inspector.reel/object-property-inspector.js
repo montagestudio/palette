@@ -11,7 +11,21 @@ var Montage = require("montage").Montage,
  @class module:"./object-property-inspector.reel".ObjectPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.ObjectPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./object-property-inspector.reel".ObjectPropertyInspector# */ {
+exports.ObjectPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./object-property-inspector.reel".ObjectPropertyInspector# */ {
+
+    constructor: {
+        value: function ObjectPropertyInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("objectReferenceValue", this.objectReferenceValue);
+        }
+    },
 
     objectReferenceValue: {
         get: function () {

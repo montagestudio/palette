@@ -11,7 +11,13 @@ var Montage = require("montage").Montage,
  @class module:"./bound-property-editor.reel".BoundPropertyEditor
  @extends module:montage/ui/component.Component
  */
-exports.BoundPropertyEditor = Montage.create(Component, /** @lends module:"./bound-property-editor.reel".BoundPropertyEditor# */ {
+exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-property-editor.reel".BoundPropertyEditor# */ {
+
+    constructor: {
+        value: function BoundPropertyEditor() {
+            this.super();
+        }
+    },
 
     object: {
         value: null

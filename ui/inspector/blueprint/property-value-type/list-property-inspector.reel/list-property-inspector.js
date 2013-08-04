@@ -12,7 +12,21 @@ var Montage = require("montage").Montage,
  @class module:"./list-property-inspector.reel".ListPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.ListPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./list-property-inspector.reel".ListPropertyInspector# */ {
+exports.ListPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./list-property-inspector.reel".ListPropertyInspector# */ {
+
+    constructor: {
+        value: function ListPropertyInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+        }
+    },
 
     //jshint -W009
     collectionValue: {

@@ -12,7 +12,21 @@ var Montage = require("montage").Montage,
  @class module:"./set-property-inspector.reel".SetPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.SetPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./set-property-inspector.reel".SetPropertyInspector# */ {
+exports.SetPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./set-property-inspector.reel".SetPropertyInspector# */ {
+
+    constructor: {
+        value: function SetPropertyInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+        }
+    },
 
     collectionValue: {
         get: function () {

@@ -12,7 +12,7 @@ var Montage = require("montage").Montage,
  @class module:"./property-editor.reel".PropertyEditor
  @extends module:montage/ui/component.Component
  */
-exports.PropertyEditor = Montage.create(Component, /** @lends module:"./property-editor.reel".PropertyEditor# */ {
+exports.PropertyEditor = Component.specialize(/** @lends module:"./property-editor.reel".PropertyEditor# */ {
 
     constructor: {
         value: function PropertyEditor () {

@@ -11,7 +11,13 @@ var Montage = require("montage").Montage,
     @class module:"./property-group-editor.reel".PropertyGroupEditor
     @extends module:montage/ui/component.Component
 */
-exports.PropertyGroupEditor = Montage.create(Component, /** @lends module:"./property-group-editor.reel".PropertyGroupEditor# */ {
+exports.PropertyGroupEditor = Component.specialize(/** @lends module:"./property-group-editor.reel".PropertyGroupEditor# */ {
+
+    constructor: {
+        value: function PropertyGroupEditor() {
+            this.super();
+        }
+    },
 
     editingDocument: {
         value: null

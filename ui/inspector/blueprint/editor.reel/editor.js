@@ -12,7 +12,13 @@ var Montage = require("montage").Montage,
  @class module:"./editor.reel".Editor
  @extends module:montage/ui/component.Component
  */
-exports.Editor = Montage.create(Component, /** @lends module:"./editor.reel".Editor# */ {
+exports.Editor = Component.specialize(/** @lends module:"./editor.reel".Editor# */ {
+
+    constructor: {
+        value: function Editor() {
+            this.super();
+        }
+    },
 
     title:{
         dependencies:["objectBlueprint"],

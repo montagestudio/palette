@@ -11,7 +11,21 @@ var Montage = require("montage").Montage,
     @class module:"./map-association-inspector.reel".MapAssociationInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
 */
-exports.MapAssociationInspector = Montage.create(ValueTypeInspector, /** @lends module:"./map-association-inspector.reel".MapAssociationInspector# */ {
+exports.MapAssociationInspector = ValueTypeInspector.specialize(/** @lends module:"./map-association-inspector.reel".MapAssociationInspector# */ {
+
+    constructor: {
+        value: function MapAssociationInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+        }
+    },
 
     collectionValue: {
         get: function() {

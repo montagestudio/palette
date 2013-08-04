@@ -14,7 +14,13 @@ var Montage = require("montage").Montage,
     @class module:"ui/inspector/inspector.reel".Inspector
     @extends module:montage/ui/component.Component
 */
-exports.Inspector = Montage.create(Component, /** @lends module:"ui/inspector/inspector.reel".Inspector# */ {
+exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspector.reel".Inspector# */ {
+
+    constructor: {
+        value: function Inspector() {
+            this.super();
+        }
+    },
 
     editingDocument: {
         value: null

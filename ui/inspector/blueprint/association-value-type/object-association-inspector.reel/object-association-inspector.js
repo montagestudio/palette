@@ -11,8 +11,22 @@ var Montage = require("montage").Montage,
     @class module:"./object-association-inspector.reel".ObjectAssociationInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
 */
-exports.ObjectAssociationInspector = Montage.create(ValueTypeInspector, /** @lends module:"./object-association-inspector.reel".ObjectAssociationInspector# */ {
-    
+exports.ObjectAssociationInspector = ValueTypeInspector.specialize(/** @lends module:"./object-association-inspector.reel".ObjectAssociationInspector# */ {
+
+    constructor: {
+        value: function ObjectAssociationInspector() {
+            this.super();
+            this.addPathChangeListener("propertyBlueprint", this, "_valueChanged");
+            this.addPathChangeListener("objectValue", this, "_valueChanged");
+        }
+    },
+
+    _valueChanged: {
+        value: function() {
+            this.dispatchOwnPropertyChange("objectReferenceValue", this.objectReferenceValue);
+        }
+    },
+
     objectReferenceValue: {
         get: function () {
             if (this.propertyBlueprint && this.objectValue && (this.propertyBlueprint.valueType === "object")) {

@@ -11,6 +11,12 @@ var Montage = require("montage").Montage,
  @class module:"./url-property-inspector.reel".UrlPropertyInspector
  @extends module:"../../value-type-inspector.reel".ValueTypeInspector
  */
-exports.UrlPropertyInspector = Montage.create(ValueTypeInspector, /** @lends module:"./url-property-inspector.reel".UrlPropertyInspector# */ {
+exports.UrlPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"./url-property-inspector.reel".UrlPropertyInspector# */ {
+
+    constructor: {
+        value: function UrlPropertyInspector() {
+            this.super();
+        }
+    }
 
 });

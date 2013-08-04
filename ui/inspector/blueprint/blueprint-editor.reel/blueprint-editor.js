@@ -12,10 +12,10 @@ var Montage = require("montage").Montage,
  @class module:"./blueprint-editor.reel".BlueprintEditor
  @extends module:montage/ui/component.Component
  */
-exports.BlueprintEditor = Montage.create(Component, /** @lends module:"./blueprint-editor.reel".BlueprintEditor# */ {
+exports.BlueprintEditor = Component.specialize(/** @lends module:"./blueprint-editor.reel".BlueprintEditor# */ {
 
     constructor: {
-        value: function () {
+        value: function BlueprintEditor() {
             this.super();
             this.propertyGroupsController = RangeController.create();
         }
