@@ -4,6 +4,7 @@
  @requires "../../value-type-inspector.reel"
 */
 var Montage = require("montage").Montage,
+    Map = require("montage/collections/map"),
     ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**

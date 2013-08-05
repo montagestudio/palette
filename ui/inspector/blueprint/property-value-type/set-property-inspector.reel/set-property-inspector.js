@@ -56,7 +56,7 @@ exports.SetPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
             if (!this.objectValue) {
                 this.objectValue = new Set();
             }
-            this.collectionValue.add("");
+            this.collectionValue.add(this.newObjectValue);
         }
     },
 

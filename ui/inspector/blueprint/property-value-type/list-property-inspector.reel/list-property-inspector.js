@@ -62,7 +62,7 @@ exports.ListPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
                 // that this property has changed as a consequence.
                 this.dispatchOwnPropertyChange("collectionValue", this.objectValue);
             }
-            this.collectionValue.add("");
+            this.collectionValue.add(this.newObjectValue);
         }
     },
     //jshint +W009
