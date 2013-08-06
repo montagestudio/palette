@@ -331,6 +331,16 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
                 frameWindow.name = "editingFrame=" + packageRequire.location;
 
+                var frameDocument = frame.contentDocument,
+                    frameHead = frameDocument.getElementsByTagName("head")[0],
+                    baseElem = frameDocument.createElement("base"),
+                    metaElem = frameDocument.createElement("meta");
+
+                baseElem.setAttribute("href", template._baseUrl);
+                metaElem.setAttribute("charset", "utf-8");
+                frameHead.insertBefore(metaElem, null);
+                frameHead.insertBefore(baseElem, metaElem);
+
                 // We need to boot Montage in the frame so that all the shims
                 // Montage needs get installed
                 if (self.iframe.src !== "" || !frameWindow.montageRequire) {
