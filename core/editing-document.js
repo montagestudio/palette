@@ -316,7 +316,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
         value: function (object) {
             var selectedObjects = this.selectedObjects;
 
-            if (selectedObjects.indexOf(object) === -1) {
+            if (object && selectedObjects.indexOf(object) === -1) {
                 //TODO what is the order ofthe selectedObjects?
                 selectedObjects.push(object);
             }
