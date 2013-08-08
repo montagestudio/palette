@@ -57,34 +57,26 @@ var ValueTypeInspector = exports.ValueTypeInspector = Component.specialize(/** @
     newObjectValue: {
         get: function() {
             switch (this.propertyBlueprint.valueType) {
-                case "string": {
-                    return "";
+            case "string":
+                return "";
+            case "number":
+                return 0;
+            case "boolean":
+                return false;
+            case "date":
+                return new Date();
+            case "enum":
+                var enumValues = this.propertyBlueprint.enumValues;
+                if (enumValues && enumValues.length > 0) {
+                    return enumValues[0];
                 }
-                case "number": {
-                    return 0;
-                }
-                case "boolean": {
-                    return false;
-                }
-                case "date": {
-                    return new Date();
-                }
-                case "enum": {
-                    var enumValues = this.propertyBlueprint.enumValues;
-                    if (enumValues && enumValues.length > 0) {
-                        return enumValues[0];
-                    }
-                    return "";
-                }
-                case "url": {
-                    return "http://";
-                }
-                case "object": {
-                    return "";
-                }
-                default: {
-                    return "";
-                }
+                return "";
+            case "url":
+                return "http://";
+            case "object":
+                return "";
+            default:
+                return "";
             }
         }
     }
