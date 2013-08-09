@@ -59,7 +59,8 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
                     .then(function (blueprint) {
                         self._blueprintDeferred.resolve(blueprint);
                         self.objectBlueprint = blueprint;
-                    }, function () {
+                    }, function (reason) {
+                        console.warn("Unable to load blueprint: ", reason.message ? reason.message : reason);
                         self._blueprintDeferred.reject(null);
                     }).done();
 
