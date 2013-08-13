@@ -329,7 +329,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     }
                 }
 
-                frameWindow.name = "editingFrame=" + packageRequire.location;
+                frameWindow.name = "editingFrame=" + self._ownerModule + "[" + self.ownerName + "]";
 
                 // We need to boot Montage in the frame so that all the shims
                 // Montage needs get installed
