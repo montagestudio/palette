@@ -180,10 +180,13 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         }
     },
 
-    _getRequireForPackage: {
-        value: function (_require) {
+    _getRequireForModuleLocation: {
+        value: function (location, _require) {
+            if (location.indexOf(_require.location) !== 0) {
+                console.warn(location, "is not in package", _require.location, "Should be fine, but this function expects a URL");
+            }
             var self = this;
-            if (!(_require.location in PACKAGE_WINDOWS)) {
+            if (!(location in PACKAGE_WINDOWS)) {
                 var iframe = document.createElement("iframe");
                 // An iframe must be in a document for its `window` to be
                 // created an valid, so insert it but hide it.
@@ -193,7 +196,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 iframe.dataset.packageFrame = _require.location;
                 iframe.contentWindow.name = "packageFrame=" + _require.location;
 
-                PACKAGE_WINDOWS[_require.location] = this._bootMontage(iframe.contentWindow, _require.location)
+                PACKAGE_WINDOWS[location] = this._bootMontage(iframe.contentWindow, _require.location)
                 .spread(function (applicationRequire, montageRequire) {
                     var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                     self._hookEventManager(defaultEventManager, iframe.contentDocument, _require.location);
@@ -202,7 +205,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 });
             }
 
-            return PACKAGE_WINDOWS[_require.location];
+            return PACKAGE_WINDOWS[location];
         }
     },
 
@@ -308,7 +311,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             var packageRequire, packageMontageRequire;
 
-            this._getRequireForPackage(template._require)
+            this._getRequireForModuleLocation(ownerModule, template._require)
             .then(function (_packageRequire) {
                 packageRequire = _packageRequire;
                 packageMontageRequire = packageRequire.getPackage({name: "montage"});
