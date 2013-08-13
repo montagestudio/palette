@@ -398,7 +398,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 // promise is async, so by the time the promise handler
                 // is called, the drawing will be complete.
                 rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
-                drawn.resolve(documentPart);
+                drawn.resolve();
             }
             rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
 
@@ -431,7 +431,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 createOwner = Promise.resolve();
             }
 
-            createOwner.then(function () {
+            var documentPartPromise = createOwner.then(function () {
                 return template.instantiate(frameDocument);
             })
             .then(function (part) {
@@ -465,10 +465,13 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     documentResources.addStyle(style);
                 });
 
-            })
-            .fail(drawn.reject);
+            });
 
-            return drawn.promise.timeout(10000, "Timeout waiting for template's first draw");
+            return Promise.all([documentPartPromise, drawn])
+            .then(function () {
+                return documentPart;
+            })
+            .timeout(10000, "Timeout waiting for template's first draw");
         }
     },
 
