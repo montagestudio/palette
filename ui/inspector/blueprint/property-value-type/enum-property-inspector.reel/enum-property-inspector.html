@@ -91,11 +91,11 @@
                 }
             },
             "bindings":{
-                "selection":{
-                    "<->":"@owner.objectValue"
-                },
                 "content":{
-                    "<-":"@owner.propertyBlueprint.enumValues"
+                    "<-":"@owner.propertyBlueprint.enumValues.map{{value: this}}"
+                },
+                "value":{
+                    "<->": "@owner.objectValue"
                 }
             }
         }
