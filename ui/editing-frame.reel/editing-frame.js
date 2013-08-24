@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     Component = require("montage/ui/component").Component,
+    getElementXPath = require("core/xpath").getElementXPath,
     Promise = require("montage/core/promise").Promise;
 
 //TODO do we care about having various modes available?
@@ -514,6 +515,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 this.dispatchEventNamed("canLoadReel", true, true);
 
                 this.element.addEventListener("mousedown", this);
+                this.element.addEventListener("mousemove", this);
             }
         }
     },
@@ -627,6 +629,37 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 expandToSelection: false,
                 removeFromSelection: false,
                 retractFromSelection: false
+            });
+        }
+    },
+
+    _mousemoveLastThrottle: {
+        value: 0
+    },
+
+    handleMousemove: {
+        value: function (evt) {
+            var throttle = 100,
+                now = (new Date()).getTime(),
+                timeFrame = now - this._mousemoveLastThrottle;
+
+            if (timeFrame < throttle) {
+                return;
+            }
+            this._mousemoveLastThrottle = now;
+
+            if (RUN_MODE === this.currentMode || 0 !== evt.button) {
+                return;
+            }
+
+            var x = evt.offsetX,
+                y = evt.offsetY,
+                frameDocument = this.iframe.contentDocument,
+                element = frameDocument.elementFromPoint(x, y);
+
+            this.dispatchEventNamed("highlight", true, true, {
+                xpath: getElementXPath(element),
+                highlight: true
             });
         }
     },
