@@ -3,82 +3,33 @@
     @requires montage
     @requires montage/ui/component
 */
-var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component,
-    RangeController = require("montage/core/range-controller").RangeController;
+var Selections = require("../selections.reel").Selections;
 
 /**
     Description TODO
     @class module:"ui/selection/highlights.reel".Highlights
-    @extends module:montage/ui/component.Component
+    @extends module:"ui/selection/selections.reel".Selections
 */
-exports.Highlights = Montage.create(Component, /** @lends module:"ui/selection/highlights.reel".Highlights# */ {
+exports.Highlights = Selections.specialize(/** @lends module:"ui/selection/highlights.reel".Highlights# */ {
 
     constructor: {
-        value: function() {
+        value: function Selections() {
             this.super();
-            this.highlightedElementsController = RangeController.create();
-            this.highlightedElementsController.defineBinding("content", {
-                "<-": "_highlightedElements",
-                source: this
-            });
+            this.highlightedElementsController = this.selectedObjectsController;
         }
     },
 
-    _highlightedElements: {
-        value: null
-    },
-    /**
-     * Array of components that are highlighted
-     * @type {Array[Component]}
-     */
     highlightedElements: {
         get: function() {
-            return this._highlightedElements;
+            return this.selectedObjects;
         },
         set: function(value) {
-            if (value !== this._highlightedElements) {
-                if (this._highlightedElements) {
-                    this._highlightedElements.removeRangeChangeListener(this, "highlightedElements");
-                }
-                this._highlightedElements = value;
-                this._highlightedElements.addRangeChangeListener(this, "highlightedElements");
-
-                this.needsDraw = true;
-            }
+            this.selectedObjects = value;
         }
     },
 
     highlightedElementsController: {
         value: null
-    },
-
-    handleHighlightedElementsRangeChange: {
-        value: function() {
-            this.allNeedDraw();
-        }
-    },
-
-    handleUpdate: {
-        value: function (event) {
-            this.allNeedDraw();
-        }
-    },
-
-    allNeedDraw: {
-        value: function() {
-            if (!this._highlightedElements || !this._highlightedElements.length) {
-                return;
-            }
-
-            this.needsDraw = true;
-
-            // all selections need to be redrawn
-            var kids = this.templateObjects.repetition.childComponents;
-            for (var i = 0, len = kids.length; i < len; i++) {
-                kids[i].needsDraw = true;
-            }
-        }
     }
 
 });
