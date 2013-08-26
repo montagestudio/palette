@@ -5,8 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    RangeController = require("montage/core/range-controller").RangeController,
-    Selection = require('../selection.reel').Selection;
+    RangeController = require("montage/core/range-controller").RangeController;
 
 /**
     Description TODO
@@ -30,8 +29,7 @@ exports.Highlights = Montage.create(Component, /** @lends module:"ui/selection/h
         value: null
     },
     /**
-     * Array of components that are selected, and so should be surrounded
-     * by a selected border.
+     * Array of components that are highlighted
      * @type {Array[Component]}
      */
     highlightedElements: {
