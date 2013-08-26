@@ -351,7 +351,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
     hightlightElement: {
         value: function (object) {
             var highlightedElements = this.highlightedElements;
-            window.d = this
+
             if (highlightedElements.indexOf(object) === -1) {
                 //TODO what is the order of the highlightedElements?
                 highlightedElements.push(object);

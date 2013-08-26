@@ -659,6 +659,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             this.dispatchEventNamed("highlight", true, true, {
                 xpath: getElementXPath(element),
+                element: element,
                 highlight: true
             });
         }
