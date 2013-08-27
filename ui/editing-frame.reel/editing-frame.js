@@ -639,6 +639,11 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     handleMousemove: {
         value: function (evt) {
+
+            if (RUN_MODE === this.currentMode) {
+                return;
+            }
+
             var throttle = 100,
                 now = (new Date()).getTime(),
                 timeFrame = now - this._mousemoveLastThrottle;
@@ -648,18 +653,20 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
             this._mousemoveLastThrottle = now;
 
-            if (RUN_MODE === this.currentMode || 0 !== evt.button) {
-                return;
-            }
 
             var x = evt.offsetX,
                 y = evt.offsetY,
                 frameDocument = this.iframe.contentDocument,
-                element = frameDocument.elementFromPoint(x, y);
+                element = frameDocument.elementFromPoint(x, y),
+                nodeXPath = getElementXPath(element),
+                parentComponent = (element.parentNode)? element.parentNode.component : undefined,
+                isIteration = (parentComponent && parentComponent.constructor.name === "Repetition"),
+                firstIterationXPath = (isIteration)?  getElementXPath(parentComponent.element.children[0]) : undefined;
 
             this.dispatchEventNamed("highlight", true, true, {
-                xpath: getElementXPath(element),
+                xpath: nodeXPath,
                 element: element,
+                firstIterationXPath: firstIterationXPath,
                 highlight: true
             });
         }
