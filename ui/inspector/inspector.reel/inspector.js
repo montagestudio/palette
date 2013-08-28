@@ -127,11 +127,22 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
         }
     },
 
-    //TODO wait for the change to be considered committed, this action happens on every character change
     handleLabelFieldAction : {
         value: function (evt) {
             if (this.object) {
-                this.editingDocument.setOwnedObjectLabel(this.object, evt.target.value);
+                var label = evt.target.value;
+
+                var nodeProxy = this.object.properties.get("element");
+                // if this object has an element and the element's data-montage-id
+                // is the same as a label, then change them both
+                if (nodeProxy && nodeProxy.montageId === this.object.label) {
+                    this.editingDocument.undoManager.openBatch("Set label and montageId");
+                    this.editingDocument.setOwnedObjectLabel(this.object, label);
+                    this.editingDocument.setNodeProxyMontageId(nodeProxy, label);
+                    this.editingDocument.undoManager.closeBatch();
+                } else {
+                    this.editingDocument.setOwnedObjectLabel(this.object, label);
+                }
             }
         }
     }
