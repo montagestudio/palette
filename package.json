@@ -7,12 +7,12 @@
         "url": "git+ssh://git@github.com:declarativ/palette.git"
     },
     "dependencies": {
-        "montage": "git://github.com/montagejs/montage.git#v0.13.3",
-        "mousse": "0.1.2",
-        "matte": "git://github.com/montagejs/matte.git#v0.1.3"
+        "montage": "git://github.com/montagejs/montage.git#cae48ae3b23aff78170f680ae663b25385fb44c3",
+        "matte": "git://github.com/montagejs/matte.git#f80344e2db94f9f0964f4bf4f08bf36ccf82f746",
+        "mousse": "0.1.2"
     },
     "devDependencies": {
-        "montage-testing": "0.1.1",
+        "montage-testing": "git://github.com/montagejs/montage-testing.git#7059c89788c7f90b9313b1a33bf5db0c8ea8c6cb",
         "jshint": "~2.0.1"
     },
     "mappings": {
