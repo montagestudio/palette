@@ -29,9 +29,6 @@ var ValueTypeInspector = exports.ValueTypeInspector = Component.specialize(/** @
 
     readOnlyLabel: {
         get: function () {
-            if (!this._readOnlyLabel) {
-                this._readOnlyLabel = true;
-            }
             return this._readOnlyLabel;
         },
         set: function (value) {
@@ -46,8 +43,17 @@ var ValueTypeInspector = exports.ValueTypeInspector = Component.specialize(/** @
         value: null
     },
 
-    objectValue: {
+    _objectValue: {
         value: null
+    },
+
+    objectValue: {
+        get: function () {
+            return this._objectValue;
+        },
+        set: function (value) {
+            this._objectValue = value;
+        }
     },
 
     editingDocument: {

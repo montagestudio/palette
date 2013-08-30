@@ -1,4 +1,7 @@
 var Montage = require("montage").Montage,
+    shim = require("montage/collections/shim"),
+    Set = require("montage/collections/set"),
+    Map = require("montage/collections/map"),
     MontageVisitor = require("montage/core/serialization/serializer/montage-visitor").MontageVisitor;
 
 exports.ProxyVisitor = MontageVisitor.specialize({
@@ -13,6 +16,10 @@ exports.ProxyVisitor = MontageVisitor.specialize({
         value: function (object) {
             if (object.proxyType) {
                 return object.proxyType;
+            } else if (object instanceof Map) {
+                return "Map";
+            } else if (object instanceof Set) {
+                return "Set";
             } else {
                 return MontageVisitor.getTypeOf.call(this, object);
             }
@@ -26,6 +33,28 @@ exports.ProxyVisitor = MontageVisitor.specialize({
             } else {
                 this.handleProxyObject(malker, proxyObject, name);
             }
+        }
+    },
+
+    visitMap: {
+        value: function (malker, object, name) {
+            var mapProxy = this.builder.createObjectLiteral()
+
+            mapProxy.setProperty("type", "map");
+            mapProxy.setProperty("entries", object.toObject());
+
+            this.storeValue(mapProxy, object, name);
+        }
+    },
+
+    visitSet: {
+        value: function (malker, object, name) {
+            var setProxy = this.builder.createObjectLiteral()
+
+            setProxy.setProperty("type", "set");
+            setProxy.setProperty("values", object.toObject());
+
+            this.storeValue(setProxy, object, name);
         }
     },
 

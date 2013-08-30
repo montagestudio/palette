@@ -24,7 +24,7 @@ exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
 
     _valueChanged: {
         value: function() {
-            this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
+            this.dispatchOwnPropertyChange("entries", this.entries);
         }
     },
 
@@ -38,7 +38,7 @@ exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
                         } else {
                             var temp = this.objectValue;
                             this.objectValue = new Map();
-                            this.objectValue.add(temp);
+                            this.objectValue.set("", temp);
                         }
                     }
                 }
@@ -51,12 +51,28 @@ exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
         }
     },
 
+    entries: {
+        get: function() {
+            if (this.collectionValue) {
+                return this.collectionValue.entries();
+             }
+            return [];
+        }
+    },
+
+    _keyIndex: {
+        value: 0
+    },
+
     handleAddButtonAction: {
         value: function (evt) {
             if (!this.objectValue) {
-                this.objectValue = new Map();
+                this.collectionValue = new Map();
             }
-            console.log("handleAddButtonAction");
+            this.dispatchBeforeOwnPropertyChange("entries", this.entries);
+            this.collectionValue.set("key" + this._keyIndex, this.newObjectValue);
+            this._keyIndex++;
+            this.dispatchOwnPropertyChange("entries", this.entries);
         }
     },
 
@@ -64,7 +80,9 @@ exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
         value: function (evt) {
             var index = evt.detail.index;
             if (this.collectionValue && (index >= 0) && (index < this.collectionValue.length)) {
-                this.collectionValue.splice(index, 1);
+                this.dispatchBeforeOwnPropertyChange("entries", this.entries);
+                this.collectionValue.delete(this.collectionValue.entries()[index][0]);
+                this.dispatchOwnPropertyChange("entries", this.entries);
             }
         }
     }

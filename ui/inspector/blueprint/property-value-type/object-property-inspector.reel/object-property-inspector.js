@@ -39,14 +39,18 @@ exports.ObjectPropertyInspector = ValueTypeInspector.specialize(/** @lends modul
                 if (value[0] === "@") {
                     var label = value.substring(1);
                     var target = this.editingDocument.editingProxyMap[label];
-                    console.log("setting target ", target);
                     if (target) {
                         this.objectValue = target;
                     }
                 } else if (value.length === 0) {
                     this.objectValue = null;
+                } else {
+                    this.objectValue = value;
                 }
+            } else {
+                this.objectValue = value;
             }
+            console.log("set value: " + this.objectValue);
         }
     }
 

@@ -54,7 +54,7 @@ exports.SetPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
     handleAddButtonAction: {
         value: function (evt) {
             if (!this.objectValue) {
-                this.objectValue = new Set();
+                this.collectionValue = new Set();
             }
             this.collectionValue.add(this.newObjectValue);
         }

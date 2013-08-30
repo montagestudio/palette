@@ -55,12 +55,12 @@ exports.ListPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
     handleAddButtonAction: {
         value: function (evt) {
             if (!this.objectValue) {
-                this.objectValue = new Array();
+                this.collectionValue = new Array();
                 // The collectionValue property is basically a wrapper around the
                 // objectValue, this is why we need to manually dispatch a
                 // collectionValue change, otherwise the observers will not now
                 // that this property has changed as a consequence.
-                this.dispatchOwnPropertyChange("collectionValue", this.objectValue);
+                // this.dispatchOwnPropertyChange("collectionValue", this.objectValue);
             }
             this.collectionValue.add(this.newObjectValue);
         }
