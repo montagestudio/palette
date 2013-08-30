@@ -159,6 +159,13 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
         }
     },
 
+    /**
+     * Sets the label of the given proxy
+     * @param  {EditingProxy}       proxy
+     * @param  {string} newLabel    The label to set
+     * @return {boolean}            true if the label was changed, false if
+     * not, because the label already existed
+     */
     setOwnedObjectLabel: {
         value: function (proxy, newLabel) {
             var proxyMap = this._editingProxyMap,
@@ -174,7 +181,9 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
                 proxy.label = newLabel;
 
                 this.undoManager.register("Set Label", Promise.resolve([this.setOwnedObjectLabel, this, proxy, oldLabel]));
+                return true;
             }
+            return false;
         }
     },
 
