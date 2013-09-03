@@ -80,35 +80,36 @@ exports.DocumentController = Target.specialize({
     openUrl: {
         value: function (url) {
             var openDocument = this.documentForUrl(url),
-                promisedDocument,
                 documentType,
                 self = this;
 
-            // While opening a new document that is not already the currentDocument, consider none to be current
-            if (!this.currentDocument || url !== this.currentDocument.url) {
-                this._setCurrentDocument(null);
-            }
-
-            this._latestUrl = url;
-
             if (openDocument) {
-                promisedDocument = Promise.resolve(openDocument);
+                self._setCurrentDocument(openDocument);
+                return Promise(openDocument);
             } else {
+                // While opening a new document that is not already the opened,
+                // consider none to be current so that anything expecting a
+                // document doesn't work on the wrong one
+                if (!this.currentDocument || url !== this.currentDocument.url) {
+                    this._setCurrentDocument(null);
+                }
+
+                this._latestUrl = url;
+
                 documentType = this.documentTypeForUrl(url);
                 if (documentType) {
-                    promisedDocument = this.createDocumentWithTypeAndUrl(documentType, url);
+                    return this.createDocumentWithTypeAndUrl(documentType, url)
+                    .then(function (doc) {
+                        self.addDocument(doc);
+                        if (doc.url === self._latestUrl) {
+                            self._setCurrentDocument(doc);
+                        }
+                        return doc;
+                    });
                 } else {
-                    promisedDocument = Promise.resolve(null);
+                    return Promise(null);
                 }
             }
-
-            return promisedDocument.then(function (doc) {
-                self.addDocument(doc);
-                if (doc.url === self._latestUrl) {
-                    self._setCurrentDocument(doc);
-                }
-                return doc;
-            });
         }
     },
 
