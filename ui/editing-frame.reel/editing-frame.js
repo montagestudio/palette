@@ -653,20 +653,23 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
             this._mousemoveLastThrottle = now;
 
-
             var x = evt.offsetX,
                 y = evt.offsetY,
                 frameDocument = this.iframe.contentDocument,
                 element = frameDocument.elementFromPoint(x, y),
-                nodeXPath = getElementXPath(element),
-                parentComponent = (element.parentNode)? element.parentNode.component : undefined,
-                isIteration = (parentComponent && parentComponent.constructor.name === "Repetition"),
-                firstIterationXPath = (isIteration)?  getElementXPath(parentComponent.element.children[0]) : undefined;
+                nodeXPath = getElementXPath(element);
+
+            // find the first parent component
+            var node = element;
+            while (node.parentNode && !node.component) {
+                node = node.parentNode;
+            }
+            var parentComponent = (node)? node.component : undefined;
 
             this.dispatchEventNamed("highlight", true, true, {
                 xpath: nodeXPath,
                 element: element,
-                firstIterationXPath: firstIterationXPath,
+                parentComponentId: (parentComponent)? node.dataset.montageId : undefined,
                 highlight: true
             });
         }
