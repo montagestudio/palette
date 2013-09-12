@@ -666,7 +666,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             }
             var parentComponent = (node)? node.component : undefined;
 
-            this.dispatchEventNamed("highlight", true, true, {
+            this.dispatchEventNamed("elementHover", true, true, {
                 xpath: nodeXPath,
                 element: element,
                 parentComponentId: (parentComponent)? node.dataset.montageId : undefined,
