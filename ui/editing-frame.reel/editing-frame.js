@@ -661,15 +661,18 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             // find the first parent component
             var node = element;
-            while (node.parentNode && !node.component) {
+            var parentComponents = [];
+            while (node.parentNode) {
+                if (node.component) {
+                    parentComponents.push(node.dataset.montageId);
+                }
                 node = node.parentNode;
             }
-            var parentComponent = (node)? node.component : undefined;
 
             this.dispatchEventNamed("elementHover", true, true, {
                 xpath: nodeXPath,
                 element: element,
-                parentComponentId: (parentComponent)? node.dataset.montageId : undefined,
+                parentComponents: (parentComponents.length)? parentComponents : undefined,
                 highlight: true
             });
         }
