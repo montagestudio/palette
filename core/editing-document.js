@@ -13,6 +13,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             this.super();
             this._editingProxyMap = {};
             this.selectedObjects = [];
+            this.highlightedElements = [];
             this.errors = [];
         }
     },
@@ -332,7 +333,44 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
             //TODO otherwise, do we remove it here?
 
         }
-    }
+    },
+
+    highlightedElements: {
+        value: null
+    },
+
+    // Selects nothing
+    clearHighlightedElements: {
+        value: function () {
+            this.highlightedElements.clear();
+        }
+    },
+
+    // Remove object from current set of highlightedElements
+    deHighlightElement: {
+        value: function (object) {
+            var index = this.highlightedElements.indexOf(object);
+            if (index >= 0) {
+                this.highlightedElements.splice(index, 1);
+            }
+        }
+    },
+
+    // Add object to current set of highlightedElements
+    hightlightElement: {
+        value: function (object) {
+            var highlightedElements = this.highlightedElements;
+
+            if (highlightedElements.indexOf(object) === -1) {
+                //TODO what is the order of the highlightedElements?
+                highlightedElements.push(object);
+            }
+            //TODO otherwise, do we remove it here?
+
+        }
+    },
+
+
 
 
 });

@@ -62,7 +62,7 @@ exports.EditingController = Montage.create(Montage, {
                 sourceSerializationString = sourceTemplate.getSerialization().getSerializationString(),
                 self = this;
 
-            stageElement = stageElement || this.owner.element,
+            stageElement = stageElement || this.owner.element;
 
             // Insert the expected markup into the document
             sourceContentRange = sourceDocument.createRange();
