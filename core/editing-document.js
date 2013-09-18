@@ -357,7 +357,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
     },
 
     // Add object to current set of highlightedElements
-    hightlightElement: {
+    highlightElement: {
         value: function (object) {
             var highlightedElements = this.highlightedElements;
 
