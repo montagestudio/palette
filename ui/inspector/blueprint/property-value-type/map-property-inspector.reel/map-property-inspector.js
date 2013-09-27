@@ -55,7 +55,7 @@ exports.MapPropertyInspector = ValueTypeInspector.specialize(/** @lends module:"
         get: function() {
             if (this.collectionValue) {
                 return this.collectionValue.entries();
-             }
+            }
             return [];
         }
     },

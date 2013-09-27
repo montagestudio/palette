@@ -38,7 +38,7 @@ exports.ProxyVisitor = MontageVisitor.specialize({
 
     visitMap: {
         value: function (malker, object, name) {
-            var mapProxy = this.builder.createObjectLiteral()
+            var mapProxy = this.builder.createObjectLiteral();
 
             mapProxy.setProperty("type", "map");
             mapProxy.setProperty("entries", object.toObject());
@@ -49,7 +49,7 @@ exports.ProxyVisitor = MontageVisitor.specialize({
 
     visitSet: {
         value: function (malker, object, name) {
-            var setProxy = this.builder.createObjectLiteral()
+            var setProxy = this.builder.createObjectLiteral();
 
             setProxy.setProperty("type", "set");
             setProxy.setProperty("values", object.toObject());
