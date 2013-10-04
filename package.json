@@ -1,18 +1,18 @@
 {
     "name": "palette",
-    "version": "0.14.0",
+    "version": "0.15.0",
     "private": true,
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com:declarativ/palette.git"
     },
     "dependencies": {
-        "montage": "git://github.com/montagejs/montage.git#f58ca91bfcd99b05c3ec6aa68850d8fb39521636",
-        "matte": "git://github.com/montagejs/matte.git#409b040f82a2119a30f9bd5eba6110250a3b4538",
+        "montage": "git://github.com/montagejs/montage.git#eef9773bcdc67d1d8185227be93275226d60ba03",
+        "matte": "git://github.com/montagejs/matte.git#ed593caeed63dc337e3ceff7d70f144f79dc1697",
         "mousse": "0.1.2"
     },
     "devDependencies": {
-        "montage-testing": "git://github.com/montagejs/montage-testing.git#7059c89788c7f90b9313b1a33bf5db0c8ea8c6cb",
+        "montage-testing": "git://github.com/montagejs/montage-testing.git#3bf86e00f77fd6946454337135be442a9c359aa6",
         "jshint": "~2.0.1"
     },
     "mappings": {
