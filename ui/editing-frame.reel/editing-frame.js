@@ -481,7 +481,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // might not need this function, currently just used to clear the frame
     // but this should probably be part of loadTemplate
-    refresh: {
+    _refresh: {
         value: function (template) {
             if (!this._loadedTemplate && !this._ownerModule) {
                 throw new Error("Editing frame must have a loaded template before refreshing");
@@ -490,6 +490,25 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             return this.loadTemplate(template, this._ownerModule, this._ownerName);
         }
     },
+
+    // Throttle the refresh function
+    _refreshTimeout : {
+        value: 0
+    },
+    refresh: {
+        value: function (template) {
+            var now = new Date();
+
+            if ((now - this._refreshTimeout)  >= 200) {
+                this._refreshTimeout = now;
+                return this._refresh(template);
+            }
+            else {
+                return Promise.all();
+            }
+        }
+    },
+
 
     // EditingFrame Methods
 
