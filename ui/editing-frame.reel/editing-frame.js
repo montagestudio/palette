@@ -183,7 +183,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     _getRequireForModuleLocation: {
         value: function (location, _require) {
-            if (location.indexOf(_require.location) !== 0) {
+            if (location && location.indexOf(_require.location) !== 0) {
                 console.warn(location, "is not in package", _require.location, "Should be fine, but this function expects a URL");
             }
             var self = this;
