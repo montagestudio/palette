@@ -493,22 +493,26 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // Throttle the refresh function
     _refreshTimeout : {
-        value: 0
+        value: null
     },
     refresh: {
         value: function (template) {
-            var now = new Date();
+            var self = this,
+                now = new Date(),
+                wait = 200;
 
-            if ((now - this._refreshTimeout)  >= 200) {
-                this._refreshTimeout = now;
+            if (!this._refreshTimeout || ((now - this._refreshTimeout)  >= wait)) {
                 return this._refresh(template);
             }
             else {
-                return Promise.all();
+                var defer = Promise.defer();
+                setTimeout(function() {
+                    defer.resolve(self._refresh(template));
+                }, wait);
+                return defer.promise;
             }
         }
     },
-
 
     // EditingFrame Methods
 
