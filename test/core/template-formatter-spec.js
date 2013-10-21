@@ -1,5 +1,4 @@
-var Montage = require("montage").Montage,
-    Template = require("montage/core/template").Template,
+var Template = require("montage/core/template").Template,
     TemplateFormatter = require("core/template-formatter").TemplateFormatter;
 
 describe("core/template-formatter-spec", function () {

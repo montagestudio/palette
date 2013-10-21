@@ -3,8 +3,7 @@
     @requires montage
  @requires "../../value-type-inspector.reel"
 */
-var Montage = require("montage").Montage,
-    ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
+var ValueTypeInspector = require("../../value-type-inspector.reel").ValueTypeInspector;
 
 /**
     Description TODO

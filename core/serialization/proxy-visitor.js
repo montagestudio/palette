@@ -1,6 +1,4 @@
-var Montage = require("montage").Montage,
-    shim = require("montage/collections/shim"),
-    Set = require("montage/collections/set"),
+var Set = require("montage/collections/set"),
     Map = require("montage/collections/map"),
     MontageVisitor = require("montage/core/serialization/serializer/montage-visitor").MontageVisitor;
 
@@ -107,8 +105,7 @@ exports.ProxyVisitor = MontageVisitor.specialize({
 
     setObjectProperties: {
         value: function (malker, object) {
-            var propertiesSerializer,
-                propertiesObject;
+            var propertiesObject;
 
             propertiesObject = this.builder.top.getProperty("properties");
 
@@ -120,8 +117,7 @@ exports.ProxyVisitor = MontageVisitor.specialize({
 
     setSerializableObjectProperties: {
         value: function (malker, object) {
-            var type,
-                propertyName,
+            var propertyName,
                 propertyNames = object.properties.keys(),
                 propertyNamesCount = propertyNames.length;
 

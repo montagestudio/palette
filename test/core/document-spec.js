@@ -1,7 +1,5 @@
-var Montage = require("montage").Montage,
-    Document = require("core/document").Document,
-    Promise = require("montage/core/promise").Promise,
-    WAITSFOR_TIMEOUT = 2500;
+var Document = require("core/document").Document,
+    Promise = require("montage/core/promise").Promise;
 
 describe("core/document-spec", function () {
 

@@ -1,5 +1,3 @@
-var Montage = require("montage").Montage;
-
 exports.Palette = {
 
     stringifySerialization: function(object) {

@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
     ProxyReviver = require("core/serialization/proxy-reviver").ProxyReviver,
     ProxyContext = require("core/serialization/proxy-context").ProxyContext;
 
-var EditingDocument = exports.EditingDocument = Document.specialize( {
+exports.EditingDocument = Document.specialize( {
 
     constructor: {
         value: function EditingDocument() {
@@ -243,8 +243,7 @@ var EditingDocument = exports.EditingDocument = Document.specialize( {
 
     __removeProxy: {
         value: function (proxy) {
-            var proxyMap = this._editingProxyMap,
-                parentNode;
+            var proxyMap = this._editingProxyMap;
 
             if (!proxyMap.hasOwnProperty(proxy.label)) {
                 throw new Error("Could not find proxy to remove with label '" + proxy.label + "'");

@@ -3,11 +3,8 @@
     @requires montage
     @requires montage/ui/component
 */
-var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component,
-    Promise = require("montage/core/promise").Promise,
-    RangeController = require("montage/core/range-controller").RangeController,
-    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
+var Component = require("montage/ui/component").Component,
+    Promise = require("montage/core/promise").Promise;
 
 /**
     Description TODO

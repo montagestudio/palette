@@ -3,15 +3,14 @@
  @requires montage
  @requires montage/ui/component
  */
-var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component;
 
 /**
  Description TODO
  @class module:"./value-type-inspector.reel".ValueTypeInspector
  @extends module:montage/ui/component.Component
  */
-var ValueTypeInspector = exports.ValueTypeInspector = Component.specialize(/** @lends module:"./value-type-inspector.reel".ValueTypeInspector# */ {
+exports.ValueTypeInspector = Component.specialize(/** @lends module:"./value-type-inspector.reel".ValueTypeInspector# */ {
 
     constructor: {
         value: function ValueTypeInspector() {

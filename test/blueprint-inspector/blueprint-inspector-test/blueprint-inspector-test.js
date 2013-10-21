@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 var TargetObject = require("../support/target-object").TargetObject;
 
-var BlueprintInspectorTest = exports.BlueprintInspectorTest = Montage.create(Component, {
+exports.BlueprintInspectorTest = Montage.create(Component, {
 
     constructor: {
         value: function () {

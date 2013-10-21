@@ -1,6 +1,5 @@
 var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
-    Promise = require("montage/core/promise").Promise,
     SERIALIZATION_SCRIPT_TYPE = Template._SERIALIZATON_SCRIPT_TYPE;
 
 exports.TemplateFormatter = Montage.create(Montage, {

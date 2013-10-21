@@ -3,10 +3,7 @@
  @requires montage
  @requires montage/ui/component
  */
-var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var Promise = require("montage/core/promise").Promise;
-var Map = require("montage/collections/map");
 
 /**
  Description TODO

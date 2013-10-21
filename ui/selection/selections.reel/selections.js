@@ -5,8 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    RangeController = require("montage/core/range-controller").RangeController,
-    Selection = require('../selection.reel').Selection;
+    RangeController = require("montage/core/range-controller").RangeController;
 
 /**
     Description TODO

@@ -1,6 +1,4 @@
-var Montage = require("montage").Montage,
-    shim = require("montage/collections/shim"),
-    Set = require("montage/collections/set"),
+var Set = require("montage/collections/set"),
     Map = require("montage/collections/map"),
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     Promise = require("montage/core/promise").Promise,

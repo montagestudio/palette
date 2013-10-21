@@ -3,8 +3,7 @@
     @requires montage
     @requires montage/ui/component
 */
-var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component;
 
 /**
     Description TODO

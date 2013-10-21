@@ -155,7 +155,6 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         value: function (eventManager, document, location) {
             function hook(original) {
                 return function (target, eventType, listener) {
-                    var newTarget;
                     if (target === document) {
                         // Oh goodness gracious this is quite the HACK
                         // Try and get the correct document from the
@@ -619,9 +618,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             var x = evt.offsetX,
                 y = evt.offsetY,
                 frameDocument = this.iframe.contentDocument,
-                selectionCandidate = frameDocument.elementFromPoint(x, y),
-                isAddingToSelection = false,
-                isRemovingFromSelection = false;
+                selectionCandidate = frameDocument.elementFromPoint(x, y);
 
             this.dispatchEventNamed("select", true, true, {
                 candidate: selectionCandidate,

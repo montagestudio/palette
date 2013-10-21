@@ -5,8 +5,6 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Promise = require("montage/core/promise").Promise,
-    Event = require("core/event").Event,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 

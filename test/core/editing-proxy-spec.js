@@ -1,6 +1,5 @@
 var Montage = require("montage").Montage,
-    EditingProxy = require("core/editing-proxy").EditingProxy,
-    WAITSFOR_TIMEOUT = 2500;
+    EditingProxy = require("core/editing-proxy").EditingProxy;
 
 describe("core/editing-proxy-spec", function () {
 
