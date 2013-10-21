@@ -182,7 +182,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     _getRequireForModuleLocation: {
         value: function (location, _require) {
-            if (location.indexOf(_require.location) !== 0) {
+            if (location && location.indexOf(_require.location) !== 0) {
                 console.warn(location, "is not in package", _require.location, "Should be fine, but this function expects a URL");
             }
             var self = this;
@@ -480,13 +480,36 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // might not need this function, currently just used to clear the frame
     // but this should probably be part of loadTemplate
-    refresh: {
+    _refresh: {
         value: function (template) {
             if (!this._loadedTemplate && !this._ownerModule) {
                 throw new Error("Editing frame must have a loaded template before refreshing");
             }
 
             return this.loadTemplate(template, this._ownerModule, this._ownerName);
+        }
+    },
+
+    // Throttle the refresh function
+    _refreshTimeout : {
+        value: null
+    },
+    refresh: {
+        value: function (template) {
+            var self = this,
+                now = new Date(),
+                wait = 200;
+
+            if (!this._refreshTimeout || ((now - this._refreshTimeout)  >= wait)) {
+                return this._refresh(template);
+            }
+            else {
+                var defer = Promise.defer();
+                setTimeout(function() {
+                    defer.resolve(self._refresh(template));
+                }, wait);
+                return defer.promise;
+            }
         }
     },
 
