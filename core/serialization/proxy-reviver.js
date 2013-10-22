@@ -14,13 +14,18 @@ exports.ProxyReviver = MontageReviver.specialize({
 
     getTypeOf: {
         value: function(value) {
-            if (value.type === "map") {
-                return "Map";
-            } else if (value.type === "set") {
-                return "Set";
-            } else {
-                return this.super(value);
+            if (
+                typeof value === "object" &&
+                value !== null
+            ) {
+                if (value.type === "map") {
+                    return "Map";
+                } else if (value.type === "set") {
+                    return "Set";
+                }
             }
+
+            return this.super(value);
         }
     },
 
