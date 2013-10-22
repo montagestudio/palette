@@ -492,12 +492,14 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     // Delay the refresh method
     _refreshDefer: {
-        value : null
+        value: null
+    },
+    refreshDelay: {
+        value: 200
     },
     refresh: {
         value: function (template) {
-            var self = this,
-                wait = 200;
+            var self = this;
 
             if (this._refreshDefer) {
                 return this._refreshDefer.promise;
@@ -507,7 +509,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 setTimeout(function() {
                     self._refreshDefer.resolve(self._refresh(template));
                     self._refreshDefer = null;
-                }, wait);
+                }, this.refreshDelay);
                 return this._refreshDefer.promise;
             }
         }
