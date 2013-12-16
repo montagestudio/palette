@@ -2,6 +2,7 @@ var Promise = require("montage/core/promise").Promise;
 
 module.exports = sandboxMontageApp;
 function sandboxMontageApp(applicationLocation, frameWindow) {
+    var dispose;
     // Ensure trailing slash
     applicationLocation = applicationLocation.replace(/([^\/])$/, "$1/");
     if (!frameWindow) {
@@ -10,6 +11,12 @@ function sandboxMontageApp(applicationLocation, frameWindow) {
         document.body.appendChild(iframe);
 
         frameWindow = iframe.contentWindow;
+
+        dispose = function () {
+            document.body.removeChild(iframe);
+        };
+    } else {
+        dispose = Function.noop;
     }
 
     var booted = Promise.defer();
@@ -26,6 +33,7 @@ function sandboxMontageApp(applicationLocation, frameWindow) {
     }, true);
 
     frameWindow.montageDidLoad = function () {
+        frameWindow.require.dispose = dispose;
         booted.resolve([frameWindow.require, frameWindow.montageRequire]);
     };
 
