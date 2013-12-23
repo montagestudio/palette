@@ -1,3 +1,4 @@
+/*global module */
 var Promise = require("montage/core/promise").Promise;
 
 module.exports = sandboxMontageApp;
