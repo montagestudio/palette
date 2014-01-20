@@ -141,12 +141,6 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
     _populateWithSerialization: {
         value: function (serialization) {
             this._properties = new Map(serialization.properties);
-
-            if (serialization.lumieres) {
-                this.comment = serialization.lumieres.comment;
-                this.x = serialization.lumieres.x;
-                this.y = serialization.lumieres.y;
-            }
         }
     },
 
@@ -216,19 +210,6 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
             }
             return result;
         }
-    },
-
-    // Schematic Information
-    x: {
-        value: null
-    },
-
-    y: {
-        value: null
-    },
-
-    comment: {
-        value: null
     }
 
 });
