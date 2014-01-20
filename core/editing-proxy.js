@@ -125,6 +125,19 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         }
     },
 
+    _originalSerializationMap: {
+        value: null
+    },
+
+    /**
+     * A map of the original serialization used to create this proxy
+     */
+    originalSerializationMap: {
+        get: function () {
+            return this._originalSerializationMap;
+        }
+    },
+
     _properties: {
         value: null
     },
@@ -140,6 +153,9 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
 
     _populateWithSerialization: {
         value: function (serialization) {
+            this._originalSerializationMap = new Map(serialization);
+
+            // We specifically surface the properties as a top level API
             this._properties = new Map(serialization.properties);
         }
     },
