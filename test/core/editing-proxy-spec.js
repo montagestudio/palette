@@ -56,4 +56,45 @@ describe("core/editing-proxy-spec", function () {
         });
     });
 
+    describe("didChangeObjectProperties", function() {
+        beforeEach(function () {
+            serialization = {
+                prototype: exportId,
+                properties: {
+                    foo: "a string",
+                    bar: 42
+                }
+            };
+
+            proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
+        });
+
+        it("should dispatch when a property is changed", function() {
+            var listener = {
+                handleEvent: function(){}
+            };
+            spyOn(listener, "handleEvent");
+
+            proxy.addEventListener("didChangeObjectProperties", listener);
+            proxy.setObjectProperty("foo", "another string");
+
+            expect(listener.handleEvent.callCount).toBe(1);
+        });
+
+        it("should dispatch a single time when multiple properties are changed", function() {
+            var listener = {
+                handleEvent: function(){}
+            };
+            spyOn(listener, "handleEvent");
+
+            proxy.addEventListener("didChangeObjectProperties", listener);
+            proxy.setObjectProperties({
+                foo: "another string",
+                bar: 1
+            });
+
+            expect(listener.handleEvent.callCount).toBe(1);
+        })
+    });
+
 });
