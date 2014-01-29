@@ -97,4 +97,46 @@ describe("core/editing-proxy-spec", function () {
         })
     });
 
+    describe("propertiesChangeDispatchingEnabled", function() {
+        beforeEach(function () {
+            serialization = {
+                prototype: exportId,
+                properties: {
+                    foo: "a string",
+                    bar: 42
+                }
+            };
+
+            proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
+        });
+
+        it("should not dispatch didChangeObjectProperties when propertiesChangeDispatchingEnabled is enabled on setObjectProperty", function() {
+            var listener = {
+                handleEvent: function(){}
+            };
+            spyOn(listener, "handleEvent");
+
+            proxy.addEventListener("didChangeObjectProperties", listener);
+            proxy.propertiesChangeDispatchingEnabled = false;
+            proxy.setObjectProperty("foo", "another string");
+
+            expect(listener.handleEvent.callCount).toBe(0);
+        });
+
+        it("should not dispatch didChangeObjectProperties when propertiesChangeDispatchingEnabled is enabled on setObjectProperties", function() {
+            var listener = {
+                handleEvent: function(){}
+            };
+            spyOn(listener, "handleEvent");
+
+            proxy.addEventListener("didChangeObjectProperties", listener);
+            proxy.propertiesChangeDispatchingEnabled = false;
+            proxy.setObjectProperties({
+                foo: "another string",
+                bar: 1
+            });
+
+            expect(listener.handleEvent.callCount).toBe(0);
+        });
+    });
 });

@@ -160,11 +160,20 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         }
     },
 
+    /**
+     * Whether to dispatch a property change when a property is changed.
+     */
+    propertiesChangeDispatchingEnabled: {
+        value: true
+    },
+
     _dispatchDidChangeObjectProperties: {
         value: function(properties) {
-            this.dispatchEventNamed("didChangeObjectProperties", true, false, {
-                properties: properties
-            });
+            if (this.propertiesChangeDispatchingEnabled) {
+                this.dispatchEventNamed("didChangeObjectProperties", true, false, {
+                    properties: properties
+                });
+            }
         }
     },
 
