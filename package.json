@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "montage": "git://github.com/montagejs/montage.git#892cf7a3627dd118f2d2de7c8e20a13bb42b29ba",
-        "matte": "git://github.com/montagejs/matte.git#ed593caeed63dc337e3ceff7d70f144f79dc1697",
+        "matte": "git://github.com/montagejs/matte.git#30ab3c59fa496186a758a2fe7b287b7d5e73a4f2",
         "mousse": "0.3.0"
     },
     "devDependencies": {
