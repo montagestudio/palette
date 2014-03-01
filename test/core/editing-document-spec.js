@@ -105,6 +105,23 @@ describe("core/editing-document-spec", function () {
             });
         });
 
+        it("should should dispatch a didSetOwnedObjectLabel", function () {
+            var event;
+            var listener = {
+                handleEvent: function(){}
+            };
+            spyOn(listener, "handleEvent");
+
+            editingDocument.addEventListener("didSetOwnedObjectLabel", listener);
+            editingDocument.setOwnedObjectLabel(aProxy, newLabel);
+
+            expect(listener.handleEvent.callCount).toBe(1);
+            event = listener.handleEvent.mostRecentCall.args[0];
+            expect(event.detail.proxy).toBe(aProxy);
+            expect(event.detail.newLabel).toBe(newLabel);
+            expect(event.detail.oldLabel).toBe(originalLabel);
+        });
+
     });
 
     describe("didSetOwnedObjectProperty", function() {

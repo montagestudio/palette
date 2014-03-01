@@ -187,6 +187,7 @@ exports.EditingDocument = Document.specialize( {
                 proxy.label = newLabel;
 
                 this.undoManager.register("Set Label", Promise.resolve([this.setOwnedObjectLabel, this, proxy, oldLabel]));
+                this._dispatchDidSetOwnedObjectLabel(proxy, newLabel, oldLabel);
                 return true;
             }
             return false;
@@ -395,5 +396,17 @@ exports.EditingDocument = Document.specialize( {
                 });
             }
         }
-    }
+    },
+
+    _dispatchDidSetOwnedObjectLabel: {
+        value: function(proxy, newLabel, oldLabel) {
+            if (this.propertyChangesDispatchingEnabled) {
+                this.dispatchEventNamed("didSetOwnedObjectLabel", true, false, {
+                    proxy: proxy,
+                    newLabel: newLabel,
+                    oldLabel: oldLabel
+                });
+            }
+        }
+    },
 });
