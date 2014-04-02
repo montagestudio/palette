@@ -19,8 +19,6 @@
         "stage": "stage"
     },
     "scripts": {
-        "install": "cd stage && npm install",
-        "update": "cd stage && npm update",
         "lint": "./node_modules/.bin/jshint --verbose ."
     }
 }
