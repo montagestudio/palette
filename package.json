@@ -15,9 +15,6 @@
         "montage-testing": "git://github.com/montagejs/montage-testing.git#3bf86e00f77fd6946454337135be442a9c359aa6",
         "jshint": "~2.0.1"
     },
-    "mappings": {
-        "stage": "stage"
-    },
     "scripts": {
         "lint": "./node_modules/.bin/jshint --verbose ."
     }
