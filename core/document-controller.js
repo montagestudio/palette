@@ -74,12 +74,12 @@ exports.DocumentController = Target.specialize({
      * of the appropriate type will be created and added to the collection of open documents.
      *
      * @param {string} url The url for which to open a representative document
+     * @param {Document} documentType The the document type to use to open the given url
      * @return {Promise} A promise for the document instance representing the specified url
      */
     openUrl: {
-        value: function (url) {
+        value: function (url, documentType) {
             var openDocument = this.documentForUrl(url),
-                documentType,
                 doc,
                 self = this;
 
@@ -99,7 +99,7 @@ exports.DocumentController = Target.specialize({
 
                 this._latestUrl = url;
 
-                documentType = this.documentTypeForUrl(url);
+                documentType = (documentType)? documentType : this.documentTypeForUrl(url);
                 if (documentType) {
                     doc = this.createDocumentWithTypeAndUrl(documentType, url);
                     this.addDocument(doc);
