@@ -30,12 +30,18 @@ exports.ResourcePropertyInspector = ValueTypeInspector.specialize(/** @lends Res
     },
 
     enterDocument: {
-        value: function (firstTime) {
-            if (firstTime) {
-                this.element.addEventListener("drop", this, false);
-                this.element.addEventListener("dragover", this, false);
-                this.element.addEventListener("dragleave", this, false);
-            }
+        value: function () {
+            this.element.addEventListener("drop", this, false);
+            this.element.addEventListener("dragover", this, false);
+            this.element.addEventListener("dragleave", this, false);
+        }
+    },
+
+    exitDocument: {
+        value: function () {
+            this.element.removeEventListener("drop", this, false);
+            this.element.removeEventListener("dragover", this, false);
+            this.element.removeEventListener("dragleave", this, false);
         }
     },
 
