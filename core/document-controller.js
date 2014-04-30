@@ -113,6 +113,12 @@ exports.DocumentController = Target.specialize({
                         if (doc.url === self._latestUrl) {
                             self._setCurrentDocument(doc);
                         }
+                    }, function() {
+                        if (doc.url === self._latestUrl) {
+                            self._setCurrentDocument(doc);
+                        }
+                    })
+                    .then(function() {
                         return doc;
                     });
                 } else {
