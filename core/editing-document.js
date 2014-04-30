@@ -215,6 +215,21 @@ exports.EditingDocument = Document.specialize( {
         }
     },
 
+    _replaceProxies: {
+        value: function(proxies) {
+            this.dispatchBeforeOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchBeforeOwnPropertyChange("editingProxies", this.editingProxies);
+
+            this._editingProxyMap.clear();
+            proxies.forEach(function (proxy) {
+                this.__addProxy(proxy);
+            }, this);
+
+            this.dispatchOwnPropertyChange("editingProxyMap", this.editingProxyMap);
+            this.dispatchOwnPropertyChange("editingProxies", this.editingProxies);
+        }
+    },
+
     _removeProxies: {
         value: function (proxies) {
             var self = this;
