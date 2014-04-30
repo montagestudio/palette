@@ -9,8 +9,8 @@ var Montage = require("montage").Montage,
 exports.EditingDocument = Document.specialize( {
 
     constructor: {
-        value: function EditingDocument(url) {
-            this.super(url);
+        value: function EditingDocument() {
+            this.super();
             this._editingProxyMap = {};
             this.selectedObjects = [];
             this.highlightedElements = [];
@@ -22,17 +22,11 @@ exports.EditingDocument = Document.specialize( {
         value: true
     },
 
-    load: {
-        value: function (fileUrl, packageUrl, packageRequire) {
-            return Promise.resolve(this.init(fileUrl, packageRequire));
-        }
-    },
-
     init: {
-        value: function (fileUrl, packageRequire) {
-            var self = this.super(fileUrl);
-            self._packageRequire = packageRequire;
-            return self;
+        value: function (fileUrl, dataSource, packageRequire) {
+            this.super(fileUrl, dataSource);
+            this._packageRequire = packageRequire;
+            return this;
         }
     },
 

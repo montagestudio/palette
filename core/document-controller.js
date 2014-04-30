@@ -13,6 +13,10 @@ exports.DocumentController = Target.specialize({
         }
     },
 
+    _documentDataSource: {
+        value: null
+    },
+
     _currentDocument: {
         value: null
     },
@@ -104,7 +108,7 @@ exports.DocumentController = Target.specialize({
                     doc = this.createDocumentWithTypeAndUrl(documentType, url);
                     this.addDocument(doc);
                     this.selectDocument(doc);
-                    return this.loadDocument(doc)
+                    return doc.load()
                     .then(function() {
                         if (doc.url === self._latestUrl) {
                             self._setCurrentDocument(doc);
@@ -133,13 +137,7 @@ exports.DocumentController = Target.specialize({
      */
     createDocumentWithTypeAndUrl: {
         value: function (documentType, url) {
-            return new documentType(url);
-        }
-    },
-
-    loadDocument: {
-        value: function(doc) {
-            return doc.load(doc.url);
+            return new documentType().init(url, this._documentDataSource);
         }
     },
 
