@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="range-property-inspector.css">
+    <script type="text/montage-serialization">
+    {
+        "owner":{
+            "properties":{
+                "element":{"#":"range-property-inspector"},
+                "inputSlider": {"@":"inputSlider"}
+            },
+            "bindings":{
+                "isTextSliderEditing":{"<-":"@textSlider.isEditing"}
+            }
+        },
+
+        "propertyNameSubstitution":{
+            "prototype":"montage/ui/substitution.reel",
+            "properties":{
+                "element":{"#":"propertyNameSubstitution"}
+            },
+            "bindings":{
+                "switchValue":{"<-":"@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"}
+            }
+        },
+
+        "readOnlyPropertyName":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{"#":"readOnlyPropertyName"}
+            },
+            "bindings":{
+                "value":{"<-":"@owner.label"}
+            }
+        },
+
+        "readWritePropertyName":{
+            "prototype":"matte/ui/input-text.reel",
+            "properties":{
+                "element":{"#":"readWritePropertyName"}
+            },
+            "bindings":{
+                "value":{ "<->":"@owner.label"}
+            }
+        },
+
+        "readWritePropertySubstitution":{
+            "prototype":"montage/ui/substitution.reel",
+            "properties":{
+                "element":{"#":"readWritePropertySubstitution"}
+            },
+            "bindings":{
+                "switchValue":{"<-":"@owner.propertyBlueprint.readOnly ? 'readOnly' : 'readWrite'"}
+            }
+        },
+
+        "propertyValueReadOnly":{
+            "prototype":"montage/ui/text.reel",
+            "properties":{
+                "element":{"#":"propertyValueReadOnly"}
+            },
+            "bindings":{
+                "value":{"<-":"@owner.rangeValue"}
+            }
+        },
+
+        "inputSlider":{
+            "prototype":"matte/ui/input-range.reel",
+            "properties":{
+                "element":{"#":"inputSlider"}
+            },
+            "bindings":{
+                "value":{"<->":"@owner.rangeValue"},
+                "min": {"<-":"@owner.min"},
+                "max": {"<-":"@owner.max"}
+            }
+        },
+
+        "textSlider":{
+            "prototype":"matte/ui/text-slider.reel",
+            "properties":{
+                "element":{"#":"textSlider"}
+            },
+            "bindings": {
+                "value":{"<->":"@owner.rangeValue"},
+                "converter": {"<-": "@owner.converter"},
+                "smallStepSize": {"<-":"@owner.smallStepSize"},
+                "stepSize": {"<-":"@owner.stepSize"},
+                "largeStepSize": {"<-":"@owner.largeStepSize"},
+                "minValue": {"<-":"@owner.min"},
+                "maxValue": {"<-":"@owner.max"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+<div data-montage-id="range-property-inspector" class="Property RangePropertyInspector">
+    <div data-montage-id="propertyNameSubstitution" class="Property-label">
+        <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
+        <input data-arg="readWrite" data-montage-id="readWritePropertyName"/>
+    </div>
+    <div data-montage-id="readWritePropertySubstitution" class="Property-field">
+        <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
+        <div data-arg="readWrite" class="RangePropertyInspector-slider">
+            <input type="range" data-montage-id="inputSlider" class="RangePropertyInspectorSlider-inputSlider" />
+            <span data-montage-id="textSlider" class="RangePropertyInspectorSlider-textSlider"></span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
