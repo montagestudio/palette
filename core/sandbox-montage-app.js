@@ -51,8 +51,8 @@ function sandboxMontageApp(applicationLocation, frameWindow) {
         frameWindow.montageDidLoad = function () {
             // don't capture errors any more
             delete frameWindow.onerror;
-            frameWindow.require.dispose = dispose;
-            booted.resolve([frameWindow.require, frameWindow.montageRequire]);
+            frameWindow.mr.dispose = dispose;
+            booted.resolve([frameWindow.mr, frameWindow.montageRequire]);
         };
 
         // Need all XHRs to have withCredentials.
