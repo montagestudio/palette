@@ -18,33 +18,6 @@ exports.EnumPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
         }
     },
 
-    _hasValueBeenInitialized: {
-        value: false
-    },
-
-    objectValue: {
-        get: function() {
-            return Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").get.call(this);
-        },
-        set: function(value) {
-            // The first valid value we get is the default and should not be serialized
-            if (this._hasValueBeenInitialized) {
-                Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").set.apply(this, arguments);
-            } else {
-                this._fakeUpdateValue(value);
-            }
-        }
-    },
-
-    _fakeUpdateValue: {
-        value: function(value) {
-            if (typeof value !== "undefined" && value !== null) {
-                this._hasValueBeenInitialized = true;
-            }
-            Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").set.call(this, void 0);
-        }
-    },
-
     draw: {
         value: function() {
             if (this.propertyBlueprint) {
