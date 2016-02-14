@@ -6,8 +6,8 @@ describe("core/template-formatter-spec", function () {
         template;
 
     beforeEach(function() {
-        template = Template.create();
-        formatter = TemplateFormatter.create().init(template);
+        template = new Template();
+        formatter = new TemplateFormatter().init(template);
     });
 
     describe("indentation", function() {

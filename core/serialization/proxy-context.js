@@ -9,12 +9,6 @@ exports.ProxyContext = Montage.specialize.call(Context, {
         }
     },
 
-    create: {
-        value: function () {
-            return Montage.create(this);
-        }
-    },
-
     init: {
         value: function (serialization, reviver, objects) {
             Context.call(this, serialization, reviver, objects);

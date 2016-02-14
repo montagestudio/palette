@@ -7,7 +7,7 @@ describe("core/document-controller-spec", function () {
     var documentController;
 
     beforeEach(function () {
-        documentController = DocumentController.create();
+        documentController = new DocumentController();
     });
 
     describe("initialization", function () {
@@ -122,7 +122,7 @@ describe("core/document-controller-spec", function () {
         var documentA;
 
         beforeEach(function () {
-            documentA = Montage.create();
+            documentA = new Montage();
             documentA.url = "fileA";
 
             documentController.addDocument(documentA);
@@ -144,11 +144,11 @@ describe("core/document-controller-spec", function () {
             documentB;
 
         beforeEach(function () {
-            documentA = Montage.create();
+            documentA = new Montage();
             documentA.url = "fileA";
             documentController.addDocument(documentA);
 
-            documentB = Montage.create();
+            documentB = new Montage();
             documentB.url = "fileB";
             documentController.addDocument(documentB);
         });

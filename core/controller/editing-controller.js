@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
  * @type {EditingController}
  * TODO rename this as TemplateController?
  */
-exports.EditingController = Montage.create(Montage, {
+exports.EditingController = Montage.specialize({
 
     /**
      * The EditingFrame housing the template this EditingController is controlling
@@ -58,7 +58,7 @@ exports.EditingController = Montage.create(Montage, {
             var sourceContentRange,
                 sourceContentFragment,
                 sourceDocument = sourceTemplate.document,
-                deserializer = Deserializer.create(),
+                deserializer = new Deserializer(),
                 sourceSerializationString = sourceTemplate.getSerialization().getSerializationString(),
                 self = this;
 

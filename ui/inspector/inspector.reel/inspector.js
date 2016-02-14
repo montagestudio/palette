@@ -104,7 +104,7 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
                 editor;
 
             this.inspectorController.editorComponent().then(function (Editor) {
-                editor = Editor.create();
+                editor = new Editor();
                 editor.object = self._object;
                 editor.editingDocument = self.editingDocument;
                 self.dispatchEventNamed("enterModalEditor", true, true, {

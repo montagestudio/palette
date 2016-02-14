@@ -12,8 +12,8 @@ describe("core/editing-proxy-spec", function () {
             prototype: exportId,
             properties: {}
         };
-        editingDocument = Montage.create();
-        proxy = EditingProxy.create().init(label, serialization, exportId, editingDocument);
+        editingDocument = new Montage();
+        proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
     });
 
     describe("initialization", function () {
@@ -41,7 +41,7 @@ describe("core/editing-proxy-spec", function () {
                 }
             };
 
-            proxy = EditingProxy.create().init(label, serialization, exportId, editingDocument);
+            proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
         });
 
         it("must preserve top level properties", function () {

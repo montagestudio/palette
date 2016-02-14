@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
     SERIALIZATION_SCRIPT_TYPE = Template._SERIALIZATON_SCRIPT_TYPE;
 
-exports.TemplateFormatter = Montage.create(Montage, {
+exports.TemplateFormatter = Montage.specialize({
     NO_FORMATTING: {
         value: {
             "PRE": true

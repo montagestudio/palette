@@ -16,7 +16,7 @@ exports.BlueprintEditor = Component.specialize(/** @lends module:"./blueprint-ed
     constructor: {
         value: function BlueprintEditor() {
             this.super();
-            this.propertyGroupsController = RangeController.create();
+            this.propertyGroupsController = new RangeController();
         }
     },
 

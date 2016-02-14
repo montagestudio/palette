@@ -4,13 +4,13 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 var TargetObject = require("../support/target-object").TargetObject;
 
-exports.BlueprintInspectorTest = Montage.create(Component, {
+exports.BlueprintInspectorTest = Component.specialize({
 
     constructor: {
         value: function () {
             var self = this;
             this.super();
-            self.object = TargetObject.create();
+            self.object = new TargetObject();
             self.object.blueprint.then(function(blueprint) {
                 self.blueprint = blueprint;
                 self.booleanPropertyBlueprint = blueprint.propertyBlueprintForName("booleanProperty");

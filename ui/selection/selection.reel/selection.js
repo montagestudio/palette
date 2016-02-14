@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
     @class module:"ui/selection/selection.reel".Selection
     @extends module:montage/ui/component.Component
 */
-exports.Selection = Montage.create(Component, /** @lends module:"ui/selection/selection.reel".Selection# */ {
+exports.Selection = Component.specialize(/** @lends module:"ui/selection/selection.reel".Selection# */ {
 
     /**
      * Init

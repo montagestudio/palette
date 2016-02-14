@@ -24,7 +24,7 @@ describe("core/document-spec", function () {
         var document;
 
         beforeEach(function () {
-            document = Document.create().init("http://example.com/foo/bar/baz.jpg");
+            document = new Document().init("http://example.com/foo/bar/baz.jpg");
         });
 
         it("should choose the last component of the url as the title", function () {
@@ -41,7 +41,7 @@ describe("core/document-spec", function () {
         var document;
 
         beforeEach(function () {
-            document = Document.create().init("http://example.com/foo/bar/baz.jpg");
+            document = new Document().init("http://example.com/foo/bar/baz.jpg");
             document.a = 1;
         });
 
@@ -54,7 +54,7 @@ describe("core/document-spec", function () {
         var document, promise;
 
         beforeEach(function () {
-            document = Document.create().init("http://example.com/foo/bar/baz.jpg");
+            document = new Document().init("http://example.com/foo/bar/baz.jpg");
             document.a = 1;
 
             expect(document.isDirty).toBe(false);

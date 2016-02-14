@@ -61,7 +61,7 @@ require.read(require.mappings.stage.location + "stage.css")
     @class module:"ui/editing-frame.reel".EditingFrame
     @extends module:ui/component.Component
 */
-exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/editing-frame.reel".EditingFrame# */ {
+exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editing-frame.reel".EditingFrame# */ {
 
     /**
      * @name update
@@ -354,7 +354,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         return packageRequire.async(ownerModule)
                         .get(ownerName)
                         .then(function (ownerPrototype) {
-                            return ownerPrototype.create();
+                            return new ownerPrototype();
                         }).then(function (owner) {
                             // prevent owner from loading its own template
                             owner._isTemplateLoaded = true;

@@ -52,7 +52,7 @@ exports.Document = Target.specialize({
             this._url = url;
             this._dataSource = dataSource;
 
-            var undoManager = this.undoManager = UndoManager.create();
+            var undoManager = this.undoManager = new UndoManager;
             undoManager.addEventListener("operationRegistered", this, false);
             undoManager.addEventListener("undo", this, false);
             undoManager.addEventListener("redo", this, false);
@@ -141,7 +141,7 @@ exports.Document = Target.specialize({
     /**
      * Saves the data to the specified dataWriter. For example:<br/>
      * <code>
-     *      var serializer = Serializer.create().initWithRequire(this.packageRequire);
+     *      var serializer = new Serializer().initWithRequire(this.packageRequire);
      *      var serializedDescription = serializer.serializeObject(this.currentProxyObject.proxiedObject);
      *      return dataWriter(serializedDescription, location);
      * </code>

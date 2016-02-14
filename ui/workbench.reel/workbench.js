@@ -19,7 +19,7 @@ var Montage = require("montage").Montage,
 // tool cursors, alignment guides, contextual editing components, and other editing specific visuals
 // well be drawn within the workbench above, but coordinated with, the document being edited.
 
-exports.Workbench = Montage.create(Component, /** @lends module:"ui/workbench.reel".Workbench# */ {
+exports.Workbench = Component.specialize(/** @lends module:"ui/workbench.reel".Workbench# */ {
 
     loadTemplate: {
         value: function (template, ownerModule, ownerName) {

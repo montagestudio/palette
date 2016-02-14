@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-exports.TargetObject = Montage.create(Montage, {
+exports.TargetObject = Montage.specialize({
 
     booleanProperty: {
         value: false

@@ -106,7 +106,7 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
 
             beforeEach(function () {
                 editingFrame.reset();
-                template = Template.create();
+                template = new Template();
             });
 
             describe("", function () {
