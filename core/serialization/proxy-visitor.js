@@ -19,7 +19,7 @@ exports.ProxyVisitor = MontageVisitor.specialize({
             } else if (object instanceof Set) {
                 return "Set";
             } else {
-                return MontageVisitor.getTypeOf.call(this, object);
+                return MontageVisitor.prototype.getTypeOf.call(this, object);
             }
         }
     },

@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
-    SERIALIZATION_SCRIPT_TYPE = Template._SERIALIZATON_SCRIPT_TYPE;
+    SERIALIZATION_SCRIPT_TYPE = Template.prototype._SERIALIZATION_SCRIPT_TYPE;
 
 exports.TemplateFormatter = Montage.specialize({
     NO_FORMATTING: {

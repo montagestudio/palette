@@ -13,7 +13,7 @@ exports.ProxySerializer = MontageSerializer.specialize({
     initWithRequire: {
         value: function (_require) {
             //TODO use the MontageSerializer from the specified require
-            var self = MontageSerializer.initWithRequire.call(this, _require);
+            var self = MontageSerializer.prototype.initWithRequire.call(this, _require);
 
             self._visitor = new this.visitorConstructor().initWithBuilderAndLabelerAndRequireAndUnits(
                 self._builder,
