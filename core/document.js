@@ -154,7 +154,7 @@ exports.Document = Target.specialize({
     save: {
         value: function (url, dataWriter) {
             var self = this;
-            return Promise.when(this._dataSource.write(url, ""))
+            return Promise.resolve(this._dataSource.write(url, ""))
                 .then(function (value) {
                     self._changeCount = 0;
                     return value;

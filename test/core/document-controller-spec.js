@@ -2,6 +2,10 @@ var Montage = require("montage").Montage,
     DocumentController = require("core/document-controller").DocumentController,
     Promise = require("montage/core/promise").Promise;
 
+function isPromiseAlike(o) {
+    return o && typeof o.then === "function";
+}
+
 describe("core/document-controller-spec", function () {
 
     var documentController;
@@ -26,7 +30,7 @@ describe("core/document-controller-spec", function () {
 
         it("should return a promise for a document", function () {
             var promisedDocument = documentController.openUrl("fileA");
-            expect(Promise.isPromiseAlike(promisedDocument)).toBeTruthy();
+            expect(isPromiseAlike(promisedDocument)).toBeTruthy();
             promisedDocument.done();
         });
 

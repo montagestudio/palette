@@ -216,7 +216,7 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
             // // If already loading finish off and then load again
             var deferredEditingInformation = this._deferredEditingInformation;
             if (deferredEditingInformation && deferredEditingInformation.promise.isPending()) {
-                var newDeferredEditingInformation = this._deferredEditingInformation = Promise.defer();
+                var newDeferredEditingInformation = this._initializeNewDeferredEditingInformation();
 
                 var next = function () {
                     // Clear out the defered editing info so that this
@@ -238,7 +238,7 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
             this._ownerModule = ownerModule;
             this._ownerName = ownerName;
 
-            deferredEditingInformation = this._deferredEditingInformation = Promise.defer();
+            deferredEditingInformation = this._initializeNewDeferredEditingInformation();
 
             var instances;
 
@@ -310,7 +310,7 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
                     frame: self
                 });
             })
-            .fail(deferredEditingInformation.reject);
+            .catch(deferredEditingInformation.reject);
 
             return deferredEditingInformation.promise;
         }
@@ -324,22 +324,23 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
 
             // set once the template has been initialized
             var documentPart;
-            var drawn = Promise.defer();
 
             var frameDocument = this.iframe.contentDocument;
             var instances = template.getInstances();
 
-            function firstDrawHandler() {
-                // Strictly speaking this handler is only being called
-                // because the event is bubbling up from its children and
-                // so the stage may not be fully drawn. However the drawing
-                // completes syncronously but the resolution of the
-                // promise is async, so by the time the promise handler
-                // is called, the drawing will be complete.
-                rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
-                drawn.resolve();
-            }
-            rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
+            var drawn = new Promise(function(resolve) {
+                function firstDrawHandler() {
+                    // Strictly speaking this handler is only being called
+                    // because the event is bubbling up from its children and
+                    // so the stage may not be fully drawn. However the drawing
+                    // completes syncronously but the resolution of the
+                    // promise is async, so by the time the promise handler
+                    // is called, the drawing will be complete.
+                    rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
+                    resolve();
+                }
+                rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
+            });
 
             var createOwner;
             if (!instances || !instances.owner) {
@@ -427,7 +428,7 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
     },
 
     // Delay the refresh method
-    _refreshDefer: {
+    _refreshPromise: {
         value: null
     },
     refreshDelay: {
@@ -437,16 +438,17 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
         value: function (template) {
             var self = this;
 
-            if (this._refreshDefer) {
-                return this._refreshDefer.promise;
+            if (this._refreshPromise) {
+                return this._refreshPromise;
             }
             else {
-                this._refreshDefer = Promise.defer();
-                setTimeout(function() {
-                    self._refreshDefer.resolve(self._refresh(template));
-                    self._refreshDefer = null;
-                }, this.refreshDelay);
-                return this._refreshDefer.promise;
+                this._refreshPromise = new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve(self._refresh(template));
+                        self._refreshPromise = null;
+                    }, this.refreshDelay);
+                });
+                return this._refreshPromise;
             }
         }
     },
@@ -564,6 +566,22 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
             element.addEventListener("dragleave", this, false);
             element.addEventListener("dragover", this, false);
             element.addEventListener("drop", this, false);
+        }
+    },
+
+    _initializeNewDeferredEditingInformation: {
+        value: function() {
+            var resolve, reject;
+            var promise = new Promise(function(res, rej) {
+                resolve = res;
+                reject = rej;
+            });
+            this._deferredEditingInformation = {
+                promise: promise,
+                resolve: resolve,
+                reject: reject
+            };
+            return this._deferredEditingInformation;
         }
     },
 

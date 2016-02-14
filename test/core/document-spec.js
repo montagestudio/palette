@@ -1,13 +1,17 @@
 var Document = require("core/document").Document,
     Promise = require("montage/core/promise").Promise;
 
+function isPromiseAlike(o) {
+    return o && typeof o.then === "function";
+}
+
 describe("core/document-spec", function () {
 
     describe("asynchronously loading a document", function () {
 
         it("should return a promise for the expected document", function () {
             var promisedDocument = Document.load("myUrl");
-            expect(Promise.isPromiseAlike(promisedDocument)).toBeTruthy();
+            expect(isPromiseAlike(promisedDocument)).toBeTruthy();
             promisedDocument.done();
         });
 

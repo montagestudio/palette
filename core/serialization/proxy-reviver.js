@@ -71,7 +71,7 @@ exports.ProxyReviver = MontageReviver.specialize({
             context.setObjectLabel(proxyObject, label);
             revivedSerialization = this.reviveObjectLiteral(value, context);
 
-            if (Promise.isPromise(revivedSerialization)) {
+            if (Promise.is(revivedSerialization)) {
                 return revivedSerialization.then(function (revivedSerialization) {
                     return self._initProxy(proxyObject, label, context, revivedSerialization);
                 });
