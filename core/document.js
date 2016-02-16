@@ -14,14 +14,14 @@ exports.Document = Target.specialize({
     },
 
     /**
-     * Return a promise for the loading of this document the specified URL
+     * Asynchronously load an already-initialized document.
+     * @example new Document("someUrl").load().then(...)
      *
-     * @param {string} url The url for which to load the document.
      * @return {Promise} A promise that resolves to this.
      */
     load: {
         value: function () {
-            return Promise.resolve();
+            return Promise.resolve(this);
         }
     },
 
@@ -139,20 +139,13 @@ exports.Document = Target.specialize({
     },
 
     /**
-     * Saves the data to the specified dataWriter. For example:<br/>
-     * <code>
-     *      var serializer = new Serializer().initWithRequire(this.packageRequire);
-     *      var serializedDescription = serializer.serializeObject(this.currentProxyObject.proxiedObject);
-     *      return dataWriter(serializedDescription, location);
-     * </code>
-     *
+     * Saves the data.
      * By default sets the _changeCount to 0. If you override this method then
      * you must do this yourself.
      * @param {string} url The url to save this document's data to
-     * @param {function} dataWriter The data writing function that will perform the data writing portion of the save operation
      */
     save: {
-        value: function (url, dataWriter) {
+        value: function (url) {
             var self = this;
             return Promise.resolve(this._dataSource.write(url, ""))
                 .then(function (value) {

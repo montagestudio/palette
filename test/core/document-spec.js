@@ -10,13 +10,13 @@ describe("core/document-spec", function () {
     describe("asynchronously loading a document", function () {
 
         it("should return a promise for the expected document", function () {
-            var promisedDocument = Document.load("myUrl");
+            var promisedDocument = new Document().init("myUrl").load();
             expect(isPromiseAlike(promisedDocument)).toBeTruthy();
             promisedDocument.done();
         });
 
         it("should resolve as a document instance with the expected url", function () {
-            return Document.load("myUrl").then(function (doc) {
+            return new Document().init("myUrl").load().then(function (doc) {
                 expect(doc.url).toBe("myUrl");
             });
         });
@@ -58,7 +58,9 @@ describe("core/document-spec", function () {
         var document, promise;
 
         beforeEach(function () {
-            document = new Document().init("http://example.com/foo/bar/baz.jpg");
+            document = new Document().init("http://example.com/foo/bar/baz.jpg", {
+                write: function() {}
+            });
             document.a = 1;
 
             expect(document.isDirty).toBe(false);
@@ -116,7 +118,7 @@ describe("core/document-spec", function () {
         it("is false after save", function () {
             return promise.then(function () {
                 expect(document.isDirty).toBe(true);
-                return document.save("", function () {});
+                return document.save("");
             }).then(function () {
                 expect(document.isDirty).toBe(false);
             });
@@ -125,7 +127,7 @@ describe("core/document-spec", function () {
         it("is true after save and undo", function () {
             return promise.then(function () {
                 expect(document.isDirty).toBe(true);
-                return document.save("", function () {});
+                return document.save("");
             }).then(function () {
                 expect(document.isDirty).toBe(false);
                 return document.undo();
@@ -137,7 +139,7 @@ describe("core/document-spec", function () {
         it("is true after save, undo and another operation", function () {
             return promise.then(function () {
                 expect(document.isDirty).toBe(true);
-                return document.save("", function () {});
+                return document.save("");
             }).then(function () {
                 expect(document.isDirty).toBe(false);
                 return document.undo();
