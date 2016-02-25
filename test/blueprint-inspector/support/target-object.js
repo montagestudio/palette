@@ -11,7 +11,7 @@ exports.TargetObject = Montage.specialize({
     },
 
     enumProperty: {
-        value: "blue"
+        value: null
     },
 
     numberProperty: {

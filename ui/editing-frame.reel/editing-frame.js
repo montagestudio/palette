@@ -152,7 +152,7 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
 
     _getRequireForModuleLocation: {
         value: function (location, _require) {
-            if (location.indexOf(_require.location) !== 0) {
+            if (location && location.indexOf(_require.location) !== 0) {
                 console.warn(location, "is not in package", _require.location, "Should be fine, but this function expects a URL");
             }
             var self = this;
@@ -165,14 +165,21 @@ exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editin
                 // Label for debugging
                 iframe.dataset.packageFrame = _require.location;
                 iframe.contentWindow.name = "packageFrame=" + _require.location;
+                iframe.src = require.location + "core/sandbox-montage.html";
 
-                PACKAGE_WINDOWS[location] = sandboxMontageApp(_require.location, iframe.contentWindow)
+                var window = sandboxMontageApp(_require.location, iframe.contentWindow)
                 .spread(function (applicationRequire, montageRequire) {
                     var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                     self._hookEventManager(defaultEventManager, iframe.contentDocument, _require.location);
 
                     return applicationRequire;
                 });
+
+                if (location) {
+                    PACKAGE_WINDOWS[location] = window;
+                } else {
+                    return window;
+                }
             }
 
             return PACKAGE_WINDOWS[location];

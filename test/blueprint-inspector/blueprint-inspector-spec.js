@@ -48,10 +48,11 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
 
         it("can create new enum property inspector", function () {
             expect(enumPropertyEditor).toBeTruthy();
-            expect(enumPropertyEditor.objectValue).toBe("blue");
             expect(enumPropertyEditor.propertyBlueprint).toBeTruthy();
-            // Toggle the value in the compoent
-            enumPropertyEditor.childComponents[1].childComponents[0].selection = "red";
+            // The inspector initially doesn't know what the value is
+            expect(enumPropertyEditor.objectValue).not.toBeDefined();
+            // Toggle the value in the component
+            enumPropertyEditor.childComponents[1].childComponents[0].selectedIndexes = [1];
             expect(enumPropertyEditor.objectValue).toBe("red");
         });
 

@@ -21,6 +21,11 @@ function sandboxMontageApp(applicationLocation, frameWindow) {
                 document.body.removeChild(iframe);
             };
         } else {
+            if (frameWindow.document.readyState == "complete") {
+                bootSandbox();
+            } else {
+                frameWindow.onload = bootSandbox;
+            }
             dispose = Function.noop;
         }
 
