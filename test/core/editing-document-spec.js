@@ -6,23 +6,29 @@ describe("core/editing-document-spec", function () {
     var editingDocument,
         originalLabel,
         aProxy,
-        anotherProxy;
+        anotherProxy,
+        packageRequire,
+        aSerialization;
 
     beforeEach(function () {
-        var packageRequire = {};
-        editingDocument = new EditingDocument().init("fileUrl", packageRequire);
+        packageRequire = {};
+        editingDocument = new EditingDocument().init("fileUrl", {
+            write: function() {}
+        }, packageRequire);
 
         originalLabel = "foo";
         var exportId = "foo/bar/baz";
-        var serialization = {
+        aSerialization = {
             prototype: exportId,
-            properties: {}
+            properties: {
+                baz: "ban"
+            }
         };
 
-        aProxy = new EditingProxy().init(originalLabel, serialization, exportId, editingDocument);
+        aProxy = new EditingProxy().init(originalLabel, aSerialization, exportId, editingDocument);
         editingDocument.__addProxy(aProxy);
 
-        anotherProxy = new EditingProxy().init("baz", serialization, exportId, editingDocument);
+        anotherProxy = new EditingProxy().init("baz", aSerialization, exportId, editingDocument);
         editingDocument.__addProxy(anotherProxy);
     });
 
@@ -32,6 +38,31 @@ describe("core/editing-document-spec", function () {
             expect(editingDocument.editingProxyMap[originalLabel]).toBe(aProxy);
         });
 
+        it("should have the correct packageRequire", function() {
+            expect(editingDocument.packageRequire).toEqual(packageRequire);
+        });
+
+    });
+
+    describe("serializationForProxy", function() {
+        it("should return an appropriate serialization object", function() {
+            var serialization = editingDocument.serializationForProxy(aProxy);
+            expect(serialization).toBeTruthy();
+            expect(serialization.prototype).toEqual(aSerialization.prototype);
+        });
+    });
+
+    describe("getting owned object properties", function() {
+        it("should return the correct single property", function() {
+            expect(editingDocument.getOwnedObjectProperty(aProxy, "baz")).toEqual("ban");
+            expect(editingDocument.getOwnedObjectProperty(aProxy, "foo")).toBeFalsy();
+        });
+
+        it("should return the correct properties", function() {
+            var props = editingDocument.getOwnedObjectProperties(aProxy, {baz: null, foo: null});
+            expect(props["baz"]).toBe("ban");
+            expect(props["foo"]).toBe(void 0);
+        });
     });
 
     describe("changing proxy labels", function () {
@@ -124,135 +155,286 @@ describe("core/editing-document-spec", function () {
 
     });
 
-    describe("didSetOwnedObjectProperty", function() {
-        var yetAnotherProxy;
-
-        beforeEach(function () {
-            var serialization;
-            var exportId = "foo/bar/baz";
-
-            serialization = {
-                prototype: exportId,
-                properties: {
-                    foo: "a string",
-                    bar: 42
-                }
-            };
-
-            yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
-            editingDocument.__addProxy(yetAnotherProxy);
-        });
-
-        it("should dispatch when a property change", function() {
-            var listener = {
-                handleEvent: function(){}
-            };
-            spyOn(listener, "handleEvent");
-
-            editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
-            editingDocument.setOwnedObjectProperty(yetAnotherProxy, "foo", "another string");
-
-            expect(listener.handleEvent.callCount).toBe(1);
+    describe("deleting an owned object property", function() {
+        it("should delete the property", function() {
+            editingDocument.deleteOwnedObjectProperty(aProxy, "baz");
+            expect(editingDocument.getOwnedObjectProperty(aProxy, "baz")).toBe(void 0);
         });
     });
 
-    describe("didSetOwnedObjectProperties", function() {
-        var yetAnotherProxy;
+    describe("getting proxies", function() {
+         it("should return each proxy", function() {
+             var proxies = editingDocument.editingProxies;
+             expect(proxies.length).toBe(2);
+             expect(proxies[0].label).toBe("foo");
+             expect(proxies[1].label).toBe("baz");
+         });
+    });
 
-        beforeEach(function () {
-            var serialization;
-            var exportId = "foo/bar/baz";
-
-            serialization = {
-                prototype: exportId,
-                properties: {
-                    foo: "a string",
-                    bar: 42
-                }
-            };
-
-            yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
-            editingDocument.__addProxy(yetAnotherProxy);
-        });
-
-        it("should dispatch when properties change", function() {
-            var listener = {
-                handleEvent: function(){}
-            };
-            spyOn(listener, "handleEvent");
-
-            editingDocument.addEventListener("didSetOwnedObjectProperties", listener);
-            editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
-                foo: "another string",
-                bar: 1
+    describe("selection API", function() {
+        describe("selection", function() {
+            it("can select an object", function() {
+                editingDocument.selectObject(aProxy);
+                expect(editingDocument.selectedObjects).toContain(aProxy);
             });
 
-            expect(listener.handleEvent.callCount).toBe(1);
-        });
-
-        it("should not dispatch didSetOwnedObjectProperty", function() {
-            var listener = {
-                handleEvent: function(){}
-            };
-            spyOn(listener, "handleEvent");
-
-            editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
-            editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
-                foo: "another string",
-                bar: 1
+            it("can deselect an object", function() {
+                editingDocument.selectObject(aProxy);
+                editingDocument.deselectObject(aProxy);
+                expect(editingDocument.selectedObjects.length).toBe(0);
             });
 
-            expect(listener.handleEvent).not.toHaveBeenCalled();
+            it("does nothing when deselecting an object that is not selected", function() {
+                editingDocument.selectObject(aProxy);
+                editingDocument.deselectObject(anotherProxy);
+                expect(editingDocument.selectedObjects.length).toBe(1);
+            });
+
+            it("can clear selected objects", function() {
+                editingDocument.selectObject(aProxy);
+                editingDocument.clearSelectedObjects();
+                expect(editingDocument.selectedObjects.length).toBe(0);
+            });
+        });
+
+        describe("highlighting", function() {
+            it("can highlight an element", function() {
+                editingDocument.highlightElement(aProxy);
+                expect(editingDocument.highlightedElements).toContain(aProxy);
+            });
+
+            it("can de-highlight an element", function() {
+                editingDocument.highlightElement(aProxy);
+                editingDocument.deHighlightElement(aProxy);
+                expect(editingDocument.highlightedElements.length).toBe(0);
+            });
+
+            it("does nothing when de-highlighting an object that is not selected", function() {
+                editingDocument.highlightElement(aProxy);
+                editingDocument.deHighlightElement(anotherProxy);
+                expect(editingDocument.highlightedElements.length).toBe(1);
+            });
+
+            it("can clear highlighted elements", function() {
+                editingDocument.highlightElement(aProxy);
+                editingDocument.clearHighlightedElements();
+                expect(editingDocument.highlightedElements.length).toBe(0);
+            });
         });
     });
 
-    describe("propertyChangesDispatchingEnabled", function() {
-        var yetAnotherProxy;
+    describe("event dispatching", function() {
 
-        beforeEach(function () {
-            var serialization;
-            var exportId = "foo/bar/baz";
+        describe("didSetOwnedObjectProperty", function () {
+            var yetAnotherProxy;
 
-            serialization = {
-                prototype: exportId,
-                properties: {
-                    foo: "a string",
-                    bar: 42
-                }
-            };
+            beforeEach(function () {
+                var serialization;
+                var exportId = "foo/bar/baz";
 
-            yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
-            editingDocument.__addProxy(yetAnotherProxy);
-        });
+                serialization = {
+                    prototype: exportId,
+                    properties: {
+                        foo: "a string",
+                        bar: 42
+                    }
+                };
 
-        it("should not dispatch didSetOwnedObjectProperty when propertyChangeDispatchingEnabled is enabled ", function() {
-            var listener = {
-                handleEvent: function(){}
-            };
-            spyOn(listener, "handleEvent");
-
-            editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
-            editingDocument.propertyChangesDispatchingEnabled = false;
-            editingDocument.setOwnedObjectProperty(yetAnotherProxy, "foo", "another string");
-
-            expect(listener.handleEvent).not.toHaveBeenCalled();
-        });
-
-        it("should not dispatch didChangeObjectProperties when propertyChangeDispatchingEnabled is enabled", function() {
-            var listener = {
-                handleEvent: function(){}
-            };
-            spyOn(listener, "handleEvent");
-
-            editingDocument.addEventListener("didChangeObjectProperties", listener);
-            editingDocument.propertyChangeDispatchingEnabled = false;
-            editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
-                foo: "another string",
-                bar: 1
+                yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
+                editingDocument.__addProxy(yetAnotherProxy);
             });
 
-            expect(listener.handleEvent).not.toHaveBeenCalled();
-        });
-    });
+            it("should dispatch when a property changes", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
 
+                editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
+                editingDocument.setOwnedObjectProperty(yetAnotherProxy, "foo", "another string");
+
+                expect(listener.handleEvent.callCount).toBe(1);
+            });
+        });
+
+        describe("didDeleteOwnedObjectProperty", function () {
+            var yetAnotherProxy;
+
+            beforeEach(function () {
+                var serialization;
+                var exportId = "foo/bar/baz";
+
+                serialization = {
+                    prototype: exportId,
+                    properties: {
+                        foo: "a string",
+                        bar: 42
+                    }
+                };
+
+                yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
+                editingDocument.__addProxy(yetAnotherProxy);
+            });
+
+            it("should dispatch when properties are deleted", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didDeleteOwnedObjectProperty", listener);
+                editingDocument.deleteOwnedObjectProperty(yetAnotherProxy, "foo");
+
+                expect(listener.handleEvent.callCount).toBe(1);
+            });
+
+            it("should not dispatch didSetOwnedObjectProperty or didSetOwnedObjectProperties", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
+                editingDocument.addEventListener("didSetOwnedObjectProperties", listener);
+                editingDocument.deleteOwnedObjectProperty(yetAnotherProxy, "foo");
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+        });
+
+        describe("didSetOwnedObjectProperties", function () {
+            var yetAnotherProxy;
+
+            beforeEach(function () {
+                var serialization;
+                var exportId = "foo/bar/baz";
+
+                serialization = {
+                    prototype: exportId,
+                    properties: {
+                        foo: "a string",
+                        bar: 42
+                    }
+                };
+
+                yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
+                editingDocument.__addProxy(yetAnotherProxy);
+            });
+
+            it("should dispatch when properties change", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didSetOwnedObjectProperties", listener);
+                editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
+                    foo: "another string",
+                    bar: 1
+                });
+
+                expect(listener.handleEvent.callCount).toBe(1);
+            });
+
+            it("should not dispatch didSetOwnedObjectProperty", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
+                editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
+                    foo: "another string",
+                    bar: 1
+                });
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+        });
+
+        describe("propertyChangesDispatchingEnabled", function () {
+            var yetAnotherProxy;
+
+            beforeEach(function () {
+                var serialization;
+                var exportId = "foo/bar/baz";
+
+                serialization = {
+                    prototype: exportId,
+                    properties: {
+                        foo: "a string",
+                        bar: 42
+                    }
+                };
+
+                yetAnotherProxy = new EditingProxy().init("yetAnotherLabel", serialization, exportId, editingDocument);
+                editingDocument.__addProxy(yetAnotherProxy);
+            });
+
+            it("should not dispatch didSetOwnedObjectProperty when propertyChangeDispatchingEnabled is false", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
+                editingDocument.propertyChangesDispatchingEnabled = false;
+                editingDocument.setOwnedObjectProperty(yetAnotherProxy, "foo", "another string");
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+
+            it("should not dispatch didDeleteOwnedObjectProperty when propertyChangeDispatchingEnabled is false", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didDeleteOwnedObjectProperty", listener);
+                editingDocument.propertyChangesDispatchingEnabled = false;
+                editingDocument.deleteOwnedObjectProperty(yetAnotherProxy, "foo");
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+
+            it("should not dispatch didChangeObjectProperties when propertyChangeDispatchingEnabled is false", function () {
+                var listener = {
+                    handleEvent: function () {
+                    }
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didChangeObjectProperties", listener);
+                editingDocument.propertyChangesDispatchingEnabled = false;
+                editingDocument.setOwnedObjectProperties(yetAnotherProxy, {
+                    foo: "another string",
+                    bar: 1
+                });
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+
+            it("should not dispatch didSetOwnedObjectLabel when propertyChangesDispatchingEnabled is false", function() {
+                var event;
+                var listener = {
+                    handleEvent: function(){}
+                };
+                spyOn(listener, "handleEvent");
+
+                editingDocument.addEventListener("didSetOwnedObjectLabel", listener);
+                editingDocument.propertyChangesDispatchingEnabled = false;
+                editingDocument.setOwnedObjectLabel(aProxy, "newLabel");
+
+                expect(listener.handleEvent).not.toHaveBeenCalled();
+            });
+        });
+
+    });
 });

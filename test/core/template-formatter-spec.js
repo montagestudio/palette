@@ -11,6 +11,10 @@ describe("core/template-formatter-spec", function () {
     });
 
     describe("indentation", function() {
+        it("should initially be set to 4", function() {
+            expect(formatter.indent).toBe(4);
+        });
+
         it("should create an empty string for depth 0", function() {
             expect(formatter.getIndentSpace(0)).toBe("");
         });

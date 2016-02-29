@@ -35,6 +35,16 @@
             ]
         }
     },
+    "blueprint_targetobject_mapProperty": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "mapProperty",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "map"
+        }
+    },
     "blueprint_targetobject_numberProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
@@ -103,6 +113,9 @@
                     "@": "blueprint_targetobject_enumProperty"
                 },
                 {
+                    "@": "blueprint_targetobject_mapProperty"
+                },
+                {
                     "@": "blueprint_targetobject_numberProperty"
                 },
                 {
@@ -128,6 +141,9 @@
                     },
                     {
                         "@": "blueprint_targetobject_enumProperty"
+                    },
+                    {
+                        "@": "blueprint_targetobject_mapProperty"
                     },
                     {
                         "@": "blueprint_targetobject_numberProperty"

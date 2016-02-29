@@ -45,12 +45,60 @@ describe("core/document-spec", function () {
         var document;
 
         beforeEach(function () {
-            document = new Document().init("http://example.com/foo/bar/baz.jpg");
+            document = new Document().init("http://example.com/foo/bar/baz.jpg", {
+                write: Function.noop
+            });
             document.a = 1;
+
+            document.add = function (n) {
+                document.a += n;
+                return document.undoManager.register("Add 1", Promise.resolve([
+                    document.sub,
+                    document,
+                    n
+                ]));
+            };
+            document.sub = function (n) {
+                document.a -= n;
+                return document.undoManager.register("Subtract 1", Promise.resolve([
+                    document.add,
+                    document,
+                    n
+                ]));
+            };
         });
 
         it("is created in init", function () {
             expect(document.undoManager).toBeDefined();
+        });
+
+        it("can be set to itself", function() {
+            var undoManager = document.undoManager;
+            expect(function() {
+                document.undoManager = undoManager;
+            }).not.toThrow();
+            expect(document.undoManager).toBe(undoManager);
+        });
+
+        it("initially cannot undo or redo", function() {
+            expect(document.canUndo).toBe(false);
+            expect(document.canRedo).toBe(false);
+        });
+
+        it("can undo after a modification", function() {
+            document.add(1).then(function() {
+                expect(document.canUndo).toBe(true);
+                expect(document.canRedo).toBe(false);
+            });
+        });
+
+        it("can redo after an undo", function() {
+            document.add(1).then(function() {
+                return document.undo();
+            }).then(function() {
+                expect(document.canUndo).toBe(false);
+                expect(document.canRedo).toBe(true);
+            });
         });
     });
 
@@ -59,7 +107,7 @@ describe("core/document-spec", function () {
 
         beforeEach(function () {
             document = new Document().init("http://example.com/foo/bar/baz.jpg", {
-                write: function() {}
+                write: Function.noop
             });
             document.a = 1;
 
@@ -154,4 +202,46 @@ describe("core/document-spec", function () {
 
     });
 
+    describe("canClose", function() {
+        var document;
+
+        beforeEach(function () {
+            document = new Document().init("http://example.com/foo/bar/baz.jpg", {
+                write: Function.noop
+            });
+            document.a = 1;
+
+            document.add = function (n) {
+                document.a += n;
+                return document.undoManager.register("Add 1", Promise.resolve([
+                    document.sub,
+                    document,
+                    n
+                ]));
+            };
+            document.sub = function (n) {
+                document.a -= n;
+                return document.undoManager.register("Subtract 1", Promise.resolve([
+                    document.add,
+                    document,
+                    n
+                ]));
+            };
+        });
+
+        it("returns null when the document is ready to be closed", function() {
+            expect(document.canClose()).toBe(null);
+        });
+
+        it("returns a message when the document has unsaved changed", function() {
+            document.add(1);
+            expect(typeof document.canClose()).toBe("string");
+        });
+    });
+
+    describe("editorType", function() {
+        it("is null by default", function() {
+            expect(Document.editorType).toBe(null);
+        });
+    });
 });

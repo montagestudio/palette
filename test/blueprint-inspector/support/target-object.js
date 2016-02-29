@@ -14,6 +14,10 @@ exports.TargetObject = Montage.specialize({
         value: null
     },
 
+    mapProperty: {
+        value: new Map()
+    },
+
     numberProperty: {
         value: 42
     },

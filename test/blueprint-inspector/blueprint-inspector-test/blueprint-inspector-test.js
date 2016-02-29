@@ -16,6 +16,8 @@ exports.BlueprintInspectorTest = Component.specialize({
                 self.booleanPropertyBlueprint = blueprint.propertyBlueprintForName("booleanProperty");
                 self.datePropertyBlueprint = blueprint.propertyBlueprintForName("dateProperty");
                 self.enumPropertyBlueprint = blueprint.propertyBlueprintForName("enumProperty");
+                self.listPropertyBlueprint = blueprint.propertyBlueprintForName("listProperty");
+                self.mapPropertyBlueprint = blueprint.propertyBlueprintForName("mapProperty");
                 self.numberPropertyBlueprint = blueprint.propertyBlueprintForName("numberProperty");
                 self.objectPropertyBlueprint = blueprint.propertyBlueprintForName("objectProperty");
                 self.stringPropertyBlueprint = blueprint.propertyBlueprintForName("stringProperty");
@@ -38,6 +40,14 @@ exports.BlueprintInspectorTest = Component.specialize({
     },
 
     enumPropertyEditor: {
+        value: null
+    },
+
+    listPropertyEditor: {
+        value: null
+    },
+
+    mapPropertyEditor: {
         value: null
     },
 
