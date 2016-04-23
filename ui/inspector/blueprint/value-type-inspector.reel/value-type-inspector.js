@@ -48,6 +48,9 @@ exports.ValueTypeInspector = Component.specialize(/** @lends module:"./value-typ
 
     objectValue: {
         get: function () {
+            if (!this._objectValue && this.propertyBlueprint && this.propertyBlueprint.defaultValue) {
+                return this.propertyBlueprint.defaultValue;
+            }
             return this._objectValue;
         },
         set: function (value) {
