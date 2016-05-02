@@ -41,7 +41,7 @@ exports.MapAssociationInspector = ValueTypeInspector.specialize(/** @lends modul
                 if (this.objectValue) {
                     if (!(this.objectValue instanceof Map)) {
                         if (this.objectValue.forEach) {
-                            this.objectValue = new Map(this.objectValue);
+                            this.objectValue = Map.from(this.objectValue);
                         } else {
                             var temp = this.objectValue;
                             this.objectValue = new Map();

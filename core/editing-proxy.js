@@ -152,10 +152,10 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
 
     _populateWithSerialization: {
         value: function (serialization) {
-            this._originalSerializationMap = new Map(serialization);
+            this._originalSerializationMap = Map.from(serialization);
 
             // We specifically surface the properties as a top level API
-            this._properties = new Map(serialization.properties);
+            this._properties = Map.from(serialization.properties);
         }
     },
 
@@ -190,10 +190,10 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
     getObjectProperties: {
         value: function (values) {
             var result = {},
-                keys,
                 index,
-                key,
-                value;
+                value,
+                entries,
+                entry;
 
             if (values) {
                 // We have a values object only returmn the required values
@@ -204,11 +204,10 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
                 }
             } else {
                 // return all properties
-                values = this.properties.values();
-                keys = this.properties.keys();
+                entries = this.properties.entries();
 
-                for (index = 0; (typeof (key = keys[index]) !== "undefined") &&  (typeof (value = values[index]) !== "undefined"); index++) {
-                    result[key] = value;
+                while (entry = entries.next().value) {
+                    result[entry[0]] = entry[1];
                 }
             }
             return result;

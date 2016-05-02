@@ -31,7 +31,7 @@ exports.ProxyReviver = MontageReviver.specialize({
 
     reviveMap: {
         value: function(value, context, label) {
-            var map = new Map(value.entries);
+            var map = Map.from(value.entries);
 
             if (label) {
                 context.setObjectLabel(map, label);

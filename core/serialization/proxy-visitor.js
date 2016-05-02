@@ -118,11 +118,9 @@ exports.ProxyVisitor = MontageVisitor.specialize({
     setSerializableObjectProperties: {
         value: function (malker, object) {
             var propertyName,
-                propertyNames = object.properties.keys(),
-                propertyNamesCount = propertyNames.length;
+                propertyNames = object.properties.keys();
 
-            for (var i = 0; i < propertyNamesCount; i++) {
-                propertyName = propertyNames[i];
+            while (propertyName = propertyNames.next().value) {
                 this.setProperty(malker, propertyName, object.getObjectProperty(propertyName));
             }
         }
