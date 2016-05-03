@@ -1,5 +1,5 @@
 var ProxyVisitor = require("./proxy-visitor").ProxyVisitor;
-var Malker = require("mousse/serialization/malker").Malker;
+var Malker = require("montage/core/serialization/serializer/montage-malker").MontageWalker;
 var MontageSerializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 
 exports.ProxySerializer = MontageSerializer.specialize({
