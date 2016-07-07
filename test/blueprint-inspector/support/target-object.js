@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-exports.TargetObject = Montage.create(Montage, {
+exports.TargetObject = Montage.specialize({
 
     booleanProperty: {
         value: false
@@ -11,7 +11,11 @@ exports.TargetObject = Montage.create(Montage, {
     },
 
     enumProperty: {
-        value: "blue"
+        value: null
+    },
+
+    mapProperty: {
+        value: new Map()
     },
 
     numberProperty: {

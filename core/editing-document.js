@@ -278,7 +278,7 @@ exports.EditingDocument = Document.specialize( {
     },
 
     /*
-     * Returns the poxy map
+     * Returns the proxy map
      */
     editingProxyMap: {
         get: function () {

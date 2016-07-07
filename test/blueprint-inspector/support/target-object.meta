@@ -1,5 +1,5 @@
 {
-    "property_boolean": {
+    "blueprint_targetobject_booleanProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "booleanProperty",
@@ -9,7 +9,7 @@
             "valueType": "boolean"
         }
     },
-    "property_date": {
+    "blueprint_targetobject_dateProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "dateProperty",
@@ -19,7 +19,7 @@
             "valueType": "date"
         }
     },
-    "property_enum": {
+    "blueprint_targetobject_enumProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "enumProperty",
@@ -35,7 +35,17 @@
             ]
         }
     },
-    "property_number": {
+    "blueprint_targetobject_mapProperty": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "mapProperty",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "map"
+        }
+    },
+    "blueprint_targetobject_numberProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "numberProperty",
@@ -45,7 +55,7 @@
             "valueType": "number"
         }
     },
-    "property_object": {
+    "blueprint_targetobject_objectProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "objectProperty",
@@ -55,7 +65,7 @@
             "valueType": "object"
         }
     },
-    "property_string": {
+    "blueprint_targetobject_stringProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "stringProperty",
@@ -65,7 +75,7 @@
             "valueType": "string"
         }
     },
-    "property_url": {
+    "blueprint_targetobject_urlProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "urlProperty",
@@ -75,7 +85,7 @@
             "valueType": "url"
         }
     },
-    "property_list": {
+    "blueprint_targetobject_listProperty": {
         "prototype": "montage/core/meta/property-blueprint",
         "properties": {
             "name": "listProperty",
@@ -88,67 +98,78 @@
         }
     },
     "root": {
-        "prototype": "montage/core/meta/blueprint",
+        "prototype": "montage/core/meta/module-blueprint",
         "properties": {
             "name": "TargetObject",
-            "blueprintModuleId": "blueprint-inspector/support/target-object-blueprint.json",
-            "prototypeName": "TargetObject",
             "customPrototype": false,
             "propertyBlueprints": [
                 {
-                    "@": "property_boolean"
+                    "@": "blueprint_targetobject_booleanProperty"
                 },
                 {
-                    "@": "property_date"
+                    "@": "blueprint_targetobject_dateProperty"
                 },
                 {
-                    "@": "property_enum"
+                    "@": "blueprint_targetobject_enumProperty"
                 },
                 {
-                    "@": "property_number"
+                    "@": "blueprint_targetobject_mapProperty"
                 },
                 {
-                    "@": "property_object"
+                    "@": "blueprint_targetobject_numberProperty"
                 },
                 {
-                    "@": "property_string"
+                    "@": "blueprint_targetobject_objectProperty"
                 },
                 {
-                    "@": "property_url"
+                    "@": "blueprint_targetobject_stringProperty"
                 },
                 {
-                    "@": "property_list"
+                    "@": "blueprint_targetobject_urlProperty"
+                },
+                {
+                    "@": "blueprint_targetobject_listProperty"
                 }
             ],
             "propertyBlueprintGroups": {
                 "target-object": [
                     {
-                        "@": "property_boolean"
+                        "@": "blueprint_targetobject_booleanProperty"
                     },
                     {
-                        "@": "property_date"
+                        "@": "blueprint_targetobject_dateProperty"
                     },
                     {
-                        "@": "property_enum"
+                        "@": "blueprint_targetobject_enumProperty"
                     },
                     {
-                        "@": "property_number"
+                        "@": "blueprint_targetobject_mapProperty"
                     },
                     {
-                        "@": "property_object"
+                        "@": "blueprint_targetobject_numberProperty"
                     },
                     {
-                        "@": "property_string"
+                        "@": "blueprint_targetobject_objectProperty"
                     },
                     {
-                        "@": "property_url"
+                        "@": "blueprint_targetobject_stringProperty"
                     },
                     {
-                        "@": "property_list"
+                        "@": "blueprint_targetobject_urlProperty"
+                    },
+                    {
+                        "@": "blueprint_targetobject_listProperty"
                     }
                 ]
             },
-            "propertyValidationRules": {}
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "blueprint-inspector/support/target-object.meta"
+            },
+            "exportName": "TargetObject",
+            "module": {
+                "%": "blueprint-inspector/support/target-object"
+            }
         }
     }
 }

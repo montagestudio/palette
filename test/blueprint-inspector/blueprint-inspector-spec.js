@@ -9,6 +9,8 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
         var booleanPropertyEditor;
         var datePropertyEditor;
         var enumPropertyEditor;
+        var listPropertyEditor;
+        var mapPropertyEditor;
         var numberPropertyEditor;
         var objectPropertyEditor;
         var stringPropertyEditor;
@@ -19,6 +21,8 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
             booleanPropertyEditor = testPage.test.booleanPropertyEditor;
             datePropertyEditor = testPage.test.datePropertyEditor;
             enumPropertyEditor = testPage.test.enumPropertyEditor;
+            listPropertyEditor = testPage.test.listPropertyEditor;
+            mapPropertyEditor = testPage.test.mapPropertyEditor;
             numberPropertyEditor = testPage.test.numberPropertyEditor;
             objectPropertyEditor = testPage.test.objectPropertyEditor;
             stringPropertyEditor = testPage.test.stringPropertyEditor;
@@ -34,6 +38,7 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
         it("can create new boolean property inspector", function () {
             expect(booleanPropertyEditor).toBeTruthy();
             expect(booleanPropertyEditor.objectValue).toBe(false);
+            expect(booleanPropertyEditor.newObjectValue).toBe(false);
             expect(booleanPropertyEditor.propertyBlueprint).toBeTruthy();
             // Toggle the value in the compoent
             booleanPropertyEditor.childComponents[1].childComponents[0].checked = true;
@@ -43,21 +48,36 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
         it("can create new date property inspector", function () {
             expect(datePropertyEditor).toBeTruthy();
             expect(datePropertyEditor.objectValue).toBeTruthy();
+            expect(datePropertyEditor.newObjectValue).toEqual(new Date);
             expect(datePropertyEditor.propertyBlueprint).toBeTruthy();
         });
 
         it("can create new enum property inspector", function () {
             expect(enumPropertyEditor).toBeTruthy();
-            expect(enumPropertyEditor.objectValue).toBe("blue");
             expect(enumPropertyEditor.propertyBlueprint).toBeTruthy();
-            // Toggle the value in the compoent
-            enumPropertyEditor.childComponents[1].childComponents[0].selection = "red";
+            expect(enumPropertyEditor.newObjectValue).toBe("blue");
+            // The inspector initially doesn't know what the value is
+            expect(enumPropertyEditor.objectValue).not.toBeDefined();
+            // Toggle the value in the component
+            enumPropertyEditor.childComponents[1].childComponents[0].selectedIndexes = [1];
             expect(enumPropertyEditor.objectValue).toBe("red");
+        });
+
+        it("can create new list property inspector", function () {
+            expect(listPropertyEditor).toBeTruthy();
+            expect(listPropertyEditor.propertyBlueprint).toBeTruthy();
+            expect(listPropertyEditor.objectValue).toBeTruthy();
+        });
+
+        it("can create new map property inspector", function () {
+            expect(mapPropertyEditor).toBeTruthy();
+            expect(mapPropertyEditor.propertyBlueprint).toBeTruthy();
         });
 
         it("can create new number property inspector", function () {
             expect(numberPropertyEditor).toBeTruthy();
             expect(numberPropertyEditor.objectValue).toBe(42);
+            expect(numberPropertyEditor.newObjectValue).toBe(0);
             expect(numberPropertyEditor.propertyBlueprint).toBeTruthy();
             // Toggle the value in the compoent
             numberPropertyEditor.childComponents[1].childComponents[0].value = 51;
@@ -67,12 +87,14 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
         it("can create new object property inspector", function () {
             expect(objectPropertyEditor).toBeTruthy();
             expect(objectPropertyEditor.objectValue).toBeTruthy();
+            expect(objectPropertyEditor.newObjectValue).toBe("");
             expect(objectPropertyEditor.propertyBlueprint).toBeTruthy();
         });
 
         it("can create new string property inspector", function () {
             expect(stringPropertyEditor).toBeTruthy();
             expect(stringPropertyEditor.objectValue).toBe("default");
+            expect(stringPropertyEditor.newObjectValue).toBe("");
             expect(stringPropertyEditor.propertyBlueprint).toBeTruthy();
              // Toggle the value in the compoent
             stringPropertyEditor.childComponents[1].childComponents[0].value = "Arcachon";
@@ -82,6 +104,7 @@ TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", fu
         it("can create new url property inspector", function () {
             expect(urlPropertyEditor).toBeTruthy();
             expect(urlPropertyEditor.objectValue).toBeTruthy();
+            expect(urlPropertyEditor.newObjectValue).toBe("http://");
             expect(urlPropertyEditor.propertyBlueprint).toBeTruthy();
         });
     });

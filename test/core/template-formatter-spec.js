@@ -6,11 +6,15 @@ describe("core/template-formatter-spec", function () {
         template;
 
     beforeEach(function() {
-        template = Template.create();
-        formatter = TemplateFormatter.create().init(template);
+        template = new Template();
+        formatter = new TemplateFormatter().init(template);
     });
 
     describe("indentation", function() {
+        it("should initially be set to 4", function() {
+            expect(formatter.indent).toBe(4);
+        });
+
         it("should create an empty string for depth 0", function() {
             expect(formatter.getIndentSpace(0)).toBe("");
         });

@@ -7,13 +7,15 @@
         "url": "git+ssh://git@github.com:declarativ/palette.git"
     },
     "dependencies": {
-        "montage": "git://github.com/montagejs/montage.git#892cf7a3627dd118f2d2de7c8e20a13bb42b29ba",
-        "matte": "git://github.com/montagejs/matte.git#30ab3c59fa496186a758a2fe7b287b7d5e73a4f2",
-        "mousse": "0.3.0"
+        "montage": "git://github.com/montagejs/montage.git#36904c2d69f43eb288b773bc25204c375129cd2f",
+        "matte": "git://github.com/montagejs/matte.git#f5826241231011ee3c6599ad147a7c33053d9928"
     },
     "devDependencies": {
         "montage-testing": "git://github.com/montagejs/montage-testing.git#3bf86e00f77fd6946454337135be442a9c359aa6",
         "jshint": "~2.0.1"
+    },
+    "mappings": {
+        "stage": "stage"
     },
     "scripts": {
         "lint": "./node_modules/.bin/jshint --verbose ."

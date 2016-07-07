@@ -83,6 +83,13 @@
             }
         },
 
+        "propertyValueController": {
+            "prototype": "montage/core/range-controller",
+            "bindings": {
+                "content": {"<-": "@owner.propertyBlueprint.enumValues.map{{value: this}}"}
+            }
+        },
+
         "propertyValue":{
             "prototype":"matte/ui/select.reel",
             "properties":{
@@ -91,9 +98,7 @@
                 }
             },
             "bindings":{
-                "content":{
-                    "<-":"@owner.propertyBlueprint.enumValues.map{{value: this}}"
-                },
+                "contentController": {"<-": "@propertyValueController"},
                 "value":{
                     "<->": "@owner.objectValue"
                 }

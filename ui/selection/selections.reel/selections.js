@@ -12,12 +12,12 @@ var Montage = require("montage").Montage,
     @class module:"ui/selection/selections.reel".Selections
     @extends module:montage/ui/component.Component
 */
-exports.Selections = Montage.create(Component, /** @lends module:"ui/selection/selections.reel".Selections# */ {
+exports.Selections = Component.specialize(/** @lends module:"ui/selection/selections.reel".Selections# */ {
 
     constructor: {
         value: function() {
             this.super();
-            this.selectedObjectsController = RangeController.create();
+            this.selectedObjectsController = new RangeController();
             this.selectedObjectsController.defineBinding("content", {
                 "<-": "_selectedObjects",
                 source: this

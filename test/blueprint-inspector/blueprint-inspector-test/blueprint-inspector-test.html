@@ -22,6 +22,12 @@
                         "enumPropertyEditor": {
                             "@": "enumPropertyEditor"
                         },
+                        "listPropertyEditor": {
+                            "@": "listPropertyEditor"
+                        },
+                        "mapPropertyEditor": {
+                            "@": "mapPropertyEditor"
+                        },
                         "numberPropertyEditor": {
                             "@": "numberPropertyEditor"
                         },
@@ -107,6 +113,44 @@
                         },
                         "propertyBlueprint": {
                             "<-": "@test.enumPropertyBlueprint"
+                        }
+                    }
+                },
+
+                "listPropertyEditor": {
+                    "prototype": "ui/inspector/blueprint/property-value-type/list-property-inspector.reel",
+                    "properties": {
+                        "element": {
+                            "#": "listPropertyEditor"
+                        },
+                        "readOnlyLabel": true,
+                        "label": "list"
+                    },
+                    "bindings": {
+                        "objectValue": {
+                            "<->": "@test.object.listProperty"
+                        },
+                        "propertyBlueprint": {
+                            "<-": "@test.listPropertyBlueprint"
+                        }
+                    }
+                },
+
+                "mapPropertyEditor": {
+                    "prototype": "ui/inspector/blueprint/property-value-type/map-property-inspector.reel",
+                    "properties": {
+                        "element": {
+                            "#": "mapPropertyEditor"
+                        },
+                        "readOnlyLabel": true,
+                        "label": "map"
+                    },
+                    "bindings": {
+                        "objectValue": {
+                            "<->": "@test.object.mapProperty"
+                        },
+                        "propertyBlueprint": {
+                            "<-": "@test.mapPropertyBlueprint"
                         }
                     }
                 },
@@ -204,6 +248,8 @@
         <div data-montage-id="booleanPropertyEditor"></div>
         <div data-montage-id="datePropertyEditor"></div>
         <div data-montage-id="enumPropertyEditor"></div>
+        <div data-montage-id="listPropertyEditor"></div>
+        <div data-montage-id="mapPropertyEditor"></div>
         <div data-montage-id="numberPropertyEditor"></div>
         <div data-montage-id="objectPropertyEditor"></div>
         <div data-montage-id="stringPropertyEditor"></div>

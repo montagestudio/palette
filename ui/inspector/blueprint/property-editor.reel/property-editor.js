@@ -54,7 +54,7 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
         enumerable: false,
         get: function () {
             if (!this._updateGate) {
-                this._updateGate = Gate.create().initWithDelegate(this);
+                this._updateGate = new Gate().initWithDelegate(this);
                 this._updateGate.setField("object", false);
                 this._updateGate.setField("propertyBlueprint", false);
             }

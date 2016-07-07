@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
-    Context = require("mousse/deserialization/context").Context;
+    MontageContext = require("montage/core/serialization/deserializer/montage-interpreter").MontageContext;
 
-exports.ProxyContext = Montage.specialize.call(Context, {
+exports.ProxyContext = MontageContext.specialize({
 
     constructor: {
         value: function ProxyContext() {
@@ -9,15 +9,11 @@ exports.ProxyContext = Montage.specialize.call(Context, {
         }
     },
 
-    create: {
-        value: function () {
-            return Montage.create(this);
-        }
-    },
-
     init: {
         value: function (serialization, reviver, objects) {
-            Context.call(this, serialization, reviver, objects);
+            // TODO: MontageContext.init also takes an "element" and "_require" parameter. Should these be included?
+            // The old Context, i.e. Mousse's Context, did not have these parameters.
+            MontageContext.prototype.init.call(this, serialization, reviver, objects);
 
             return this;
         }

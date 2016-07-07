@@ -12,8 +12,13 @@ describe("core/editing-proxy-spec", function () {
             prototype: exportId,
             properties: {}
         };
-        editingDocument = Montage.create();
-        proxy = EditingProxy.create().init(label, serialization, exportId, editingDocument);
+        editingDocument = {
+            url: "palette/test",
+            packageRequire: {
+                location: "montage/core/promise"
+            }
+        }
+        proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
     });
 
     describe("initialization", function () {
@@ -24,6 +29,18 @@ describe("core/editing-proxy-spec", function () {
 
         it("should have the expected editingDocument", function () {
             expect(proxy.editingDocument).toBe(editingDocument);
+        });
+
+        it("should always initialize the next target to be the document", function() {
+            expect(proxy.nextTarget).toBe(editingDocument);
+        });
+
+        it("should properly extract the moduleId from the exportId string", function() {
+            expect(proxy.moduleId).toEqual(exportId);
+        });
+
+        it("should generate the correct export name", function() {
+            expect(proxy.exportName).toEqual("Baz");
         });
 
     });
@@ -41,7 +58,7 @@ describe("core/editing-proxy-spec", function () {
                 }
             };
 
-            proxy = EditingProxy.create().init(label, serialization, exportId, editingDocument);
+            proxy = new EditingProxy().init(label, serialization, exportId, editingDocument);
         });
 
         it("must preserve top level properties", function () {

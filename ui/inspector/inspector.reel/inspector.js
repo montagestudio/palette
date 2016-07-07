@@ -45,8 +45,8 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
 
             if (this._object && this._object.moduleId && (this._object.moduleId !== "") && this._object.exportName && (this._object.exportName !== "")) {
 
-                if (this.templateObjects) {
-                    this.templateObjects.labelField.value = this._object.label;
+                if (typeof this._labelField !== "undefined") {
+                    this._labelField.value = this._object.label;
                 }
 
                 this._blueprintDeferred = Promise.defer();
@@ -64,8 +64,8 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
             } else {
                 this._blueprintDeferred = null;
                 this.objectBlueprint = null;
-                if (this.templateObjects) {
-                    this.templateObjects.labelField.value = "";
+                if (typeof this._labelField !== "undefined") {
+                    this._labelField.value = "";
                 }
             }
         }
@@ -104,7 +104,7 @@ exports.Inspector = Component.specialize( /** @lends module:"ui/inspector/inspec
                 editor;
 
             this.inspectorController.editorComponent().then(function (Editor) {
-                editor = Editor.create();
+                editor = new Editor();
                 editor.object = self._object;
                 editor.editingDocument = self.editingDocument;
                 self.dispatchEventNamed("enterModalEditor", true, true, {

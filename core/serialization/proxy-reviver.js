@@ -31,7 +31,7 @@ exports.ProxyReviver = MontageReviver.specialize({
 
     reviveMap: {
         value: function(value, context, label) {
-            var map = new Map(value.entries);
+            var map = Map.from(value.entries);
 
             if (label) {
                 context.setObjectLabel(map, label);
@@ -71,7 +71,7 @@ exports.ProxyReviver = MontageReviver.specialize({
             context.setObjectLabel(proxyObject, label);
             revivedSerialization = this.reviveObjectLiteral(value, context);
 
-            if (Promise.isPromise(revivedSerialization)) {
+            if (Promise.is(revivedSerialization)) {
                 return revivedSerialization.then(function (revivedSerialization) {
                     return self._initProxy(proxyObject, label, context, revivedSerialization);
                 });

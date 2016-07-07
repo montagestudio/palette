@@ -61,7 +61,7 @@ require.read(require.mappings.stage.location + "stage.css")
     @class module:"ui/editing-frame.reel".EditingFrame
     @extends module:ui/component.Component
 */
-exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/editing-frame.reel".EditingFrame# */ {
+exports.EditingFrame = Component.specialize(/** @lends module:"montage/ui/editing-frame.reel".EditingFrame# */ {
 
     /**
      * @name update
@@ -152,7 +152,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
     _getRequireForModuleLocation: {
         value: function (location, _require) {
-            if (location.indexOf(_require.location) !== 0) {
+            if (location && location.indexOf(_require.location) !== 0) {
                 console.warn(location, "is not in package", _require.location, "Should be fine, but this function expects a URL");
             }
             var self = this;
@@ -165,14 +165,21 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                 // Label for debugging
                 iframe.dataset.packageFrame = _require.location;
                 iframe.contentWindow.name = "packageFrame=" + _require.location;
+                iframe.src = require.location + "core/sandbox-montage.html";
 
-                PACKAGE_WINDOWS[location] = sandboxMontageApp(_require.location, iframe.contentWindow)
+                var window = sandboxMontageApp(_require.location, iframe.contentWindow)
                 .spread(function (applicationRequire, montageRequire) {
                     var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                     self._hookEventManager(defaultEventManager, iframe.contentDocument, _require.location);
 
                     return applicationRequire;
                 });
+
+                if (location) {
+                    PACKAGE_WINDOWS[location] = window;
+                } else {
+                    return window;
+                }
             }
 
             return PACKAGE_WINDOWS[location];
@@ -216,7 +223,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             // // If already loading finish off and then load again
             var deferredEditingInformation = this._deferredEditingInformation;
             if (deferredEditingInformation && deferredEditingInformation.promise.isPending()) {
-                var newDeferredEditingInformation = this._deferredEditingInformation = Promise.defer();
+                var newDeferredEditingInformation = this._initializeNewDeferredEditingInformation();
 
                 var next = function () {
                     // Clear out the defered editing info so that this
@@ -238,7 +245,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             this._ownerModule = ownerModule;
             this._ownerName = ownerName;
 
-            deferredEditingInformation = this._deferredEditingInformation = Promise.defer();
+            deferredEditingInformation = this._initializeNewDeferredEditingInformation();
 
             var instances;
 
@@ -310,7 +317,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                     frame: self
                 });
             })
-            .fail(deferredEditingInformation.reject);
+            .catch(deferredEditingInformation.reject);
 
             return deferredEditingInformation.promise;
         }
@@ -324,22 +331,23 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
 
             // set once the template has been initialized
             var documentPart;
-            var drawn = Promise.defer();
 
             var frameDocument = this.iframe.contentDocument;
             var instances = template.getInstances();
 
-            function firstDrawHandler() {
-                // Strictly speaking this handler is only being called
-                // because the event is bubbling up from its children and
-                // so the stage may not be fully drawn. However the drawing
-                // completes syncronously but the resolution of the
-                // promise is async, so by the time the promise handler
-                // is called, the drawing will be complete.
-                rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
-                drawn.resolve();
-            }
-            rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
+            var drawn = new Promise(function(resolve) {
+                function firstDrawHandler() {
+                    // Strictly speaking this handler is only being called
+                    // because the event is bubbling up from its children and
+                    // so the stage may not be fully drawn. However the drawing
+                    // completes syncronously but the resolution of the
+                    // promise is async, so by the time the promise handler
+                    // is called, the drawing will be complete.
+                    rootComponent.removeEventListener("firstDraw", firstDrawHandler, false);
+                    resolve();
+                }
+                rootComponent.addEventListener("firstDraw", firstDrawHandler, false);
+            });
 
             var createOwner;
             if (!instances || !instances.owner) {
@@ -354,7 +362,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
                         return packageRequire.async(ownerModule)
                         .get(ownerName)
                         .then(function (ownerPrototype) {
-                            return ownerPrototype.create();
+                            return new ownerPrototype();
                         }).then(function (owner) {
                             // prevent owner from loading its own template
                             owner._isTemplateLoaded = true;
@@ -427,7 +435,7 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
     },
 
     // Delay the refresh method
-    _refreshDefer: {
+    _refreshPromise: {
         value: null
     },
     refreshDelay: {
@@ -437,16 +445,17 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
         value: function (template) {
             var self = this;
 
-            if (this._refreshDefer) {
-                return this._refreshDefer.promise;
+            if (this._refreshPromise) {
+                return this._refreshPromise;
             }
             else {
-                this._refreshDefer = Promise.defer();
-                setTimeout(function() {
-                    self._refreshDefer.resolve(self._refresh(template));
-                    self._refreshDefer = null;
-                }, this.refreshDelay);
-                return this._refreshDefer.promise;
+                this._refreshPromise = new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve(self._refresh(template));
+                        self._refreshPromise = null;
+                    }, this.refreshDelay);
+                });
+                return this._refreshPromise;
             }
         }
     },
@@ -564,6 +573,22 @@ exports.EditingFrame = Montage.create(Component, /** @lends module:"montage/ui/e
             element.addEventListener("dragleave", this, false);
             element.addEventListener("dragover", this, false);
             element.addEventListener("drop", this, false);
+        }
+    },
+
+    _initializeNewDeferredEditingInformation: {
+        value: function() {
+            var resolve, reject;
+            var promise = new Promise(function(res, rej) {
+                resolve = res;
+                reject = rej;
+            });
+            this._deferredEditingInformation = {
+                promise: promise,
+                resolve: resolve,
+                reject: reject
+            };
+            return this._deferredEditingInformation;
         }
     },
 

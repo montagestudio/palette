@@ -2,12 +2,16 @@ var Montage = require("montage").Montage,
     DocumentController = require("core/document-controller").DocumentController,
     Promise = require("montage/core/promise").Promise;
 
+function isPromiseAlike(o) {
+    return o && typeof o.then === "function";
+}
+
 describe("core/document-controller-spec", function () {
 
     var documentController;
 
     beforeEach(function () {
-        documentController = DocumentController.create();
+        documentController = new DocumentController();
     });
 
     describe("initialization", function () {
@@ -26,7 +30,7 @@ describe("core/document-controller-spec", function () {
 
         it("should return a promise for a document", function () {
             var promisedDocument = documentController.openUrl("fileA");
-            expect(Promise.isPromiseAlike(promisedDocument)).toBeTruthy();
+            expect(isPromiseAlike(promisedDocument)).toBeTruthy();
             promisedDocument.done();
         });
 
@@ -78,32 +82,41 @@ describe("core/document-controller-spec", function () {
                 deferredC = Promise.defer(),
                 documentC;
 
-            // Inject our own document loading to resolve documents in the order B, C,  A
-            documentController.loadDocument = function (doc) {
-                var url = doc.url;
+            // Inject our own document loading to resolve documents in the order B, C, A
+            var old_createDocumentWithTypeAndUrl = documentController.createDocumentWithTypeAndUrl;
+            documentController.createDocumentWithTypeAndUrl = function (documentType, url) {
+                var doc = old_createDocumentWithTypeAndUrl.apply(this, arguments);
 
-                if ("fileA" === url) {
-                    return deferredC.promise.then(function () {
-                        return doc.load(url).then(function (doc) {
-                            deferredA.resolve(doc);
-                            return doc;
-                        });
-                    });
-                } else if ("fileB" === url) {
-                    return doc.load(url).then(function (doc) {
-                        deferredB.resolve(doc);
-                        return doc;
-                    });
-                } else {
-                    return deferredB.promise.then(function () {
-                        return doc.load(url).then(function (doc) {
-                            documentC = doc;
-                            deferredC.resolve(doc);
-                            return doc;
-                        });
-                    });
-                }
-            };
+                var old_load = doc.load;
+                doc.load = function() {
+                    return old_load.apply(this, arguments)
+                    .then(function() {
+                        if ("fileA" === url) {
+                            return deferredC.promise.then(function () {
+                                return old_load.call(doc, url).then(function (doc) {
+                                    deferredA.resolve(doc);
+                                    return doc;
+                                });
+                            });
+                        } else if ("fileB" === url) {
+                            return old_load.call(doc, url).then(function (doc) {
+                                deferredB.resolve(doc);
+                                return doc;
+                            });
+                        } else {
+                            return deferredB.promise.then(function () {
+                                return old_load.call(doc, url).then(function (doc) {
+                                    documentC = doc;
+                                    deferredC.resolve(doc);
+                                    return doc;
+                                });
+                            });
+                        }
+                    })
+                };
+
+                return doc;
+            }
 
             // Open A, then B, then C, expecting C to be the document we consider current when done
             var openA = documentController.openUrl("fileA"),
@@ -122,7 +135,7 @@ describe("core/document-controller-spec", function () {
         var documentA;
 
         beforeEach(function () {
-            documentA = Montage.create();
+            documentA = new Montage();
             documentA.url = "fileA";
 
             documentController.addDocument(documentA);
@@ -144,11 +157,11 @@ describe("core/document-controller-spec", function () {
             documentB;
 
         beforeEach(function () {
-            documentA = Montage.create();
+            documentA = new Montage();
             documentA.url = "fileA";
             documentController.addDocument(documentA);
 
-            documentB = Montage.create();
+            documentB = new Montage();
             documentB.url = "fileB";
             documentController.addDocument(documentB);
         });

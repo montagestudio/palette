@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
     @class module:"ui/infobar.reel".Infobar
     @extends module:montage/ui/component.Component
 */
-exports.Infobar = Montage.create(Component, /** @lends module:"ui/infobar.reel".Infobar# */ {
+exports.Infobar = Component.specialize(/** @lends module:"ui/infobar.reel".Infobar# */ {
 
     _open: {
         value: false

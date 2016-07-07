@@ -92,7 +92,7 @@ exports.DocumentController = Target.specialize({
                     this._setCurrentDocument(openDocument);
                     this._latestUrl = url;
                 }
-                return Promise(openDocument);
+                return Promise.resolve(openDocument);
             } else {
                 // While opening a new document that is not already the opened,
                 // consider none to be current so that anything expecting a
@@ -122,7 +122,7 @@ exports.DocumentController = Target.specialize({
                         return doc;
                     });
                 } else {
-                    return Promise(null);
+                    return Promise.resolve(null);
                 }
             }
         }
