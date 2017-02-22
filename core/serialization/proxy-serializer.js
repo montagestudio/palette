@@ -19,7 +19,7 @@ exports.ProxySerializer = MontageSerializer.specialize({
                 self._builder,
                 self._labeler,
                 self._require,
-                self._units);
+                self.constructor._units);
 
             self._malker = new Malker(self._visitor);
 
