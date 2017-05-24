@@ -1,7 +1,7 @@
 {
   "name": "palette",
   "description": "Montage Authoring Toolkit",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "private": true,
   "repository": {
     "type": "git",
