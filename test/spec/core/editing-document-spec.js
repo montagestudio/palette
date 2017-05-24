@@ -1,5 +1,5 @@
-var EditingDocument = require("core/editing-document").EditingDocument,
-    EditingProxy = require("core/editing-proxy").EditingProxy;
+var EditingDocument = require("palette/core/editing-document").EditingDocument,
+    EditingProxy = require("palette/core/editing-proxy").EditingProxy;
 
 describe("core/editing-document-spec", function () {
 

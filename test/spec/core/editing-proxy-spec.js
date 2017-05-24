@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    EditingProxy = require("core/editing-proxy").EditingProxy;
+    EditingProxy = require("palette/core/editing-proxy").EditingProxy;
 
 describe("core/editing-proxy-spec", function () {
 

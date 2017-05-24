@@ -1,4 +1,4 @@
-var Document = require("core/document").Document,
+var Document = require("palette/core/document").Document,
     Promise = require("montage/core/promise").Promise;
 
 function isPromiseAlike(o) {

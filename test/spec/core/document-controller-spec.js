@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    DocumentController = require("core/document-controller").DocumentController,
+    DocumentController = require("palette/core/document-controller").DocumentController,
     Promise = require("montage/core/promise").Promise;
 
 function isPromiseAlike(o) {

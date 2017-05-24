@@ -13,15 +13,15 @@ exports.BlueprintInspectorTest = Component.specialize({
             self.object = new TargetObject();
             self.object.blueprint.then(function(blueprint) {
                 self.blueprint = blueprint;
-                self.booleanPropertyBlueprint = blueprint.propertyBlueprintForName("booleanProperty");
-                self.datePropertyBlueprint = blueprint.propertyBlueprintForName("dateProperty");
-                self.enumPropertyBlueprint = blueprint.propertyBlueprintForName("enumProperty");
-                self.listPropertyBlueprint = blueprint.propertyBlueprintForName("listProperty");
-                self.mapPropertyBlueprint = blueprint.propertyBlueprintForName("mapProperty");
-                self.numberPropertyBlueprint = blueprint.propertyBlueprintForName("numberProperty");
-                self.objectPropertyBlueprint = blueprint.propertyBlueprintForName("objectProperty");
-                self.stringPropertyBlueprint = blueprint.propertyBlueprintForName("stringProperty");
-                self.urlPropertyBlueprint = blueprint.propertyBlueprintForName("urlProperty");
+                self.booleanPropertyBlueprint = blueprint.propertyDescriptorForName("booleanProperty");
+                self.datePropertyBlueprint = blueprint.propertyDescriptorForName("dateProperty");
+                self.enumPropertyBlueprint = blueprint.propertyDescriptorForName("enumProperty");
+                self.listPropertyBlueprint = blueprint.propertyDescriptorForName("listProperty");
+                self.mapPropertyBlueprint = blueprint.propertyDescriptorForName("mapProperty");
+                self.numberPropertyBlueprint = blueprint.propertyDescriptorForName("numberProperty");
+                self.objectPropertyBlueprint = blueprint.propertyDescriptorForName("objectProperty");
+                self.stringPropertyBlueprint = blueprint.propertyDescriptorForName("stringProperty");
+                self.urlPropertyBlueprint = blueprint.propertyDescriptorForName("urlProperty");
             }).done();
             return self;
         }
