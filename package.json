@@ -1,23 +1,38 @@
 {
-    "name": "palette",
-    "version": "0.16.0",
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "git+ssh://git@github.com:declarativ/palette.git"
-    },
-    "dependencies": {
-        "montage": "git://github.com/montagejs/montage.git#36904c2d69f43eb288b773bc25204c375129cd2f",
-        "matte": "git://github.com/montagejs/matte.git#f5826241231011ee3c6599ad147a7c33053d9928"
-    },
-    "devDependencies": {
-        "montage-testing": "git://github.com/montagejs/montage-testing.git#3bf86e00f77fd6946454337135be442a9c359aa6",
-        "jshint": "~2.0.1"
-    },
-    "mappings": {
-        "stage": "stage"
-    },
-    "scripts": {
-        "lint": "./node_modules/.bin/jshint --verbose ."
-    }
+  "name": "palette",
+  "description": "Montage Authoring Toolkit",
+  "version": "0.16.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:montagestudio/palette.git"
+  },
+  "dependencies": {
+    "matte": "^0.3.0",
+    "montage": "^17.0.8"
+  },
+  "devDependencies": {
+    "concurrently": "^3.4.0",
+    "http-server": "^0.9.0",
+    "jasmine-console-reporter": "^1.2.7",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
+    "open": "0.0.5"
+  },
+  "scripts": {
+    "test": "node test/run-node.js",
+    "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\"",
+    "start:overview": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/overview/index.html\""
+  },
+  "mappings": {
+    "stage": "stage"
+  }
 }
