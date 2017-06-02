@@ -1,10 +1,10 @@
-require("montage-testing").run(require, [
+module.exports = require("montage-testing").run(require, [
     // Please keep in alphabetical order
-    "spec/blueprint-inspector/blueprint-inspector-spec",
+    {name: "spec/blueprint-inspector/blueprint-inspector-spec", node: false},
     "spec/core/document-spec",
     "spec/core/editing-document-spec",
     "spec/core/document-controller-spec",
     "spec/core/editing-proxy-spec",
     "spec/core/template-formatter-spec",
-    "spec/ui/editing-frame-spec"   // Some tests broken
+    {name: "spec/ui/editing-frame-spec", node: false}   // Some tests broken
 ]);
