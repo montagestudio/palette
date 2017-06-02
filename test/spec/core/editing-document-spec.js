@@ -60,8 +60,8 @@ describe("core/editing-document-spec", function () {
 
         it("should return the correct properties", function() {
             var props = editingDocument.getOwnedObjectProperties(aProxy, {baz: null, foo: null});
-            expect(props["baz"]).toBe("ban");
-            expect(props["foo"]).toBe(void 0);
+            expect(props.baz).toBe("ban");
+            expect(props.foo).toBe(void 0);
         });
     });
 
@@ -146,8 +146,8 @@ describe("core/editing-document-spec", function () {
             editingDocument.addEventListener("didSetOwnedObjectLabel", listener);
             editingDocument.setOwnedObjectLabel(aProxy, newLabel);
 
-            expect(listener.handleEvent.callCount).toBe(1);
-            event = listener.handleEvent.mostRecentCall.args[0];
+            expect(listener.handleEvent.calls.count()).toBe(1);
+            event = listener.handleEvent.calls.argsFor(0)[0];
             expect(event.detail.proxy).toBe(aProxy);
             expect(event.detail.newLabel).toBe(newLabel);
             expect(event.detail.oldLabel).toBe(originalLabel);
@@ -254,7 +254,7 @@ describe("core/editing-document-spec", function () {
                 editingDocument.addEventListener("didSetOwnedObjectProperty", listener);
                 editingDocument.setOwnedObjectProperty(yetAnotherProxy, "foo", "another string");
 
-                expect(listener.handleEvent.callCount).toBe(1);
+                expect(listener.handleEvent.calls.count()).toBe(1);
             });
         });
 
@@ -287,7 +287,7 @@ describe("core/editing-document-spec", function () {
                 editingDocument.addEventListener("didDeleteOwnedObjectProperty", listener);
                 editingDocument.deleteOwnedObjectProperty(yetAnotherProxy, "foo");
 
-                expect(listener.handleEvent.callCount).toBe(1);
+                expect(listener.handleEvent.calls.count()).toBe(1);
             });
 
             it("should not dispatch didSetOwnedObjectProperty or didSetOwnedObjectProperties", function () {
@@ -337,7 +337,7 @@ describe("core/editing-document-spec", function () {
                     bar: 1
                 });
 
-                expect(listener.handleEvent.callCount).toBe(1);
+                expect(listener.handleEvent.calls.count()).toBe(1);
             });
 
             it("should not dispatch didSetOwnedObjectProperty", function () {
@@ -422,7 +422,6 @@ describe("core/editing-document-spec", function () {
             });
 
             it("should not dispatch didSetOwnedObjectLabel when propertyChangesDispatchingEnabled is false", function() {
-                var event;
                 var listener = {
                     handleEvent: function(){}
                 };
