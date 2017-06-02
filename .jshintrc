@@ -20,8 +20,10 @@
         "WebSocket": false,
 
         "require": false,
+        "module": false,
         "exports": false,
 
+        "jasmine": true,
         "beforeEach": false,
         "afterEach": false,
         "describe": false,
