@@ -2,7 +2,7 @@
  </copyright> */
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("blueprint-inspector-test/blueprint-inspector-test", function (testPage) {
+TestPageLoader.queueTest("blueprint-inspector-test", function (testPage) {
 
     describe("blueprint-inspector/blueprint-inspector-spec", function () {
         var blueprintEditor;

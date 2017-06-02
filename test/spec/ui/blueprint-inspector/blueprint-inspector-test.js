@@ -2,7 +2,7 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
-var TargetObject = require("../support/target-object").TargetObject;
+var TargetObject = require("./target-object").TargetObject;
 
 exports.BlueprintInspectorTest = Component.specialize({
 
