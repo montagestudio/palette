@@ -38,10 +38,6 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
         value: null
     },
 
-    editingDocument: {
-        value: null
-    },
-
     _updateGate: {
         value: null
     },
@@ -149,8 +145,8 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
                         this.dispatchOwnPropertyChange("objectValue", value);
                     }
                 }
-            } else if (Component.gateDidBecomeTrue) {
-                Component.gateDidBecomeTrue.call(this, gate);
+            } else if (Component.prototype.gateDidBecomeTrue) {
+                Component.prototype.gateDidBecomeTrue.call(this, gate);
             }
         }
     },
@@ -161,8 +157,8 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
                 this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                 this._objectValue = null;
                 this.dispatchOwnPropertyChange("objectValue", null);
-            } else if (Component.gateDidBecomeFalse) {
-                Component.gateDidBecomeFalse.call(this, gate);
+            } else if (Component.prototype.gateDidBecomeFalse) {
+                Component.prototype.gateDidBecomeFalse.call(this, gate);
             }
         }
     },
