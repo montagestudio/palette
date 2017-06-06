@@ -18,7 +18,7 @@
                 "element": {"#": "bindingButtonSubstitution"}
             },
             "bindings": {
-                "switchValue": {"<-": "@owner._propertyIsBound ? 'bound' : 'unbound'"}
+                "switchValue": {"<-": "@owner._propertyIsBound ? (@owner._isBindingComplex ? 'none' : 'bound') : 'unbound'"}
             }
         },
         "defineBindingButton": {
@@ -54,7 +54,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -65,8 +65,8 @@
                 "element": {"#": "boundPropertyInspector"}
             },
             "bindings": {
-                "binding": {"<-": "@owner.object.bindings.filter{targetPath == @owner.propertyBlueprint.name}.get(0)"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "binding": {"<-": "@owner.object.bindings.filter{targetPath == @owner._key}.get(0)"},
+                "label": {"<-": "@owner._key"},
                 "object": {"<->": "@owner.object"}
             }
         },
@@ -78,7 +78,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -91,7 +91,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -113,7 +113,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -126,7 +126,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -139,7 +139,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -152,7 +152,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -165,7 +165,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -178,7 +178,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -191,7 +191,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -204,7 +204,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -217,7 +217,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -230,7 +230,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -244,7 +244,7 @@
             },
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
-                "label": {"<-": "@owner.propertyBlueprint.name"},
+                "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
             }
@@ -260,9 +260,30 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "objectValue": {"<->": "@owner.objectValue"},
                 "propertyBlueprint": {"<-": "@owner.propertyBlueprint"},
-                "label": {"<-": "@owner.propertyBlueprint.name"
-                }
+                "label": {"<-": "@owner._key"}
             }
+        },
+
+        "deleteButtonCondition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "deleteButtonCondition"}
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.isPropertyCustom"}
+            }
+        },
+        "deleteButton": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "deleteButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
 
     }
@@ -291,6 +312,9 @@
             <div data-arg="set-property" data-montage-id="setPropertyInspector"></div>
             <div data-arg="map-property" data-montage-id="mapPropertyInspector"></div>
             <div data-arg="resource-property" data-montage-id="resourcePropertyInspector"></div>
+        </div>
+        <div data-montage-id="deleteButtonCondition" class="PropertyEditor-deleteButtonCondition">
+            <div data-montage-id="deleteButton" class="PropertyEditor-deleteButton"></div>
         </div>
     </label>
 </body>

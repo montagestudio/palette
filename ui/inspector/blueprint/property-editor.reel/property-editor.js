@@ -76,22 +76,48 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
 
     constructor: {
         value: function PropertyEditor () {
+            var self = this;
             this.super();
 
+            this.defineBinding("_key", {
+                "<-": "propertyDescriptor.defined() ? propertyDescriptor.name : propertyKey"
+            });
+            this.defineBinding("isPropertyCustom", {
+                "<-": "!propertyDescriptor"
+            });
             this.defineBinding("_bindingModel", {
-                "<-": "object.bindings.filter{targetPath == ^_propertyDescriptor.name}[0]"
+                "<-": "object.bindings.filter{targetPath == ^_key}[0]"
             });
             this.defineBinding("_propertyIsBound", {
                 "<-": "!!_bindingModel"
             });
 
-            this.addPathChangeListener("object.properties.get(_propertyDescriptor.name)", this, "_valueChanged");
+            this.addPathChangeListener("object.properties.get(_key)", this, "_valueChanged");
             this.addPathChangeListener("_propertyIsBound", this, "handlePropertyTypeDependencyChange");
+            this.addPathChangeListener("_key", function () {
+                self.dispatchOwnPropertyChange("_isBindingComplex", self._isBindingComplex, void 0);
+            });
             this.addPathChangeListener("_propertyDescriptor.isAssociationBlueprint", this, "handlePropertyTypeDependencyChange");
             this.addPathChangeListener("_propertyDescriptor.isToMany", this, "handlePropertyTypeDependencyChange");
             this.addPathChangeListener("_propertyDescriptor.collectionValueType", this, "handlePropertyTypeDependencyChange");
             this.addPathChangeListener("_propertyDescriptor.valueType", this, "handlePropertyTypeDependencyChange");
         }
+    },
+
+    /**
+     * The true key of the property, calculated using both the propertyDescriptor
+     * and the propertyKey public APIs.
+     *
+     * @private
+     * @readonly
+     * @type {string}
+     */
+    _key: {
+        value: null
+    },
+
+    isPropertyCustom: {
+        value: null
     },
 
     _bindingModel: {
@@ -100,6 +126,24 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
 
     _propertyIsBound: {
         value: null
+    },
+
+    /**
+     * Whether the targetPath of the binding is complex, i.e. is not just a
+     * simple (valid) property key. This includes property chains (with .),
+     * FRB functions, arithmetic, concatenation, higher order functions,
+     * boolean operators, scope operators (^), etc.
+     * A property editor that is inspecting a complex binding will not allow
+     * the user to revert the binding into a property.
+     *
+     * @private
+     * @readonly
+     * @type {boolean}
+     */
+    _isBindingComplex: {
+        get: function () {
+            return !(/^[A-Za-z]+\w*$/.test(this._key));
+        }
     },
 
     _propertyType: {
@@ -119,9 +163,9 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
             return this._objectValue;
         },
         set: function (value) {
-            if ((this._objectValue !== value) && this._object && this._propertyDescriptor) {
-                if (typeof value !== "undefined" && !this._propertyDescriptor.readOnly) {
-                    this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyDescriptor.name, value);
+            if (this._objectValue !== value && typeof value !== "undefined" && this._object && this._key) {
+                if (!(this._propertyDescriptor && this._propertyDescriptor.readOnly)) {
+                    this._object.editingDocument.setOwnedObjectProperty(this._object, this._key, value);
                 }
             }
             this._objectValue = value;
@@ -148,7 +192,6 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
             if (!this._updateGate) {
                 this._updateGate = new Gate().initWithDelegate(this);
                 this._updateGate.setField("object", false);
-                this._updateGate.setField("propertyDescriptor", true);
             }
             return this._updateGate;
         }
@@ -187,12 +230,11 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
         value: function() {
             var descriptor = this._propertyDescriptor;
 
-            if (!descriptor) {
-                return;
-            }
-
             if (this._propertyIsBound) {
                 this._propertyType = "binding";
+            } else if (!descriptor) {
+                // TODO: Could do something smarter here, infer the type from the value
+                this._propertyType = "string-property";
             } else if (descriptor.isAssociationBlueprint) {
                 this._propertyType = (descriptor.isToMany ? descriptor.collectionValueType : "object") + "-association";
             } else {
@@ -203,7 +245,7 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
 
     handleDefineBindingButtonAction: {
         value: function () {
-            this.object.defineObjectBinding(this._propertyDescriptor.name, true, "");
+            this.object.defineObjectBinding(this._key, true, "");
             this._propertyIsBound = true;
         }
     },
@@ -212,6 +254,12 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
         value: function () {
             this.object.cancelObjectBinding(this._bindingModel);
             this._propertyIsBound = false;
+        }
+    },
+
+    handleDeleteButtonAction: {
+        value: function () {
+            this.object.deleteObjectProperty(this._key);
         }
     }
 });

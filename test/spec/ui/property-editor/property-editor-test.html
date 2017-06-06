@@ -11,7 +11,10 @@
                     "prototype": "spec/ui/property-editor/property-editor-test",
                     "properties": {
                         "propertyEditor": {"@": "propertyEditor"},
-                        "boundPropertyEditor": {"@": "boundPropertyEditor"}
+                        "boundPropertyEditor": {"@": "boundPropertyEditor"},
+                        "customPropertyEditor": {"@": "customPropertyEditor"},
+                        "boundCustomPropertyEditor": {"@": "boundCustomPropertyEditor"},
+                        "complexBindingEditor": {"@": "complexBindingEditor"}
                     }
                 },
 
@@ -39,6 +42,39 @@
                     }
                 },
 
+                "customPropertyEditor": {
+                    "prototype": "palette/ui/inspector/blueprint/property-editor.reel",
+                    "properties": {
+                        "element": {"#": "customPropertyEditor"},
+                        "propertyKey": "customPropertyA"
+                    },
+                    "bindings": {
+                        "object": {"<-": "@test.proxy"}
+                    }
+                },
+
+                "boundCustomPropertyEditor": {
+                    "prototype": "palette/ui/inspector/blueprint/property-editor.reel",
+                    "properties": {
+                        "element": {"#": "boundCustomPropertyEditor"},
+                        "propertyKey": "customPropertyB"
+                    },
+                    "bindings": {
+                        "object": {"<-": "@test.proxy"}
+                    }
+                },
+
+                "complexBindingEditor": {
+                    "prototype": "palette/ui/inspector/blueprint/property-editor.reel",
+                    "properties": {
+                        "element": {"#": "complexBindingEditor"},
+                        "propertyKey": "complex.binding"
+                    },
+                    "bindings": {
+                        "object": {"<-": "@test.proxy"}
+                    }
+                },
+
                 "application": {
                     "prototype": "montage/core/application",
                     "properties": {
@@ -54,5 +90,8 @@
 <body>
     <div data-montage-id="propertyEditor"></div>
     <div data-montage-id="boundPropertyEditor"></div>
+    <div data-montage-id="customPropertyEditor"></div>
+    <div data-montage-id="boundCustomPropertyEditor"></div>
+    <div data-montage-id="complexBindingEditor"></div>
 </body>
 </html>

@@ -15,7 +15,8 @@ exports.PropertyEditorTest = Component.specialize({
                 "prototype": "spec/ui/property-editor/target-object",
                 "bindings": {
                     "propertyB": {"<-": "'abc'"},
-                    "customPropertyB": {"<-": "'def'"}
+                    "customPropertyB": {"<-": "'def'"},
+                    "complex.binding": {"<-": "'ghi'"}
                 }
             }, "spec/ui/property-editor/target-object", {});
             object.blueprint.then(function (blueprint) {
@@ -39,6 +40,10 @@ exports.PropertyEditorTest = Component.specialize({
     },
 
     boundCustomPropertyEditor: {
+        value: null
+    },
+
+    complexBindingEditor: {
         value: null
     },
 
