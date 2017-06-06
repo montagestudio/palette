@@ -150,12 +150,43 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         }
     },
 
+    _bindings: {
+        value: null
+    },
+
+    /**
+     * The collection of bindings associated with the object this proxy represents
+     */
+    bindings: {
+        get: function () {
+            return this._bindings;
+        }
+    },
+
     _populateWithSerialization: {
         value: function (serialization) {
+            var serializationBindings;
+
             this._originalSerializationMap = Map.from(serialization);
 
             // We specifically surface the properties as a top level API
             this._properties = Map.from(serialization.properties);
+
+            serializationBindings = serialization.bindings || {};
+            this._bindings = Object.keys(serializationBindings).map(function (key) {
+                var bindingEntry = serialization.bindings[key];
+                var bindingDescriptor = Object.create(null);
+
+                bindingDescriptor.targetPath = key;
+                bindingDescriptor.oneway = ("<-" in bindingEntry);
+                bindingDescriptor.sourcePath = bindingDescriptor.oneway ? bindingEntry["<-"] : bindingEntry["<->"];
+                /* TODO the converter seems to be maintaining state */
+                if (bindingEntry.converter) {
+                    bindingDescriptor.converter = bindingEntry.converter;
+                }
+
+                return bindingDescriptor;
+            });
         }
     },
 
@@ -190,8 +221,6 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
     getObjectProperties: {
         value: function (values) {
             var result = {},
-                index,
-                value,
                 entries,
                 entry;
 
@@ -211,6 +240,48 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
                 }
             }
             return result;
+        }
+    },
+
+    /**
+     * @param {string} targetPath
+     * @param {boolean} oneway
+     * @param {string} sourcePath
+     * @param {Object} converter
+     * @return {Object} The binding model
+     */
+    defineObjectBinding: {
+        value: function (targetPath, oneway, sourcePath, converter) {
+            var binding = Object.create(null);
+
+            // TODO guard against binding to the exact same targetPath twice
+            binding.targetPath = targetPath;
+            binding.oneway = oneway;
+            binding.sourcePath = sourcePath;
+            binding.converter = converter;
+
+            this.bindings.push(binding);
+
+            return binding;
+        }
+    },
+
+    /**
+     * Remove the specific binding from the set of active bindings on this proxy
+     *
+     * @param {Object} binding The binding model
+     * @return {Object} an object with two keys index and removedBinding
+     */
+    cancelObjectBinding: {
+        value: function (binding) {
+            var bindingIndex = this.bindings.indexOf(binding);
+
+            if (bindingIndex > -1) {
+                this.bindings.splice(bindingIndex, 1);
+                return {index: bindingIndex, removedBinding: binding};
+            } else {
+                throw new Error("Cannot cancel a binding that's not associated with this proxy");
+            }
         }
     }
 

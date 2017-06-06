@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Slot Test</title>
+    <script src="../../../../node_modules/montage/montage.js" data-package="../../../"></script>
+    <script type="text/montage-serialization">
+            {
+
+                "test": {
+                    "prototype": "spec/ui/property-editor/property-editor-test",
+                    "properties": {
+                        "propertyEditor": {"@": "propertyEditor"},
+                        "boundPropertyEditor": {"@": "boundPropertyEditor"}
+                    }
+                },
+
+                "propertyEditor": {
+                    "prototype": "palette/ui/inspector/blueprint/property-editor.reel",
+                    "properties": {
+                        "element": {"#": "propertyEditor"},
+                        "propertyKey": "propertyA"
+                    },
+                    "bindings": {
+                        "object": {"<-": "@test.proxy"},
+                        "propertyDescriptor": {"<-": "@test.propertyDescriptorA"}
+                    }
+                },
+
+                "boundPropertyEditor": {
+                    "prototype": "palette/ui/inspector/blueprint/property-editor.reel",
+                    "properties": {
+                        "element": {"#": "boundPropertyEditor"},
+                        "propertyKey": "propertyB"
+                    },
+                    "bindings": {
+                        "object": {"<-": "@test.proxy"},
+                        "propertyDescriptor": {"<-": "@test.propertyDescriptorB"}
+                    }
+                },
+
+                "application": {
+                    "prototype": "montage/core/application",
+                    "properties": {
+                        "delegate": {
+                            "@": "test"
+                        }
+                    }
+                }
+
+            }
+        </script>
+</head>
+<body>
+    <div data-montage-id="propertyEditor"></div>
+    <div data-montage-id="boundPropertyEditor"></div>
+</body>
+</html>

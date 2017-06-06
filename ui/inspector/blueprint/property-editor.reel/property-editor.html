@@ -11,6 +11,41 @@
                 "element": {"#": "property-editor"}
             }
         },
+
+        "bindingButtonSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "bindingButtonSubstitution"}
+            },
+            "bindings": {
+                "switchValue": {"<-": "@owner._propertyIsBound ? 'bound' : 'unbound'"}
+            }
+        },
+        "defineBindingButton": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "defineBindingButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "cancelBindingButton": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "cancelBindingButton"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
         "booleanPropertyInspector": {
             "prototype": "../property-value-type/boolean-property-inspector.reel",
             "properties": {
@@ -235,8 +270,12 @@
 </head>
 <body>
     <label data-montage-id="property-editor" class="PropertyEditor" title="">
+        <div data-montage-id="bindingButtonSubstitution" class="PropertyEditor-bindingButtonSubstitution">
+            <button data-arg="unbound" data-montage-id="defineBindingButton" class="PropertyEditor-defineBindingButton"></button>
+            <button data-arg="bound" data-montage-id="cancelBindingButton" class="PropertyEditor-cancelBindingButton"></button>
+        </div>
         <div data-montage-id="inspectorSubstitution">
-            <div data-arg="bound" data-montage-id="boundPropertyInspector"></div>
+            <div data-arg="binding" data-montage-id="boundPropertyInspector"></div>
             <div data-arg="object-association" data-montage-id="objectAssociationInspector"></div>
             <div data-arg="list-association" data-montage-id="listAssociationInspector"></div>
             <div data-arg="set-association" data-montage-id="setAssociationInspector"></div>

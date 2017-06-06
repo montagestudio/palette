@@ -25,6 +25,7 @@
 
         "jasmine": true,
         "beforeEach": false,
+        "beforeAll": false,
         "afterEach": false,
         "describe": false,
         "xdescribe": false,

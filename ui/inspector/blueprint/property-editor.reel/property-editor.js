@@ -1,69 +1,28 @@
 /**
- @module "./property-editor.reel"
- @requires montage
- @requires montage/ui/component
+ * @module "ui/inspector/blueprint/property-editor.reel"
+ * @requires montage/ui/component
  */
 var Component = require("montage/ui/component").Component,
     Gate = require("montage/core/gate").Gate;
 
 /**
- Description TODO
- @class module:"./property-editor.reel".PropertyEditor
- @extends module:montage/ui/component.Component
+ * An editor for a single property on an editing proxy. Displays an appropriate
+ * editor for the property's type (if the target object has an ObjectDescriptor),
+ * and displays a binding inspector if needed, as well as buttons for creating/
+ * reverting bindings.
+ * @class PropertyEditor
+ * @extends module:montage/ui/component.Component
  */
-exports.PropertyEditor = Component.specialize(/** @lends module:"./property-editor.reel".PropertyEditor# */ {
-
-    constructor: {
-        value: function PropertyEditor () {
-            this.super();
-
-            this.defineBinding("_propertyIsBound", {
-                "<-": "object.bindings.some{targetPath == this.propertyBlueprint.name}"
-            });
-
-            this.addPathChangeListener("object.properties.get(propertyBlueprint.name)", this, "_valueChanged");
-            this.addPathChangeListener("_propertyIsBound", this, "handlePropertyTypeDependencyChange");
-            this.addPathChangeListener("propertyBlueprint.isAssociationBlueprint", this, "handlePropertyTypeDependencyChange");
-            this.addPathChangeListener("propertyBlueprint.isToMany", this, "handlePropertyTypeDependencyChange");
-            this.addPathChangeListener("propertyBlueprint.collectionValueType", this, "handlePropertyTypeDependencyChange");
-            this.addPathChangeListener("propertyBlueprint.valueType", this, "handlePropertyTypeDependencyChange");
-        }
-    },
-
-    _propertyIsBound: {
-        value: null
-    },
-
-    _propertyType: {
-        value: null
-    },
-
-    _updateGate: {
-        value: null
-    },
-    /**
-     Description TODO
-     @function
-     @returns this._blockDrawGate
-     */
-    updateGate: {
-        enumerable: false,
-        get: function () {
-            if (!this._updateGate) {
-                this._updateGate = new Gate().initWithDelegate(this);
-                this._updateGate.setField("object", false);
-                this._updateGate.setField("propertyBlueprint", false);
-            }
-            return this._updateGate;
-        }
-    },
+exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
 
     _object: {
         value: null
     },
 
-    /*
-     * Target object proxy that is inspected with the blueprint
+    /**
+     * Target object proxy that is inspected.
+     *
+     * @type {EditingProxy}
      */
     object: {
         get: function () {
@@ -82,32 +41,91 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
         }
     },
 
-    _propertyBlueprint: {
+    _propertyKey: {
         value: null
     },
 
-    /*
-     * Property blueprint that is inspected
+    /**
+     * The name of the property to inspect.
+     *
+     * @type {String}
      */
-    propertyBlueprint: {
+    propertyKey: {
         get: function () {
-            return this._propertyBlueprint;
+            return this._propertyKey;
         },
         set: function (value) {
-            if (this._propertyBlueprint !== value) {
-                if (this.updateGate.getField("propertyBlueprint")) {
-                    this.updateGate.setField("propertyBlueprint", false);
-                }
-                this._propertyBlueprint = value;
-                if (value) {
-                    this.updateGate.setField("propertyBlueprint", true);
-                }
+            if (this._propertyKey !== value) {
+                this._propertyKey = value;
             }
         }
     },
 
+    _propertyDescriptor: {
+        value: null
+    },
+
+    propertyDescriptor: {
+        get: function () {
+            return this._propertyDescriptor;
+        },
+        set: function (value) {
+            this._propertyDescriptor = value;
+        }
+    },
+
+    constructor: {
+        value: function PropertyEditor () {
+            this.super();
+
+            this.defineBinding("_bindingModel", {
+                "<-": "object.bindings.filter{targetPath == ^_propertyDescriptor.name}[0]"
+            });
+            this.defineBinding("_propertyIsBound", {
+                "<-": "!!_bindingModel"
+            });
+
+            this.addPathChangeListener("object.properties.get(_propertyDescriptor.name)", this, "_valueChanged");
+            this.addPathChangeListener("_propertyIsBound", this, "handlePropertyTypeDependencyChange");
+            this.addPathChangeListener("_propertyDescriptor.isAssociationBlueprint", this, "handlePropertyTypeDependencyChange");
+            this.addPathChangeListener("_propertyDescriptor.isToMany", this, "handlePropertyTypeDependencyChange");
+            this.addPathChangeListener("_propertyDescriptor.collectionValueType", this, "handlePropertyTypeDependencyChange");
+            this.addPathChangeListener("_propertyDescriptor.valueType", this, "handlePropertyTypeDependencyChange");
+        }
+    },
+
+    _bindingModel: {
+        value: null
+    },
+
+    _propertyIsBound: {
+        value: null
+    },
+
+    _propertyType: {
+        value: null
+    },
+
     _objectValue: {
         value: null
+    },
+
+    /*
+     * Target value in the object
+     */
+    objectValue: {
+        dependencies: ["object", "_propertyDescriptor"],
+        get: function () {
+            return this._objectValue;
+        },
+        set: function (value) {
+            if ((this._objectValue !== value) && this._object && this._propertyDescriptor) {
+                if (typeof value !== "undefined" && !this._propertyDescriptor.readOnly) {
+                    this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyDescriptor.name, value);
+                }
+            }
+            this._objectValue = value;
+        }
     },
 
     _valueChanged: {
@@ -116,29 +134,31 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
         }
     },
 
-    /*
-     * Target value in the object
+    _updateGate: {
+        value: null
+    },
+    /**
+     Description TODO
+     @function
+     @returns this._blockDrawGate
      */
-    objectValue: {
-        dependencies: ["object", "propertyBlueprint"],
+    updateGate: {
+        enumerable: false,
         get: function () {
-            return this._objectValue;
-        },
-        set: function (value) {
-            if ((this._objectValue !== value) && this._object && this._propertyBlueprint) {
-                if (typeof value !== "undefined" && !this._propertyBlueprint.readOnly) {
-                    this._object.editingDocument.setOwnedObjectProperty(this._object, this._propertyBlueprint.name, value);
-                }
+            if (!this._updateGate) {
+                this._updateGate = new Gate().initWithDelegate(this);
+                this._updateGate.setField("object", false);
+                this._updateGate.setField("propertyDescriptor", true);
             }
-            this._objectValue = value;
+            return this._updateGate;
         }
     },
 
     gateDidBecomeTrue: {
         value: function (gate) {
             if (gate === this._updateGate) {
-                if (this._object && this._propertyBlueprint) {
-                    var value = this._object.getObjectProperty(this._propertyBlueprint.name);
+                if (this._object && this._propertyDescriptor) {
+                    var value = this._object.getObjectProperty(this._propertyDescriptor.name);
                     if (this._objectValue !== value) {
                         this.dispatchBeforeOwnPropertyChange("objectValue", this._objectValue);
                         this._objectValue = value;
@@ -163,59 +183,35 @@ exports.PropertyEditor = Component.specialize(/** @lends module:"./property-edit
         }
     },
 
-    //jshint -W074
     handlePropertyTypeDependencyChange: {
         value: function() {
-            var blueprint = this.propertyBlueprint;
+            var descriptor = this._propertyDescriptor;
 
-            if (!blueprint) {
+            if (!descriptor) {
                 return;
             }
 
             if (this._propertyIsBound) {
                 this._propertyType = "binding";
-            } else if (blueprint.isAssociationBlueprint) {
-                if (blueprint.isToMany) {
-                    if (blueprint.collectionValueType === "list") {
-                        this._propertyType = "list-association";
-                    } else if (blueprint.collectionValueType === "set") {
-                        this._propertyType = "set-association";
-                    } else if (blueprint.collectionValueType === "map") {
-                        this._propertyType = "map-association";
-                    }
-                } else {
-                    this._propertyType = "object-association";
-                }
+            } else if (descriptor.isAssociationBlueprint) {
+                this._propertyType = (descriptor.isToMany ? descriptor.collectionValueType : "object") + "-association";
             } else {
-                if (blueprint.isToMany) {
-                    if (blueprint.collectionValueType === "list") {
-                        this._propertyType = "list-property";
-                    } else if (blueprint.collectionValueType === "set") {
-                        this._propertyType = "set-property";
-                    } else if (blueprint.collectionValueType === "map") {
-                        this._propertyType = "map-property";
-                    }
-                } else {
-                    if (blueprint.valueType === "boolean") {
-                        this._propertyType = "boolean-property";
-                    } else if (blueprint.valueType === "date") {
-                        this._propertyType = "date-property";
-                    } else if (blueprint.valueType === "enum") {
-                        this._propertyType = "enum-property";
-                    } else if (blueprint.valueType === "number") {
-                        this._propertyType = "number-property";
-                    } else if (blueprint.valueType === "object") {
-                        this._propertyType = "object-property";
-                    } else if (blueprint.valueType === "string") {
-                        this._propertyType = "string-property";
-                    } else if (blueprint.valueType === "url") {
-                        this._propertyType = "url-property";
-                    } else if (blueprint.valueType === "resource") {
-                        this._propertyType = "resource-property";
-                    }
-                }
+                this._propertyType = (descriptor.isToMany ? descriptor.collectionValueType : descriptor.valueType) + "-property";
             }
         }
+    },
+
+    handleDefineBindingButtonAction: {
+        value: function () {
+            this.object.defineObjectBinding(this._propertyDescriptor.name, true, "");
+            this._propertyIsBound = true;
+        }
+    },
+
+    handleCancelBindingButtonAction: {
+        value: function () {
+            this.object.cancelObjectBinding(this._bindingModel);
+            this._propertyIsBound = false;
+        }
     }
-    //jshint +W074
 });
