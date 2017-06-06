@@ -30,14 +30,6 @@ exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-pr
         value: ""
     },
 
-    handleRemoveButtonAction: {
-        value: function (evt) {
-            if (this.object && this.binding) {
-                this.object.editingDocument.cancelOwnedObjectBinding(this.object, this.binding);
-            }
-        }
-    },
-
     handleBoundButtonAction: {
         value: function (evt) {
             if (this.object && this.binding) {

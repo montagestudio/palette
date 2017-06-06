@@ -104,6 +104,20 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
         }
     },
 
+    enterDocument: {
+        value: function (firstTime) {
+            var self = this;
+            if (firstTime) {
+                this.element.addEventListener("mouseenter", function () {
+                    self.classList.add("mouseOver");
+                });
+                this.element.addEventListener("mouseleave", function () {
+                    self.classList.remove("mouseOver");
+                });
+            }
+        }
+    },
+
     /**
      * The true key of the property, calculated using both the propertyDescriptor
      * and the propertyKey public APIs.

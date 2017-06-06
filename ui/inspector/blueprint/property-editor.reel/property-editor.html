@@ -22,7 +22,7 @@
             }
         },
         "defineBindingButton": {
-            "prototype": "montage/ui/button.reel",
+            "prototype": "matte/ui/button.reel",
             "properties": {
                 "element": {"#": "defineBindingButton"}
             },
@@ -34,7 +34,7 @@
             ]
         },
         "cancelBindingButton": {
-            "prototype": "montage/ui/button.reel",
+            "prototype": "matte/ui/button.reel",
             "properties": {
                 "element": {"#": "cancelBindingButton"}
             },
@@ -56,7 +56,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "boundPropertyInspector": {
@@ -80,7 +80,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "enumPropertyInspector": {
@@ -93,7 +93,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "inspectorSubstitution": {
@@ -115,7 +115,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "listPropertyInspector": {
@@ -128,7 +128,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "mapAssociationInspector": {
@@ -141,7 +141,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "mapPropertyInspector": {
@@ -154,7 +154,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "numberPropertyInspector": {
@@ -167,7 +167,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "objectAssociationInspector": {
@@ -180,7 +180,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "objectPropertyInspector": {
@@ -193,7 +193,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "setAssociationInspector": {
@@ -206,7 +206,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "setPropertyInspector": {
@@ -219,7 +219,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
         "stringPropertyInspector": {
@@ -232,7 +232,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
 
@@ -246,7 +246,7 @@
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "label": {"<-": "@owner._key"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"}
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"}
             }
         },
 
@@ -259,7 +259,7 @@
             "bindings": {
                 "editingDocument": {"<-": "@owner.editingDocument"},
                 "objectValue": {"<->": "@owner.objectValue"},
-                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"},
+                "propertyBlueprint": {"<-": "@owner.propertyDescriptor"},
                 "label": {"<-": "@owner._key"}
             }
         },
@@ -274,9 +274,10 @@
             }
         },
         "deleteButton": {
-            "prototype": "montage/ui/button.reel",
+            "prototype": "matte/ui/button.reel",
             "properties": {
-                "element": {"#": "deleteButton"}
+                "element": {"#": "deleteButton"},
+                "label": "-"
             },
             "listeners": [
                 {
@@ -292,8 +293,12 @@
 <body>
     <label data-montage-id="property-editor" class="PropertyEditor" title="">
         <div data-montage-id="bindingButtonSubstitution" class="PropertyEditor-bindingButtonSubstitution">
-            <button data-arg="unbound" data-montage-id="defineBindingButton" class="PropertyEditor-defineBindingButton"></button>
-            <button data-arg="bound" data-montage-id="cancelBindingButton" class="PropertyEditor-cancelBindingButton"></button>
+            <button data-arg="unbound" data-montage-id="defineBindingButton" class="PropertyEditor-defineBindingButton">
+                <i class="PropertyEditor-bindingIcon"></i>
+            </button>
+            <button data-arg="bound" data-montage-id="cancelBindingButton" class="PropertyEditor-cancelBindingButton">
+                <i class="PropertyEditor-cancelBindingIcon"></i>
+            </button>
         </div>
         <div data-montage-id="inspectorSubstitution">
             <div data-arg="binding" data-montage-id="boundPropertyInspector"></div>
