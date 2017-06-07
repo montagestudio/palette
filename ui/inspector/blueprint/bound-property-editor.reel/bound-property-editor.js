@@ -12,6 +12,13 @@ var Component = require("montage/ui/component").Component;
  */
 exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-property-editor.reel".BoundPropertyEditor# */ {
 
+    /**
+     * @event editBindingForObject
+     * Dispatched when the user clicks the bound property editor. Event detail
+     * contains the bindingModel and the existing binding. Should be
+     * used to bring up a modal for binding customization.
+     */
+
     constructor: {
         value: function BoundPropertyEditor() {
             this.super();
@@ -30,22 +37,22 @@ exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-pr
         value: ""
     },
 
-    handleBoundButtonAction: {
-        value: function (evt) {
+    handlePress: {
+        value: function(evt) {
             if (this.object && this.binding) {
                 var bindingModel = Object.create(null);
                 bindingModel.targetObject = this.object;
-                bindingModel.targetPath = this.label;
+                bindingModel.targetPath = this.binding.targetPath;
                 bindingModel.oneway = this.binding.oneway;
                 bindingModel.sourcePath = this.binding.sourcePath;
+                bindingModel.converter = this.binding.converter;
 
-                this.dispatchEventNamed("editBindingForObject", true, false, {
+                this.dispatchEventNamed("addBinding", true, false, {
                     bindingModel: bindingModel,
                     existingBinding: this.binding
                 });
             }
         }
     }
-
 
 });

@@ -259,8 +259,14 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
 
     handleDefineBindingButtonAction: {
         value: function () {
-            this.object.defineObjectBinding(this._key, true, "");
-            this._propertyIsBound = true;
+            var bindingModel = Object.create(null);
+            bindingModel.targetObject = this._object;
+            bindingModel.targetPath = this._key;
+            bindingModel.oneway = true;
+            bindingModel.sourcePath = "";
+            this.dispatchEventNamed("addBinding", true, false, {
+                bindingModel: bindingModel
+            });
         }
     },
 

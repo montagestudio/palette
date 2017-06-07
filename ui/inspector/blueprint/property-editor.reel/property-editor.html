@@ -65,7 +65,7 @@
                 "element": {"#": "boundPropertyInspector"}
             },
             "bindings": {
-                "binding": {"<-": "@owner.object.bindings.filter{targetPath == @owner._key}.get(0)"},
+                "binding": {"<-": "@owner._bindingModel"},
                 "label": {"<-": "@owner._key"},
                 "object": {"<->": "@owner.object"}
             }

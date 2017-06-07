@@ -13,19 +13,17 @@
             }
         },
 
-        "bindingCondition": {
-            "prototype": "montage/ui/condition.reel",
+        "pressComposer": {
+            "prototype": "montage/composer/press-composer",
             "properties": {
-                "element": {
-                    "#": "bindingCondition"
-                },
-                "removalStrategy": "hide"
+                "component": {"@": "owner"}
             },
-            "bindings": {
-                "condition": {
-                    "<-": "@owner.binding"
+            "listeners": [
+                {
+                    "type": "press",
+                    "listener": {"@": "owner"}
                 }
-            }
+            ]
         },
 
         "readOnlyPropertyName": {
@@ -51,7 +49,7 @@
             },
             "bindings": {
                 "condition": {
-                    "<-": "!@owner.binding.twoWay"
+                    "<-": "@owner.binding.oneway"
                 }
             }
         },
@@ -65,7 +63,7 @@
             },
             "bindings": {
                 "condition": {
-                    "<-": "@owner.binding.twoWay"
+                    "<-": "!@owner.binding.oneway"
                 }
             }
         },
@@ -82,28 +80,6 @@
                     "<-": "@owner.binding.sourcePath"
                 }
             }
-        },
-
-        "boundButton": {
-            "prototype": "matte/ui/button.reel",
-            "properties": {
-                "element": {
-                    "#": "boundButton"
-                }
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {
-                        "@": "owner"
-                    }
-                }
-            ],
-            "bindings": {
-                "title": {
-                    "<-": "@owner.binding.sourcePath"
-                }
-            }
         }
 
     }
@@ -111,15 +87,10 @@
 </head>
 <body>
     <div data-montage-id="bound-property-editor" class="BoundPropertyEditor">
-        <div data-montage-id="bindingCondition" class="Property">
-            <div data-montage-id="readOnlyPropertyName" class="Property-label"></div>
-            <div class="Property-field">
-                <span data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional" style="display: none;"></span>
-                <span data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional" style="display: none;"></span>
-                <div data-montage-id="sourcePath" style="display: none;"></div>
-                <button data-montage-id="boundButton" class="BoundPropertyEditor-boundButton Button--action"><i class="BoundPropertyEditor-boundIcon"></i></button>
-            </div>
-        </div>
+        <div data-montage-id="readOnlyPropertyName" class="Property-label"></div>
+        <div data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional"></div>
+        <div data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional"></div>
+        <div data-montage-id="sourcePath" class="BindingEntry-pill"></div>
     </div>
 </body>
 </html>
