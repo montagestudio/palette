@@ -20,7 +20,7 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
 
         // TODO: All of these tests are broken. Right now I don't know how to fix them, they have been out of
         // date for some time now.
-        xdescribe("loading a template", function () {
+        describe("loading a template", function () {
             var template;
             var noOwnerHtml = '<html><head><script type="text/montage-serialization">{'+
                 '    "text": {'+
@@ -118,26 +118,21 @@ TestPageLoader.queueTest("editing-frame/editing-frame", function (testPage) {
                 });
             });
 
-            describe("", function () {
-                var init;
-                beforeEach(function () {
-                    init = template.initWithHtml(noOwnerHtml, require);
-                });
 
-                it("can be reloaded twice without errors", function () {
-                    return init.then(function () {
-                        editingFrame.loadTemplate(template);
-                    }).then(function () {
-                        var a = editingFrame.refresh(template);
-                        var b = editingFrame.refresh(template);
+            it("can be reloaded twice without errors", function () {
+                var init = template.initWithHtml(noOwnerHtml, require);
+                return init.then(function () {
+                    editingFrame.loadTemplate(template);
+                }).then(function () {
+                    var a = editingFrame.refresh(template);
+                    var b = editingFrame.refresh(template);
 
-                        return a.then(function (aInfo) {
-                            expect(aInfo.template).not.toBe(template);
-                            expect(b.isPending()).toBe(true);
+                    return a.then(function (aInfo) {
+                        expect(aInfo.template).not.toBe(template);
+                        expect(b.isPending()).toBe(true);
 
-                            return b.then(function (bInfo) {
-                                expect(bInfo.template).not.toBe(aInfo.template);
-                            });
+                        return b.then(function (bInfo) {
+                            expect(bInfo.template).not.toBe(aInfo.template);
                         });
                     });
                 });
