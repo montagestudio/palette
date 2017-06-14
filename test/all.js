@@ -1,11 +1,11 @@
 module.exports = require("montage-testing").run(require, [
     // Please keep in alphabetical order
-    "spec/core/document-spec",
-    "spec/core/editing-document-spec",
-    "spec/core/document-controller-spec",
+    {name: "spec/core/document-spec", node: false},
+    {name: "spec/core/editing-document-spec", node: false},
+    {name: "spec/core/document-controller-spec", node: false},
     "spec/core/editing-proxy-spec",
-    "spec/core/template-formatter-spec",
-    {name: "spec/ui/blueprint-inspector/blueprint-inspector-spec", node: false},
+    {name: "spec/core/template-formatter-spec", node: false},
+    {name: "spec/ui/blueprint-inspector/blueprint-inspector-spec", node: false, karma: false},
     {name: "spec/ui/editing-frame-spec", node: false},   // Some tests broken
-    {name: "spec/ui/property-editor/property-editor-spec", node: false}
+    {name: "spec/ui/property-editor/property-editor-spec", node: false, karma: false}
 ]);

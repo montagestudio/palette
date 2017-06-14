@@ -23,30 +23,6 @@ module.exports = function(config) {
             included: false
         },
         {
-            pattern: 'stage/**/*.json',
-            included: false
-        },
-        {
-            pattern: 'stage/**/*.css',
-            included: false
-        },
-        {
-            pattern: 'templates/**/*.js',
-            included: false
-        },
-        {
-            pattern: 'templates/**/*.html',
-            included: false
-        },
-        {
-            pattern: 'templates/**/*.css',
-            included: false
-        },
-        {
-            pattern: 'templates/**/*.mjson',
-            included: false
-        },
-        {
             pattern: 'ui/**/*.js',
             included: false
         },
