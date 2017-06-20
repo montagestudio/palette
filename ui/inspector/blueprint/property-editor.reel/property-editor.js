@@ -86,7 +86,7 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
                 "<-": "!propertyDescriptor"
             });
             this.defineBinding("_bindingModel", {
-                "<-": "object.bindings.filter{targetPath == ^_key}[0]"
+                "<-": "object.bindings.filter{key == ^_key}[0]"
             });
             this.defineBinding("_propertyIsBound", {
                 "<-": "!!_bindingModel"
@@ -260,8 +260,9 @@ exports.PropertyEditor = Component.specialize(/** @lends PropertyEditor# */ {
     handleDefineBindingButtonAction: {
         value: function () {
             var bindingModel = Object.create(null);
+            bindingModel.bound = true;
             bindingModel.targetObject = this._object;
-            bindingModel.targetPath = this._key;
+            bindingModel.key = this._key;
             bindingModel.oneway = true;
             bindingModel.sourcePath = "";
             this.dispatchEventNamed("addBinding", true, false, {

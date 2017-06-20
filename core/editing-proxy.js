@@ -14,6 +14,13 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         }
     },
 
+    destroy: {
+        value: function() {
+            this.cancelBindings();
+            this._editingDocument = null;
+        }
+    },
+
     nextTarget: {
         get: function() {
             return this.editingDocument;
@@ -177,7 +184,8 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
                 var bindingEntry = serialization.bindings[key];
                 var bindingDescriptor = Object.create(null);
 
-                bindingDescriptor.targetPath = key;
+                bindingDescriptor.bound = true;
+                bindingDescriptor.key = key;
                 bindingDescriptor.oneway = ("<-" in bindingEntry);
                 bindingDescriptor.sourcePath = bindingDescriptor.oneway ? bindingEntry["<-"] : bindingEntry["<->"];
                 /* TODO the converter seems to be maintaining state */
@@ -255,12 +263,66 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
             var binding = Object.create(null);
 
             // TODO guard against binding to the exact same targetPath twice
-            binding.targetPath = targetPath;
+            binding.bound = true;
+            binding.key = targetPath;
             binding.oneway = oneway;
             binding.sourcePath = sourcePath;
             binding.converter = converter;
 
             this.bindings.push(binding);
+
+            return binding;
+        }
+    },
+
+    /**
+     * Add a a specified binding object to the proxy at a specific index
+     * in the bindings collection
+     */
+    addBinding: {
+        value: function (binding, insertionIndex) {
+            var bindingIndex = this.bindings.indexOf(binding);
+
+            if (-1 === bindingIndex) {
+                if (isNaN(insertionIndex)) {
+                    this.bindings.push(binding);
+                } else {
+                    this.bindings.splice(insertionIndex, 0, binding);
+                }
+            } else {
+                //TODO guard against adding exact same binding to multiple proxies
+                throw new Error("Cannot add the same binding to a proxy more than once");
+            }
+
+            return binding;
+        }
+    },
+
+    /**
+     * Update an existing binding with new parameters
+     *
+     * All parameters are required, currently you cannot update a single
+     * property of the existing binding without affecting the others.
+     *
+     * @param {Object} binding The existing binding to update
+     * @param {string} targetPath The targetPath to set on the binding
+     * @param {boolean} oneway Whether or not to set the binding as being oneway
+     * @param {string} sourcePath The sourcePath to set on the binding
+     * @param {string} converter The converter to set on the binding
+     */
+    updateObjectBinding: {
+        value: function (binding, targetPath, oneway, sourcePath, converter) {
+            var bindingIndex = this.bindings.indexOf(binding);
+
+            if (bindingIndex === -1) {
+                throw new Error("Cannot update a binding that's not associated with this proxy.");
+            }
+
+            binding.bound = true;
+            binding.key = targetPath;
+            binding.oneway = oneway;
+            binding.sourcePath = sourcePath;
+            binding.converter = converter;
 
             return binding;
         }

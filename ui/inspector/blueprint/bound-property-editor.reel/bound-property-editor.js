@@ -41,8 +41,9 @@ exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-pr
         value: function(evt) {
             if (this.object && this.binding) {
                 var bindingModel = Object.create(null);
+                bindingModel.bound = true;
                 bindingModel.targetObject = this.object;
-                bindingModel.targetPath = this.binding.targetPath;
+                bindingModel.key = this.binding.key;
                 bindingModel.oneway = this.binding.oneway;
                 bindingModel.sourcePath = this.binding.sourcePath;
                 bindingModel.converter = this.binding.converter;
