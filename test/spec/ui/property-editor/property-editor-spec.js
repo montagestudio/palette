@@ -29,7 +29,7 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 expect(stringInspector).toBeTruthy();
             });
             it("can be converted to a binding", function () {
-                var defineButton = propertyEditor.element.querySelector(".PropertyEditor-defineBindingButton");
+                var defineButton = propertyEditor.element.querySelector(".PropertyEditor-bindingButton--define");
                 expect(defineButton).toBeTruthy();
                 var addBindingListener = {
                     handler: function () {}
@@ -39,7 +39,7 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 propertyEditor.handleDefineBindingButtonAction();
                 expect(addBindingListener.handler).toHaveBeenCalled();
                 var details = addBindingListener.handler.calls.argsFor(0)[0].detail;
-                expect(details.bindingModel.targetPath).toBe("propertyA");
+                expect(details.bindingModel.key).toBe("propertyA");
             });
             it("does not have a delete button", function () {
                 var deleteButton = propertyEditor.element.querySelector(".PropertyEditor-deleteButton");
@@ -53,14 +53,14 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 expect(bindingInspector).toBeTruthy();
             });
             it("can cancel the binding", function (done) {
-                var cancelButton = boundPropertyEditor.element.querySelector(".PropertyEditor-cancelBindingButton");
+                var cancelButton = boundPropertyEditor.element.querySelector(".PropertyEditor-bindingButton--cancel");
                 expect(cancelButton).toBeTruthy();
                 boundPropertyEditor.handleCancelBindingButtonAction();
                 Promise.delay(100).then(function () {
-                    var defineButton = boundPropertyEditor.element.querySelector(".PropertyEditor-defineBindingButton");
+                    var defineButton = boundPropertyEditor.element.querySelector(".PropertyEditor-bindingButton--define");
                     expect(defineButton).toBeTruthy();
                     var bindingTargetPaths = boundPropertyEditor.object.bindings.map(function (bindingModel) {
-                        return bindingModel.targetPath;
+                        return bindingModel.key;
                     });
                     var isBindingSet = bindingTargetPaths.indexOf("propertyB") > -1;
                     expect(isBindingSet).toBeFalsy();
@@ -79,7 +79,7 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 expect(stringInspector).toBeTruthy();
             });
             it("can be converted to a binding", function () {
-                var defineButton = customPropertyEditor.element.querySelector(".PropertyEditor-defineBindingButton");
+                var defineButton = customPropertyEditor.element.querySelector(".PropertyEditor-bindingButton--define");
                 expect(defineButton).toBeTruthy();
                 var addBindingListener = {
                     handler: function () {}
@@ -89,7 +89,7 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 customPropertyEditor.handleDefineBindingButtonAction();
                 expect(addBindingListener.handler).toHaveBeenCalled();
                 var details = addBindingListener.handler.calls.argsFor(0)[0].detail;
-                expect(details.bindingModel.targetPath).toBe("customPropertyA");
+                expect(details.bindingModel.key).toBe("customPropertyA");
             });
             it("can be deleted", function (done) {
                 var deleteButton = customPropertyEditor.element.querySelector(".PropertyEditor-deleteButton"),
@@ -109,14 +109,14 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 expect(bindingInspector).toBeTruthy();
             });
             it("can cancel the binding", function (done) {
-                var cancelButton = boundCustomPropertyEditor.element.querySelector(".PropertyEditor-cancelBindingButton");
+                var cancelButton = boundCustomPropertyEditor.element.querySelector(".PropertyEditor-bindingButton--cancel");
                 expect(cancelButton).toBeTruthy();
                 boundCustomPropertyEditor.handleCancelBindingButtonAction();
                 Promise.delay(100).then(function () {
-                    var defineButton = boundCustomPropertyEditor.element.querySelector(".PropertyEditor-defineBindingButton");
+                    var defineButton = boundCustomPropertyEditor.element.querySelector(".PropertyEditor-bindingButton--define");
                     expect(defineButton).toBeTruthy();
                     var bindingTargetPaths = boundCustomPropertyEditor.object.bindings.map(function (bindingModel) {
-                        return bindingModel.targetPath;
+                        return bindingModel.key;
                     });
                     var isBindingSet = bindingTargetPaths.indexOf("propertyB") > -1;
                     expect(isBindingSet).toBeFalsy();
@@ -141,8 +141,8 @@ TestPageLoader.queueTest("property-editor-test", function (testPage) {
                 expect(bindingInspector).toBeTruthy();
             });
             it("does not have a defineBinding or cancelBinding button", function () {
-                var defineButton = complexBindingEditor.element.querySelector(".PropertyEditor-defineBindingButton"),
-                    cancelButton = complexBindingEditor.element.querySelector(".PropertyEditor-cancelBindingButton");
+                var defineButton = complexBindingEditor.element.querySelector(".PropertyEditor-bindingButton--define"),
+                    cancelButton = complexBindingEditor.element.querySelector(".PropertyEditor-bindingButton--cancel");
                 expect(defineButton).toBeNull();
                 expect(cancelButton).toBeNull();
             });
