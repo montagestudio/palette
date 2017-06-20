@@ -72,4 +72,50 @@ describe("core/editing-proxy-spec", function () {
             expect(JSON.stringify(barUnit.qux)).toBe(JSON.stringify(["a", "b", "c"]));
         });
     });
+
+    describe("bindings", function () {
+
+        it("should correctly represent a one-way binding", function () {
+            var element = {};
+            var serialization = {
+                "prototype": "ui/foo.reel",
+                "properties": {
+                    "element": element
+                },
+                "bindings": {
+                    "propertyOfFoo": {"<-": "@foo.anotherPropertyOfFoo"}
+                }
+            };
+
+            proxy = new EditingProxy().init(label, serialization);
+            var bindingEntry = proxy.bindings[0];
+
+            expect(bindingEntry).toBeTruthy();
+            expect(bindingEntry.key).toBe("propertyOfFoo");
+            expect(bindingEntry.twoWay).toBeFalsy();
+            expect(bindingEntry.sourcePath).toBe("@foo.anotherPropertyOfFoo");
+        });
+
+        it("should correctly represent a two-way binding", function () {
+            var element = {};
+            var serialization = {
+                "prototype": "ui/foo.reel",
+                "properties": {
+                    "element": element
+                },
+                "bindings": {
+                    "propertyOfFoo": {"<->": "@foo.anotherPropertyOfFoo"}
+                }
+            };
+
+            proxy = new EditingProxy().init(label, serialization);
+            var bindingEntry = proxy.bindings[0];
+
+            expect(bindingEntry).toBeTruthy();
+            expect(bindingEntry.key).toBe("propertyOfFoo");
+            expect(bindingEntry.oneway).toBeFalsy();
+            expect(bindingEntry.sourcePath).toBe("@foo.anotherPropertyOfFoo");
+        });
+
+    });
 });
