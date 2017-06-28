@@ -2,9 +2,9 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     Document = require("core/document").Document,
     SORTERS = require("core/sorters"),
-    ProxySerializer = require("core/serialization/proxy-serializer").ProxySerializer,
-    ProxyReviver = require("core/serialization/proxy-reviver").ProxyReviver,
-    ProxyContext = require("core/serialization/proxy-context").ProxyContext;
+    ProxySerializer = require("core/serialization/serializer/proxy-serializer").ProxySerializer,
+    ProxyReviver = require("core/serialization/deserializer/proxy-reviver").ProxyReviver,
+    ProxyContext = require("core/serialization/deserializer/proxy-context").ProxyContext;
 
 exports.EditingDocument = Document.specialize( {
 

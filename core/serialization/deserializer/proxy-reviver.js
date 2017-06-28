@@ -2,7 +2,7 @@ var Set = require("montage/collections/set"),
     Map = require("montage/collections/map"),
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     Promise = require("montage/core/promise").Promise,
-    EditingProxy = require("../editing-proxy").EditingProxy;
+    EditingProxy = require("core/editing-proxy").EditingProxy;
 
 exports.ProxyReviver = MontageReviver.specialize({
 
