@@ -4,7 +4,9 @@ var Montage = require("montage").Montage,
     SORTERS = require("core/sorters"),
     ProxySerializer = require("core/serialization/serializer/proxy-serializer").ProxySerializer,
     ProxyReviver = require("core/serialization/deserializer/proxy-reviver").ProxyReviver,
-    ProxyContext = require("core/serialization/deserializer/proxy-context").ProxyContext;
+    ProxyContext = require("core/serialization/deserializer/proxy-context").ProxyContext,
+    NotModifiedError = require("core/error").NotModifiedError,
+    ValidationError = require("core/error").ValidationError;
 
 exports.EditingDocument = Document.specialize( {
 
@@ -19,6 +21,10 @@ exports.EditingDocument = Document.specialize( {
     },
 
     propertyChangesDispatchingEnabled: {
+        value: true
+    },
+
+    bindingChangesDispatchingEnabled: {
         value: true
     },
 
@@ -88,6 +94,8 @@ exports.EditingDocument = Document.specialize( {
             return this._packageRequire;
         }
     },
+
+    // Properties API
 
     getOwnedObjectProperty: {
         value: function (proxy, property) {
@@ -190,6 +198,108 @@ exports.EditingDocument = Document.specialize( {
                 return true;
             }
             return false;
+        }
+    },
+
+    // Bindings API
+
+    /**
+     * Defines or updates a binding on a given Proxy object, updating its
+     * serialization and refreshing the editor.
+     *
+     * @param {EditingProxy} proxy
+     * @param {String} key
+     * @param {Boolean} oneway
+     * @param {String} sourcePath
+     * @param {Object} converter
+     *
+     * @throws {ValidationError} if the given arguments do not make a valid binding
+     * @return {Object} the created binding model
+     */
+    defineOwnedObjectBinding: {
+        value: function (proxy, key, oneway, sourcePath, converter) {
+            var existingBinding, newBinding;
+
+            if (!this.isBindingParamsValid(key, sourcePath)) {
+                throw new ValidationError("Invalid binding.");
+            }
+
+            existingBinding = proxy.getObjectBinding(key);
+            if (existingBinding) {
+                if (!this._hasBindingChanged(existingBinding, key, oneway, sourcePath, converter)) {
+                    throw new NotModifiedError("Nothing has been modified.");
+                }
+                this._dispatchWillUpdateOwnedObjectBinding(proxy, existingBinding);
+            }
+
+            newBinding = proxy.defineObjectBinding(key, oneway, sourcePath, converter);
+
+            if (existingBinding) {
+                this.undoManager.register("Edit Binding", Promise.resolve([
+                    this.defineOwnedObjectBinding, this, proxy, existingBinding.key, existingBinding.oneway, existingBinding.sourcePath, existingBinding.converter
+                ]));
+                this._dispatchDidUpdateOwnedObjectBinding(proxy, key, oneway, sourcePath, converter);
+            } else {
+                this.undoManager.register("Define Binding", Promise.resolve([
+                    this.cancelOwnedObjectBinding, this, proxy, key
+                ]));
+                this._dispatchDidDefineOwnedObjectBinding(proxy, key, oneway, sourcePath, converter);
+            }
+
+            // Need to rebuild the serialization here so that the template
+            // updates, ready for the inner template inspector
+            this._buildSerializationObjects();
+
+            // Refresh the stage
+            this.editor.refresh();
+
+            return newBinding;
+        }
+    },
+
+    isBindingParamsValid: {
+        value: function (targetPath, sourcePath) {
+            return targetPath && sourcePath;
+        }
+    },
+
+    _hasBindingChanged: {
+        value: function(existingBinding, targetPath, oneway, sourcePath, converter) {
+            return existingBinding.targetPath !== targetPath ||
+                existingBinding.oneway !== oneway ||
+                existingBinding.sourcePath !== sourcePath ||
+                existingBinding.converter !== converter;
+        }
+    },
+
+    /**
+     * Cancels the binding with the given key on the given Proxy object.
+     * Refreshes the editor, even if there was nothing to delete.
+     *
+     * @param {EditingProxy} proxy
+     * @param {String} key
+     *
+     * @return {Object} the removed binding model
+     */
+    cancelOwnedObjectBinding: {
+        value: function (proxy, key) {
+            var removedBinding = proxy.cancelObjectBinding(key);
+
+            if (removedBinding) {
+                this.undoManager.register("Cancel Binding", Promise.resolve([
+                    this.defineOwnedObjectBinding, this, proxy, removedBinding.key, removedBinding.oneway, removedBinding.sourcePath, removedBinding.converter
+                ]));
+                this._dispatchDidCancelOwnedObjectBinding(proxy, key);
+            }
+
+            // Need to rebuild the serialization here so that the template
+            // updates, ready for the inner template inspector
+            this._buildSerializationObjects();
+
+            // Refresh the stage
+            this.editor.refresh();
+
+            return removedBinding;
         }
     },
 
@@ -430,6 +540,56 @@ exports.EditingDocument = Document.specialize( {
                     proxy: proxy,
                     newLabel: newLabel,
                     oldLabel: oldLabel
+                });
+            }
+        }
+    },
+
+    _dispatchWillUpdateOwnedObjectBinding: {
+        value: function (proxy, binding) {
+            if (this.bindingChangesDispatchingEnabled) {
+                this.dispatchEventNamed("willUpdateOwnedObjectBinding", true, false, {
+                    proxy: proxy,
+                    binding: binding
+                });
+            }
+        }
+    },
+
+    _dispatchDidUpdateOwnedObjectBinding: {
+        value: function (proxy, targetPath, oneway, sourcePath, converter) {
+            if (this.bindingChangesDispatchingEnabled) {
+                this.dispatchEventNamed("didUpdateOwnedObjectBinding", true, false, {
+                    proxy: proxy,
+                    targetPath: targetPath,
+                    oneway: oneway,
+                    sourcePath: sourcePath,
+                    converter: converter
+                });
+            }
+        }
+    },
+
+    _dispatchDidDefineOwnedObjectBinding: {
+        value: function (proxy, targetPath, oneway, sourcePath, converter) {
+            if (this.bindingChangesDispatchingEnabled) {
+                this.dispatchEventNamed("didDefineOwnedObjectBinding", true, false, {
+                    proxy: proxy,
+                    targetPath: targetPath,
+                    oneway: oneway,
+                    sourcePath: sourcePath,
+                    converter: converter
+                });
+            }
+        }
+    },
+
+    _dispatchDidCancelOwnedObjectBinding: {
+        value: function (proxy, binding) {
+            if (this.bindingChangesDispatchingEnabled) {
+                this.dispatchEventNamed("didCancelOwnedObjectBinding", true, false, {
+                    proxy: proxy,
+                    binding: binding
                 });
             }
         }

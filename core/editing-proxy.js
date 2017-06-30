@@ -150,6 +150,8 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
 
     /**
      * The map of properties that should be applied to the object this proxy represents
+     *
+     * @type {Map}
      */
     properties: {
         get: function () {
@@ -197,6 +199,8 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
             });
         }
     },
+
+    // Properties API
 
     setObjectProperty: {
         value: function (property, value) {
@@ -251,75 +255,29 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         }
     },
 
+    // Bindings API
+
     /**
-     * @param {string} targetPath
+     * Creates a new binding, or updates an existing binding (that matches the
+     * given key parameter).
+     *
+     * @param {string} key
      * @param {boolean} oneway
      * @param {string} sourcePath
      * @param {Object} converter
      * @return {Object} The binding model
      */
     defineObjectBinding: {
-        value: function (targetPath, oneway, sourcePath, converter) {
-            var binding = Object.create(null);
+        value: function (key, oneway, sourcePath, converter) {
+            var binding = this.getObjectBinding(key);
 
-            // TODO guard against binding to the exact same targetPath twice
-            binding.bound = true;
-            binding.key = targetPath;
-            binding.oneway = oneway;
-            binding.sourcePath = sourcePath;
-            binding.converter = converter;
-
-            this.bindings.push(binding);
-
-            return binding;
-        }
-    },
-
-    /**
-     * Add a a specified binding object to the proxy at a specific index
-     * in the bindings collection
-     */
-    addBinding: {
-        value: function (binding, insertionIndex) {
-            var bindingIndex = this.bindings.indexOf(binding);
-
-            if (-1 === bindingIndex) {
-                if (isNaN(insertionIndex)) {
-                    this.bindings.push(binding);
-                } else {
-                    this.bindings.splice(insertionIndex, 0, binding);
-                }
-            } else {
-                //TODO guard against adding exact same binding to multiple proxies
-                throw new Error("Cannot add the same binding to a proxy more than once");
-            }
-
-            return binding;
-        }
-    },
-
-    /**
-     * Update an existing binding with new parameters
-     *
-     * All parameters are required, currently you cannot update a single
-     * property of the existing binding without affecting the others.
-     *
-     * @param {Object} binding The existing binding to update
-     * @param {string} targetPath The targetPath to set on the binding
-     * @param {boolean} oneway Whether or not to set the binding as being oneway
-     * @param {string} sourcePath The sourcePath to set on the binding
-     * @param {string} converter The converter to set on the binding
-     */
-    updateObjectBinding: {
-        value: function (binding, targetPath, oneway, sourcePath, converter) {
-            var bindingIndex = this.bindings.indexOf(binding);
-
-            if (bindingIndex === -1) {
-                throw new Error("Cannot update a binding that's not associated with this proxy.");
+            if (!binding) {
+                binding = Object.create(null);
+                binding.key = key;
+                this.bindings.push(binding);
             }
 
             binding.bound = true;
-            binding.key = targetPath;
             binding.oneway = oneway;
             binding.sourcePath = sourcePath;
             binding.converter = converter;
@@ -329,22 +287,37 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
     },
 
     /**
-     * Remove the specific binding from the set of active bindings on this proxy
+     * Returns the binding model for the binding with the given target path.
      *
-     * @param {Object} binding The binding model
-     * @return {Object} an object with two keys index and removedBinding
+     * @param {string} key
+     * @return {Object?}
+     */
+    getObjectBinding: {
+        value: function (key) {
+            return this.bindings.filter(function (binding) {
+                return binding.key === key;
+            })[0];
+        }
+    },
+
+    /**
+     * Remove the binding with the given key from the set of active bindings on this proxy.
+     *
+     * @param {string} key
+     * @return {Object} the removed binding model
      */
     cancelObjectBinding: {
-        value: function (binding) {
-            var bindingIndex = this.bindings.indexOf(binding);
-
-            if (bindingIndex > -1) {
-                this.bindings.splice(bindingIndex, 1);
-                return {index: bindingIndex, removedBinding: binding};
-            } else {
-                throw new Error("Cannot cancel a binding that's not associated with this proxy");
+        value: function (key) {
+            var i,
+                bindingsLength = this.bindings.length,
+                binding;
+            for (i = 0; i < bindingsLength; ++i) {
+                binding = this.bindings[i];
+                if (binding.key === key) {
+                    this.bindings.splice(i, 1);
+                    return binding;
+                }
             }
         }
     }
-
 });

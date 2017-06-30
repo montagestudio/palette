@@ -74,8 +74,9 @@ describe("core/editing-proxy-spec", function () {
     });
 
     describe("bindings", function () {
+        var element, serialization, proxy;
 
-        it("should correctly represent a one-way binding", function () {
+        beforeEach(function () {
             var element = {};
             var serialization = {
                 "prototype": "ui/foo.reel",
@@ -83,39 +84,55 @@ describe("core/editing-proxy-spec", function () {
                     "element": element
                 },
                 "bindings": {
-                    "propertyOfFoo": {"<-": "@foo.anotherPropertyOfFoo"}
+                    "oneWayBinding": {"<-": "@foo.anotherPropertyOfFoo"},
+                    "twoWayBinding": {"<->": "@foo.anotherPropertyOfFoo"}
                 }
             };
-
             proxy = new EditingProxy().init(label, serialization);
-            var bindingEntry = proxy.bindings[0];
-
-            expect(bindingEntry).toBeTruthy();
-            expect(bindingEntry.key).toBe("propertyOfFoo");
-            expect(bindingEntry.twoWay).toBeFalsy();
-            expect(bindingEntry.sourcePath).toBe("@foo.anotherPropertyOfFoo");
         });
 
-        it("should correctly represent a two-way binding", function () {
-            var element = {};
-            var serialization = {
-                "prototype": "ui/foo.reel",
-                "properties": {
-                    "element": element
-                },
-                "bindings": {
-                    "propertyOfFoo": {"<->": "@foo.anotherPropertyOfFoo"}
-                }
-            };
+        it("represents serialized binding correctly", function () {
+            var oneWayBinding = proxy.getObjectBinding("oneWayBinding"),
+                twoWayBinding = proxy.getObjectBinding("twoWayBinding");
 
-            proxy = new EditingProxy().init(label, serialization);
-            var bindingEntry = proxy.bindings[0];
+            expect(oneWayBinding).toBeTruthy();
+            expect(oneWayBinding.key).toBe("oneWayBinding");
+            expect(oneWayBinding.oneway).toBeTruthy();
+            expect(oneWayBinding.sourcePath).toBe("@foo.anotherPropertyOfFoo");
 
-            expect(bindingEntry).toBeTruthy();
-            expect(bindingEntry.key).toBe("propertyOfFoo");
-            expect(bindingEntry.oneway).toBeFalsy();
-            expect(bindingEntry.sourcePath).toBe("@foo.anotherPropertyOfFoo");
+            expect(twoWayBinding).toBeTruthy();
+            expect(twoWayBinding.key).toBe("twoWayBinding");
+            expect(twoWayBinding.oneway).toBeFalsy();
+            expect(twoWayBinding.sourcePath).toBe("@foo.anotherPropertyOfFoo");
         });
 
+        it("defines a binding with the correct model", function () {
+            proxy.defineObjectBinding("aThirdBinding", true, "@foo.bar", void 0);
+            var bindingModel = proxy.getObjectBinding("aThirdBinding");
+            expect(bindingModel).toBeTruthy();
+            expect(bindingModel.key).toBe("aThirdBinding");
+            expect(bindingModel.oneway).toBeTruthy();
+            expect(bindingModel.sourcePath).toBe("@foo.bar");
+        });
+
+        it("modifies an existing binding", function () {
+            var bindingModel,
+                someConverter = {};
+            proxy.defineObjectBinding("aThirdBinding", true, "@foo.bar", void 0);
+            proxy.defineObjectBinding("aThirdBinding", false, "@baz.ban", someConverter);
+            bindingModel = proxy.getObjectBinding("aThirdBinding");
+            expect(proxy.bindings.length).toBe(3);
+            expect(bindingModel).toBeTruthy();
+            expect(bindingModel.key).toBe("aThirdBinding");
+            expect(bindingModel.oneway).toBeFalsy();
+            expect(bindingModel.sourcePath).toBe("@baz.ban");
+            expect(bindingModel.converter).toBe(someConverter);
+        });
+
+        it("cancels an existing binding", function () {
+            proxy.cancelObjectBinding("oneWayBinding");
+            expect(proxy.properties.length).toBe(1);
+            expect(proxy.getObjectBinding("oneWayBinding")).toBeFalsy();
+        });
     });
 });
