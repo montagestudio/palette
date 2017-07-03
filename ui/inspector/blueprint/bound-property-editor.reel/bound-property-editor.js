@@ -40,16 +40,8 @@ exports.BoundPropertyEditor = Component.specialize(/** @lends module:"./bound-pr
     handlePress: {
         value: function(evt) {
             if (this.object && this.binding) {
-                var bindingModel = Object.create(null);
-                bindingModel.bound = true;
-                bindingModel.targetObject = this.object;
-                bindingModel.key = this.binding.key;
-                bindingModel.oneway = this.binding.oneway;
-                bindingModel.sourcePath = this.binding.sourcePath;
-                bindingModel.converter = this.binding.converter;
-
                 this.dispatchEventNamed("addBinding", true, false, {
-                    bindingModel: bindingModel,
+                    bindingModel: this.binding,
                     existingBinding: this.binding
                 });
             }
