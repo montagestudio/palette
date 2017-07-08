@@ -18,35 +18,15 @@ exports.EnumPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
         }
     },
 
-    _hasValueBeenInitialized: {
-        value: false
-    },
-
-    objectValue: {
-        get: function() {
-            return Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").get.call(this);
-        },
-        set: function(value) {
-            // The first valid value we get is the default and should not be serialized
-            if (this._hasValueBeenInitialized) {
-                Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").set.apply(this, arguments);
-            } else {
-                this._fakeUpdateValue(value);
-            }
-        }
-    },
-
-    _fakeUpdateValue: {
-        value: function(value) {
-            if (typeof value !== "undefined" && value !== null) {
-                this._hasValueBeenInitialized = true;
-            }
-            Object.getPropertyDescriptor(ValueTypeInspector.prototype, "objectValue").set.call(this, void 0);
+    enterDocument: {
+        value: function () {
+            // This is to fix a bug, the select resets its value when entering the document
+            this.propertyValue.value = this._objectValue;
         }
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this.propertyBlueprint) {
                 this.templateObjects.propertyNameSubstitution.element.setAttribute("title", this.propertyBlueprint.name);
             }
