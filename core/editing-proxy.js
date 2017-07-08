@@ -271,16 +271,20 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         value: function (key, oneway, sourcePath, converter) {
             var binding = this.getObjectBinding(key);
 
-            if (!binding) {
+            if (binding) {
+                binding.bound = true;
+                binding.oneway = oneway;
+                binding.sourcePath = sourcePath;
+                binding.converter = converter;
+            } else {
                 binding = Object.create(null);
                 binding.key = key;
+                binding.bound = true;
+                binding.oneway = oneway;
+                binding.sourcePath = sourcePath;
+                binding.converter = converter;
                 this.bindings.push(binding);
             }
-
-            binding.bound = true;
-            binding.oneway = oneway;
-            binding.sourcePath = sourcePath;
-            binding.converter = converter;
 
             return binding;
         }
