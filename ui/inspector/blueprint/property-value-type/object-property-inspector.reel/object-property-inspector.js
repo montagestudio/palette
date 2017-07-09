@@ -57,7 +57,6 @@ exports.ObjectPropertyInspector = ValueTypeInspector.specialize(/** @lends modul
             } else {
                 this.objectValue = value;
             }
-            console.log("set value: " + this.objectValue);
         }
     }
 
