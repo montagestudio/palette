@@ -13,48 +13,6 @@
             }
         },
 
-        "propertyNameSubstitution":{
-            "prototype":"montage/ui/substitution.reel",
-            "properties":{
-                "element":{
-                    "#":"propertyNameSubstitution"
-                }
-            },
-            "bindings":{
-                "switchValue":{
-                    "<-":"@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
-                }
-            }
-        },
-
-        "readOnlyPropertyName":{
-            "prototype":"montage/ui/text.reel",
-            "properties":{
-                "element":{
-                    "#":"readOnlyPropertyName"
-                }
-            },
-            "bindings":{
-                "value":{
-                    "<-":"@owner.label"
-                }
-            }
-        },
-
-        "readWritePropertyName":{
-            "prototype":"matte/ui/input-text.reel",
-            "properties":{
-                "element":{
-                    "#":"readWritePropertyName"
-                }
-            },
-            "bindings":{
-                "value":{
-                    "<->":"@owner.label"
-                }
-            }
-        },
-
         "readWritePropertySubstitution":{
             "prototype":"montage/ui/substitution.reel",
             "properties":{
@@ -102,10 +60,6 @@
 </head>
 <body>
     <div data-montage-id="date-property-inspector" class="Property DatePropertyInspector">
-        <div data-montage-id="propertyNameSubstitution" class="Property-label">
-            <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
-            <input data-arg="readWrite" data-montage-id="readWritePropertyName"/>
-        </div>
         <div data-montage-id="readWritePropertySubstitution" class="Property-field">
             <span data-arg="readOnly" data-montage-id="propertyValueReadOnly"></span>
             <input data-arg="readWrite" data-montage-id="propertyValue" type="date"/>

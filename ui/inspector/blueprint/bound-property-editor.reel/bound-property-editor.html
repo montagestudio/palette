@@ -26,20 +26,6 @@
             ]
         },
 
-        "readOnlyPropertyName": {
-            "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {
-                    "#": "readOnlyPropertyName"
-                }
-            },
-            "bindings": {
-                "value": {
-                    "<-": "@owner.binding.key"
-                }
-            }
-        },
-
         "unidirectionalCondition": {
             "prototype": "montage/ui/condition.reel",
             "properties": {
@@ -87,7 +73,6 @@
 </head>
 <body>
     <div data-montage-id="bound-property-editor" class="BoundPropertyEditor">
-        <div data-montage-id="readOnlyPropertyName" class="Property-label"></div>
         <div data-montage-id="unidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--unidirectional"></div>
         <div data-montage-id="bidirectionalCondition" class="BindingEntry-direction BindingEntry-direction--bidirectional"></div>
         <div data-montage-id="sourcePath" class="BindingEntry-pill"></div>

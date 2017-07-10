@@ -16,14 +16,5 @@ exports.StringPropertyInspector = ValueTypeInspector.specialize(/** @lends modul
         value: function StringPropertyInspector() {
             this.super();
         }
-    },
-
-    draw: {
-        value: function() {
-            if (this.propertyBlueprint) {
-                this.templateObjects.propertyNameSubstitution.element.setAttribute("title", this.propertyBlueprint.name);
-            }
-        }
     }
-
 });

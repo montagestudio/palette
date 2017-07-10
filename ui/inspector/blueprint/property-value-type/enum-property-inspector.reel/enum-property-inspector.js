@@ -23,13 +23,5 @@ exports.EnumPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
             // This is to fix a bug, the select resets its value when entering the document
             this.propertyValue.value = this._objectValue;
         }
-    },
-
-    draw: {
-        value: function () {
-            if (this.propertyBlueprint) {
-                this.templateObjects.propertyNameSubstitution.element.setAttribute("title", this.propertyBlueprint.name);
-            }
-        }
     }
 });

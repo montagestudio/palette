@@ -13,48 +13,6 @@
             }
         },
 
-        "associationNameSubstitution": {
-            "prototype": "montage/ui/substitution.reel",
-            "properties": {
-                "element": {
-                    "#": "associationNameSubstitution"
-                }
-            },
-            "bindings": {
-                "switchValue": {
-                    "<-": "@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
-                }
-            }
-        },
-
-        "readOnlyAssociationName": {
-            "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {
-                    "#": "readOnlyAssociationName"
-                }
-            },
-            "bindings": {
-                "value": {
-                    "<-": "@owner.label"
-                }
-            }
-        },
-
-        "readWriteAssociationName": {
-            "prototype": "matte/ui/input-text.reel",
-            "properties": {
-                "element": {
-                    "#": "readWriteAssociationName"
-                }
-            },
-            "bindings": {
-                "value": {
-                    "<->": "@owner.label"
-                }
-            }
-        },
-
         "propertyCollection": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
@@ -146,10 +104,6 @@
 <body>
     <div data-montage-id="map-association-inspector" class="MapAssociationInspector">
         <div class="Association">
-            <div data-montage-id="associationNameSubstitution" class="Association-label">
-                <span data-arg="readOnly" data-montage-id="readOnlyAssociationName"></span>
-                <span data-arg="readWrite" data-montage-id="readWriteAssociationName"></span>
-            </div>
             <button data-montage-id="addButton"></button>
         </div>
         <ul data-montage-id="propertyCollection" class="PropertyCollection">

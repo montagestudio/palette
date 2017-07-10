@@ -13,48 +13,6 @@
             }
         },
 
-        "propertyNameSubstitution": {
-            "prototype": "montage/ui/substitution.reel",
-            "properties": {
-                "element": {
-                    "#": "propertyNameSubstitution"
-                }
-            },
-            "bindings": {
-                "switchValue": {
-                    "<-": "@owner.readOnlyLabel ? 'readOnly' : 'readWrite'"
-                }
-            }
-        },
-
-        "readOnlyPropertyName": {
-            "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {
-                    "#": "readOnlyPropertyName"
-                }
-            },
-            "bindings": {
-                "value": {
-                    "<-": "@owner.label"
-                }
-            }
-        },
-
-        "readWritePropertyName": {
-            "prototype": "matte/ui/input-text.reel",
-            "properties": {
-                "element": {
-                    "#": "readWritePropertyName"
-                }
-            },
-            "bindings": {
-                "value": {
-                    "<->": "@owner.label"
-                }
-            }
-        },
-
         "propertyCollection": {
             "prototype": "montage/ui/repetition.reel",
             "properties": {
@@ -306,10 +264,6 @@
 <body>
     <div data-montage-id="map-property-inspector" class="MapPropertyInspector">
         <div class="Property">
-            <div data-montage-id="propertyNameSubstitution" class="Property-label">
-                <span data-arg="readOnly" data-montage-id="readOnlyPropertyName"></span>
-                <span data-arg="readWrite" data-montage-id="readWritePropertyName"></span>
-            </div>
             <button data-montage-id="addButton"></button>
         </div>
         <ul data-montage-id="propertyCollection" class="PropertyCollection">

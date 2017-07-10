@@ -20,14 +20,6 @@ exports.ListPropertyInspector = ValueTypeInspector.specialize(/** @lends module:
         }
     },
 
-    draw: {
-        value: function() {
-            if (this.propertyBlueprint) {
-                this.templateObjects.propertyNameSubstitution.element.setAttribute("title", this.propertyBlueprint.name);
-            }
-        }
-    },
-
     _valueChanged: {
         value: function() {
             this.dispatchOwnPropertyChange("collectionValue", this.collectionValue);
