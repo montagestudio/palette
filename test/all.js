@@ -1,3 +1,5 @@
+require("montage");
+
 module.exports = require("montage-testing").run(require, [
     // Please keep in alphabetical order
     {name: "spec/core/document-spec", node: false},
