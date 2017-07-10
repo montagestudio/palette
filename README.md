@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/montagestudio/palette.svg?branch=master)](http://travis-ci.org/montagestudio/palette)
+[![Build Status](https://travis-ci.com/montagestudio/palette.svg?branch=master)](http://travis-ci.com/montagestudio/palette)
 
 # palette
 
