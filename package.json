@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "matte": "^0.3.0",
-    "montage": "^17.0.8"
+    "montage": "^17.0.7"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
