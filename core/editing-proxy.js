@@ -154,8 +154,21 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
         value: function (serialization) {
             this._originalSerializationMap = Map.from(serialization);
 
+            var properties;
             // We specifically surface the properties as a top level API
-            this._properties = Map.from(serialization.properties);
+            if (serialization.values) {
+                properties = new Map();
+                for (var key in serialization.values) {
+                    if (serialization.values.hasOwnProperty(key)) {
+                        if (!("<-" in serialization.values[key] || "<->" in serialization.values[key])) {
+                            properties.set(key, serialization.values[key]);
+                        }
+                    }
+                }
+            } else {
+                properties = Map.from(serialization.properties);
+            }
+            this._properties = properties;
         }
     },
 
