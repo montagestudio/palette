@@ -160,7 +160,9 @@ exports.EditingProxy = Target.specialize( /** @lends module:palette/coreediting-
                 properties = new Map();
                 for (var key in serialization.values) {
                     if (serialization.values.hasOwnProperty(key)) {
-                        if (!("<-" in serialization.values[key] || "<->" in serialization.values[key])) {
+                        var serializationValue = serialization.values[key];
+                        var isValueBinding = typeof serializationValue === "object" && ("<-" in serializationValue || "<->" in serializationValue);
+                        if (!isValueBinding) {
                             properties.set(key, serialization.values[key]);
                         }
                     }
