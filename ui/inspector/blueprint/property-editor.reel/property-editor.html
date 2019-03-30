@@ -228,6 +228,21 @@
                 "label": {"<-": "@owner.propertyBlueprint.name"
                 }
             }
+        },
+
+        "rangePropertyInspector": {
+            "prototype": "../property-value-type/range-property-inspector.reel",
+            "properties": {
+                "element": {"#": "rangePropertyInspector"},
+                "readOnlyLabel": true
+            },
+            "bindings": {
+                "editingDocument": {"<-": "@owner.editingDocument"},
+                "objectValue": {"<->": "@owner.objectValue"},
+                "propertyBlueprint": {"<-": "@owner.propertyBlueprint"},
+                "label": {"<-": "@owner.propertyBlueprint.name"
+                }
+            }
         }
 
     }
@@ -252,6 +267,7 @@
             <div data-arg="set-property" data-montage-id="setPropertyInspector"></div>
             <div data-arg="map-property" data-montage-id="mapPropertyInspector"></div>
             <div data-arg="resource-property" data-montage-id="resourcePropertyInspector"></div>
+            <div data-arg="range-property" data-montage-id="rangePropertyInspector"></div>
         </div>
     </label>
 </body>
